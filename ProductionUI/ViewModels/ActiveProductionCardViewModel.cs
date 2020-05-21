@@ -10,7 +10,7 @@ namespace ProductionUI.ViewModels
 {
     public class ActiveProductionCardViewModel : AProductionCard
     {
-        DispatcherTimer t;
+        private readonly DispatcherTimer t;
 
         private DateTime _startTime = System.DateTime.Now;
 
@@ -23,9 +23,11 @@ namespace ProductionUI.ViewModels
             DependencyObject dep = new DependencyObject();
             if (DesignerProperties.GetIsInDesignMode(dep) != true)
             {
-                t = new DispatcherTimer();
-                t.IsEnabled = true;
-                t.Interval = TimeSpan.FromMilliseconds(1);
+                t = new DispatcherTimer
+                {
+                    IsEnabled = true,
+                    Interval = TimeSpan.FromMilliseconds(1)
+                };
                 t.Tick += Tick;
                 ResetRunTime();
                 t.Start();

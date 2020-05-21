@@ -38,11 +38,6 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-
-            <WrapPanel Orientation="Horizontal"
-                       IsItemsHost="True"
-                       >
-            </WrapPanel>
             
         </Grid>
 

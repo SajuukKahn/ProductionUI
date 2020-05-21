@@ -18,12 +18,7 @@ namespace ProductionUI.Commands
         /// <param name="canExecute">Check for is allowed</param>
         public RelayCommand(Action<object> execute, Predicate<object> canExecute = null)
         {
-            if (execute == null)
-            {
-                throw new ArgumentNullException("execute");
-            }
-
-            _execute = execute;
+            _execute = execute ?? throw new ArgumentNullException("execute");
             _canExecute = canExecute;
         }
 
