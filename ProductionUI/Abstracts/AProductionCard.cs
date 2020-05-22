@@ -1,9 +1,12 @@
 ﻿using ProductionUI.Interfaces;
+using ProductionUI.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
+using System.Windows;
 using System.Windows.Input;
+using System.Windows.Threading;
 
 namespace ProductionUI.Abstracts
 {
@@ -13,44 +16,7 @@ namespace ProductionUI.Abstracts
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string prop)
         {
-            if(PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(prop));
-            }
-        }
-
-        public ICommand PlayButton { get; set; }
-        public ICommand PauseButton { get; set; }
-
-        private string _processLocation;
-
-        public string ProcessLocation 
-        {
-            get
-            {
-                return _processLocation;
-            }
-            
-            set
-            {
-                _processLocation = value;
-                OnPropertyChanged("ProcessLocation");
-            }
-        
-        }
-
-        private string _programName;
-        public string ProgramName
-        {
-            get
-            {
-                return _programName;
-            }
-            set 
-            {
-                _programName = value;
-                OnPropertyChanged("ProgramName");
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
         private string _stepDataDisplay;
@@ -109,8 +75,23 @@ namespace ProductionUI.Abstracts
             }
         }
 
-        private int[,,,] _stepPointData;
-        public int[,,,] StepPointData
+
+        private bool _isActiveStep;
+        public bool IsActiveStep
+        {
+            get
+            {
+                return _isActiveStep;
+            }
+            set
+            {
+                _isActiveStep = value;
+                OnPropertyChanged("IsActiveStep");
+            }
+        }
+
+        private StepCoordinatesModel _stepPointData;
+        public StepCoordinatesModel StepPointData
         {
             get
             {
@@ -121,6 +102,43 @@ namespace ProductionUI.Abstracts
                 _stepPointData = value;
                 OnPropertyChanged("StepPointData");
             }
+        }
+
+        private readonly DispatcherTimer t;
+
+        private DateTime _startTime;
+
+        public AProductionCard()
+        {
+
+            DependencyObject dep = new DependencyObject();
+            if (DesignerProperties.GetIsInDesignMode(dep) != true)
+            {
+                t = new DispatcherTimer
+                {
+                    IsEnabled = true,
+                    Interval = TimeSpan.FromMilliseconds(1)
+                };
+                t.Tick += Tick;
+                ResetRunTime();
+                //t.Start();
+            }
+        }
+
+        public void ResetRunTime()
+        {
+            _startTime = System.DateTime.Now;
+        }
+
+        private void Tick(object sender, EventArgs e)
+        {
+            StepActiveTime = Convert.ToString(DateTime.Now - _startTime);
+        }
+
+        ~AProductionCard()
+        {
+            t.Stop();
+            t.IsEnabled = false;
         }
     }
 }

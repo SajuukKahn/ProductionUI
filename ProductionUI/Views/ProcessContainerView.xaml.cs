@@ -14,11 +14,11 @@ using System.Windows.Shapes;
 namespace ProductionUI.Views
 {
     /// <summary>
-    /// Interaction logic for InactiveProductionCard.xaml
+    /// Interaction logic for ProcessContainerView.xaml
     /// </summary>
-    public partial class InactiveProductionCard : UserControl
+    public partial class ProcessContainerView : UserControl
     {
-        public InactiveProductionCard()
+        public ProcessContainerView()
         {
             InitializeComponent();
         }

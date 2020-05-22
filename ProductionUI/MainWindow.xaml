@@ -9,37 +9,21 @@
         Title="MainWindow" Height="300" Width="500">
 
     <Window.Resources>
-
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                
+                <!--<ResourceDictionary Source="/Theme.xaml"/>-->
+                
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Window.Resources>
 
-    <DockPanel>
+    <DockPanel LastChildFill="True" x:Name="Dock">
 
+        <userControls:ProcessContainerView DockPanel.Dock="Top" Height="25"/>
 
-        <userControls:ActiveProductionCard
-            DockPanel.Dock="Top"
-            Height="175"/>
+        <userControls:ProductionCardDeckView DockPanel.Dock="Bottom"/>
 
-        <Grid>
-            <!--<TextBlock x:Name="textBlock" Text="HELLO">
-                <TextBlock.Triggers>
-                    <EventTrigger RoutedEvent="FrameworkElement.Loaded">
-                        <BeginStoryboard>
-                            <Storyboard RepeatBehavior="Forever" AutoReverse="True">
-                                <DoubleAnimation Storyboard.TargetName="textBlock" 
-                               Storyboard.TargetProperty="FontSize"
-                               From="10" To="30" 
-                               Duration="0:0:1"/>
-                            </Storyboard>
-                        </BeginStoryboard>
-                    </EventTrigger>
-                </TextBlock.Triggers>
-            </TextBlock>-->
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            
-        </Grid>
 
     </DockPanel>
 

@@ -1,12 +1,13 @@
-﻿using System;
+﻿using ProductionUI.Models;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Controls;
 
-namespace ProductionUI.Models
+namespace ProductionUI.ViewModels
 {
-    internal class ProductionCardDeckModel : IList<ProductionCardModel>
+    public class ProductionCardDeckViewModel : IList<ProductionCardModel>
     {
         private readonly IList<ProductionCardModel> _list = new List<ProductionCardModel>();
 

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ProductionUI.Models
 {
-    class ProductionCardModel : AProductionCard
+    public class ProductionCardModel : AProductionCard
     {
     }
 }

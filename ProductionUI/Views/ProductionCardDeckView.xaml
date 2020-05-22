@@ -1,21 +1,22 @@
-﻿<UserControl x:Class="ProductionUI.Views.InactiveProductionCard"
+﻿<UserControl x:Class="ProductionUI.Views.ProductionCardDeckView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ProductionUI.Views"
              xmlns:vm="clr-namespace:ProductionUI.ViewModels"
-             
              mc:Ignorable="d" 
-             d:DesignHeight="80" d:DesignWidth="175">
+             d:DesignHeight="450" d:DesignWidth="800">
 
     <UserControl.DataContext>
-        <vm:InactiveProductionCardViewModel/>
+        <vm:ProductionCardDeckViewModel/>
     </UserControl.DataContext>
+        
 
-    <StackPanel Background="AliceBlue">
-        <Label Content="{Binding StepDataDisplay}"/>
-        <Label Content="{Binding StepActiveTime}"/>
-        <Label Content="{Binding StepPointData}"/>
-    </StackPanel>
+            <ScrollBar Orientation="Horizontal">
+
+    </ScrollBar>
+ 
+
+
 </UserControl>
