@@ -11,12 +11,62 @@
     <UserControl.DataContext>
         <vm:ProductionCardDeckViewModel/>
     </UserControl.DataContext>
-        
 
-            <ScrollBar Orientation="Horizontal">
+    <Grid>
 
-    </ScrollBar>
- 
+        <Grid VerticalAlignment="Stretch"
+                  DockPanel.Dock="Bottom">
+
+            <ScrollViewer HorizontalScrollBarVisibility="Visible"
+                          VerticalScrollBarVisibility="Hidden"
+                          HorizontalAlignment="Stretch"
+                          VerticalContentAlignment="Stretch"
+                          HorizontalContentAlignment="Center">
+
+                <ListView SelectionMode="Single"
+                          ItemsSource="{Binding ProductionDeck}">
 
 
+                    <!--<ListViewItem>
+
+                        <ListViewItem.Triggers>
+                            <EventTrigger RoutedEvent="MouseLeave">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <MatrixAnimationUsingPath Storyboard.TargetName="listViewTransform"
+                                                                    Storyboard.TargetProperty="Matrix"
+                                                                    DoesRotateWithTangent="True"
+                                                                    Duration="00:00:10" 
+                                                                    RepeatBehavior="Forever" >
+                                            <MatrixAnimationUsingPath.PathGeometry>
+                                                <PathGeometry Figures=  "M 50,110
+                                                                         C 50,20 150,20 150,110
+                                                                           150,250 250,250 250,160
+                                                                           250,60 50,210 50,110"/>
+                                            </MatrixAnimationUsingPath.PathGeometry>
+                                        </MatrixAnimationUsingPath>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </ListViewItem.Triggers>
+
+                    </ListViewItem>-->
+
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <DataTemplate.Triggers>
+                            </DataTemplate.Triggers>
+                            <StackPanel Orientation="Vertical">
+                                <TextBlock Text="Step: " />
+                                <TextBlock Text="{Binding StepDataDisplay}" FontWeight="Bold" />
+                                <TextBlock Text="Time: " />
+                                <TextBlock Text="{Binding StepActiveTime}" FontWeight="Bold" />
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+
+                </ListView>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
 </UserControl>

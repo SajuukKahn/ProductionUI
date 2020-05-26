@@ -1,6 +1,7 @@
 ﻿using ProductionUI.Abstracts;
 using ProductionUI.Commands;
 using ProductionUI.Interfaces;
+using ProductionUI.Tests;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -54,24 +55,13 @@ namespace ProductionUI.ViewModels
             }
         }
 
-        private string _stepActiveTime;
-        public string StepActiveTime
-        {
-            get
-            {
-                return _stepActiveTime;
-            }
-            set
-            {
-                _stepActiveTime = value;
-                OnPropertyChanged("StepActiveTime");
-            }
-        }
-
         public ProcessContainerViewModel()
         {
             PlayButton = new RelayCommand(o => PlayPressed());
             PauseButton = new RelayCommand(o => PausePressed());
+
+            RandomProgramGenerator randomProgramGenerator = new RandomProgramGenerator();
+            randomProgramGenerator.GenerateRandom(this);
         }
 
         private void PausePressed()

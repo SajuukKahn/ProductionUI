@@ -17,6 +17,17 @@ namespace ProductionUI.Abstracts
         private void OnPropertyChanged(string prop)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+            if(prop == "IsActiveStep")
+            {
+                if (IsActiveStep == false)
+                {
+                    t.Stop();
+                }
+                else
+                {
+                    t.Start();
+                }
+            }
         }
 
         private string _stepDataDisplay;
@@ -45,6 +56,20 @@ namespace ProductionUI.Abstracts
             {
                 _stepActiveTime = value;
                 OnPropertyChanged("StepActiveTime");
+            }
+        }
+
+        private string _stepPointData;
+        public string StepPointData
+        {
+            get
+            {
+                return _stepPointData;
+            }
+            set
+            {
+                _stepPointData = value;
+                OnPropertyChanged("StepPointData");
             }
         }
 
@@ -90,20 +115,6 @@ namespace ProductionUI.Abstracts
             }
         }
 
-        private StepCoordinatesModel _stepPointData;
-        public StepCoordinatesModel StepPointData
-        {
-            get
-            {
-                return _stepPointData;
-            }
-            set
-            {
-                _stepPointData = value;
-                OnPropertyChanged("StepPointData");
-            }
-        }
-
         private readonly DispatcherTimer t;
 
         private DateTime _startTime;
@@ -121,7 +132,6 @@ namespace ProductionUI.Abstracts
                 };
                 t.Tick += Tick;
                 ResetRunTime();
-                //t.Start();
             }
         }
 
@@ -134,6 +144,7 @@ namespace ProductionUI.Abstracts
         {
             StepActiveTime = Convert.ToString(DateTime.Now - _startTime);
         }
+
 
         ~AProductionCard()
         {

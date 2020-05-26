@@ -11,8 +11,8 @@ namespace ProductionUI.Interfaces
         public string StepDataDisplay { get; set; }
         public string StepActiveTime { get; set; }
         public string StepStatus { get; set; }
+        public string StepPointData { get; set; }
         public bool StepComplete { get; set; }
         public bool IsActiveStep { get; set; }
-        public StepCoordinatesModel StepPointData { get; set; }
     }
 }

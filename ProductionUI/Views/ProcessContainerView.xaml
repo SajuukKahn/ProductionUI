@@ -36,7 +36,7 @@
 
 
         <DockPanel Grid.Column="2"
-                   LastChildFill="True">
+                   LastChildFill="False">
             <Button Content="Play"
                         Command="{Binding PlayButton}"
                         Padding="12, 0"
@@ -49,9 +49,6 @@
                         Margin="2">
             </Button>
 
-
-            <Label Content="{Binding StepActiveTime}"
-                   DockPanel.Dock="Right"/>
 
         </DockPanel>
     </Grid>
