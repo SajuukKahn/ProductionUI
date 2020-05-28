@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace ProductionUI
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for WindowContainer.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class WindowContainer : Window
     {
-        public MainWindow()
+        public WindowContainer()
         {
             InitializeComponent();
         }

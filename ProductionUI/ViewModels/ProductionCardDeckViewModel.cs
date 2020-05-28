@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Text;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -39,6 +40,21 @@ namespace ProductionUI.ViewModels
             VertCheck = new RelayCommand(o => VertCheckPressed());
             DeleteButton = new RelayCommand(o => DeleteButtonPressed());
 
+        }
+
+        private ProductionCardModel _currentCard;
+        public ProductionCardModel CurrentCard
+        {
+            get
+            {
+                return _currentCard;
+            }
+            set
+            {
+                _currentCard = value;
+                _productionDeck.All(x => x.IsActiveStep == true);
+                OnPropertyChanged("CurrentCard");
+            }
         }
 
         private void LeftManyArrowPressed()

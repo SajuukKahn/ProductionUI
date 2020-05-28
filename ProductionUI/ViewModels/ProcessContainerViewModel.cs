@@ -25,6 +25,7 @@ namespace ProductionUI.ViewModels
         public ICommand PlayButton { get; set; }
         public ICommand PauseButton { get; set; }
 
+
         private string _processLocation;
         public string ProcessLocation
         {

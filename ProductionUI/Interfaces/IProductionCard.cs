@@ -14,5 +14,7 @@ namespace ProductionUI.Interfaces
         public string StepPointData { get; set; }
         public bool StepComplete { get; set; }
         public bool IsActiveStep { get; set; }
+        public bool StepPassed { get; set; }
+        public bool BreakOnError { get; set; }
     }
 }

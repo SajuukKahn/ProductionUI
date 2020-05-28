@@ -1,9 +1,9 @@
 ﻿<Application x:Class="ProductionUI.App"
-			 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-			 xmlns:local="clr-namespace:ProductionUI"
-			 StartupUri="MainWindow.xaml">
-	<Application.Resources>
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:ProductionUI"
+             StartupUri="WindowContainer.xaml">
+    <Application.Resources>
 
-	</Application.Resources>
+    </Application.Resources>
 </Application>

@@ -4,363 +4,179 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:ProductionUI.ViewModels"
-             xmlns:Carousel="clr-namespace:ProductionUI.Animators"
-             mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             xmlns:dts="clr-namespace:ProductionUI.DataTemplateSelectors"
+             mc:Ignorable="d"
+             ClipToBounds="True">
 
     <UserControl.DataContext>
         <vm:ProductionCardDeckViewModel/>
     </UserControl.DataContext>
 
-    <UserControl.Background>
-        <LinearGradientBrush EndPoint="0.5,0" StartPoint="0.5,1">
-            <GradientStop Color="LightBlue" Offset="0"/>
-            <GradientStop Color="SteelBlue" Offset="1.0"/>
-        </LinearGradientBrush>
-    </UserControl.Background>
     <UserControl.Resources>
-        <ResourceDictionary>
-            <Style x:Key="labelStyleCentred" 
-                   TargetType="Label">
-                <Setter Property="Padding" 
-                        Value="0"/>
-                <Setter Property="VerticalAlignment" 
-                        Value="Center"/>
-                <Setter Property="VerticalContentAlignment" 
-                        Value="Center"/>
-                <Setter Property="HorizontalAlignment" 
-                        Value="Center"/>
-                <Setter Property="HorizontalContentAlignment" 
-                        Value="Center"/>
-            </Style>
 
-            <Style x:Key="StyleButtonBase" 
-                   TargetType="Button">
-                <Setter Property="HorizontalAlignment" 
-                        Value="Center"/>
-                <Setter Property="VerticalAlignment" 
-                        Value="Center"/>
-                <Setter Property="HorizontalContentAlignment" 
-                        Value="Center"/>
-                <Setter Property="VerticalContentAlignment" 
-                        Value="Center"/>
-                <Setter Property="BorderThickness" 
-                        Value="0"/>
-                <Setter Property="Background" 
-                        Value="Transparent"/>
-            </Style>
+        <DataTemplate x:Key="DataTemplate_ActiveCard">
+            <StackPanel Margin="2">
+                <Grid Background="LightSkyBlue"
+                          Width="400">
 
-            <Style x:Key="StyleArrowButton" 
-                   TargetType="Button" 
-                   BasedOn="{StaticResource StyleButtonBase}">
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="Button">
-                            <Grid >
-                                <Polygon Name="_polygon" 
-                                         Points="30,0 30,40 0,20" 
-                                         Fill="{TemplateBinding Background}" 
-                                         Stroke="Gainsboro" 
-                                         StrokeThickness="1" />
-                            </Grid>
-                            <ControlTemplate.Triggers>
-                                <Trigger Property="IsMouseOver" 
-                                         Value="True">
-                                    <Setter TargetName="_polygon" 
-                                            Property="Stroke" 
-                                            Value="Orange" />
-                                </Trigger>
-                                <Trigger Property="IsPressed" 
-                                         Value="True">
-                                    <Setter TargetName="_polygon" 
-                                            Property="Stroke" 
-                                            Value="Red" />
-                                </Trigger>
-                            </ControlTemplate.Triggers>
 
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
-            </Style>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
 
-            <Style x:Key="StyleLeftArrow" 
-                   TargetType="Button" 
-                   BasedOn="{StaticResource StyleArrowButton}">
-                <Setter Property="Background">
-                    <Setter.Value>
-                        <LinearGradientBrush EndPoint="0.5,0" 
-                                             StartPoint="0.5,1">
-                            <GradientStop Color="#DDDDDD" 
-                                          Offset="0"/>
-                            <GradientStop Color="#FFFFFF" 
-                                          Offset="1.0"/>
-                        </LinearGradientBrush>
-                    </Setter.Value>
-                </Setter>
-            </Style>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
 
-            <Style x:Key="StyleRightArrow" 
-                   TargetType="Button" 
-                   BasedOn="{StaticResource StyleLeftArrow}">
-                <Setter Property="LayoutTransform">
-                    <Setter.Value>
-                        <TransformGroup>
-                            <ScaleTransform ScaleX="-1.0" 
-                                            ScaleY="1"/>
-                        </TransformGroup>
-                    </Setter.Value>
-                </Setter>
-            </Style>
+                    <Grid.Children>
+                        <TextBlock Text="Step: "
+                                       Grid.Column="0"
+                                       Grid.Row="0"/>
+                        <TextBlock Text="{Binding StepDataDisplay}"
+                                       Grid.Column="0"
+                                       Grid.Row="1"/>
+                        <TextBlock Text="Time: " 
+                                       HorizontalAlignment="Right"
+                                       Grid.Column="2"
+                                       Grid.Row="0"/>
+                        <TextBlock Text="{Binding StepActiveTime}"
+                                       Grid.Column="3"
+                                       Grid.Row="0"/>
+                        <TextBlock Text="Step Point Data: "
+                                       Grid.Column="0"
+                                       Grid.Row="2"/>
+                        <TextBlock Text="{Binding StepPointData}"
+                                       Grid.Column="0"
+                                       Grid.Row="3"/>
+                        <TextBlock Text="Step Status: "
+                                       HorizontalAlignment="Right"
+                                       Grid.Column="2"
+                                       Grid.Row="1"/>
+                        <TextBlock Text="{Binding StepStatus}"
+                                       Grid.Column="3"
+                                       Grid.Row="1"/>
+                    </Grid.Children>
+                </Grid>
+            </StackPanel>
+        </DataTemplate>
 
-        </ResourceDictionary>
+            <DataTemplate x:Key="DataTemplate_QueuedCard">
+                <StackPanel Margin="2">
+                    <Grid Background="MediumTurquoise"
+                          Width="400">
+
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid.Children>
+                            <TextBlock Text="Step: "
+                                       Grid.Column="0"
+                                       Grid.Row="0"/>
+                            <TextBlock Text="{Binding StepDataDisplay}"
+                                       Grid.Column="0"
+                                       Grid.Row="1"/>
+                            <TextBlock Text="Time: " 
+                                       HorizontalAlignment="Right"
+                                       Grid.Column="2"
+                                       Grid.Row="0"/>
+                            <TextBlock Text="{Binding StepActiveTime}"
+                                       Grid.Column="3"
+                                       Grid.Row="0"/>
+                            <TextBlock Text="Step Point Data: "
+                                       Grid.Column="0"
+                                       Grid.Row="2"/>
+                            <TextBlock Text="{Binding StepPointData}"
+                                       Grid.Column="0"
+                                       Grid.Row="3"/>
+                            <TextBlock Text="Step Status: "
+                                       HorizontalAlignment="Right"
+                                       Grid.Column="2"
+                                       Grid.Row="1"/>
+                            <TextBlock Text="{Binding StepStatus}"
+                                       Grid.Column="3"
+                                       Grid.Row="1"/>
+                        </Grid.Children>
+                    </Grid>
+                </StackPanel>
+
+            </DataTemplate>
+
+            <dts:ProductionCardDataTemplateSelector x:Key="ProdCard_DataTemplateSelector"
+                                                    ActiveCard="{StaticResource DataTemplate_ActiveCard}"
+                                                    QueuedCard="{StaticResource DataTemplate_QueuedCard}"/>
     </UserControl.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="20"/>
-            <RowDefinition Height="60"/>
-            <RowDefinition Height="0"/>
-            <RowDefinition Height="40"/>
-            <RowDefinition Height="20"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="10"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="10"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="10"/>
-            <ColumnDefinition Width="40"/>
-            <ColumnDefinition Width="10"/>
-            <ColumnDefinition Width="20"/>
-            <ColumnDefinition Width="10"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="10"/>
-            <ColumnDefinition Width="20"/>
-            <ColumnDefinition Width="10"/>
-            <ColumnDefinition Width="40"/>
-            <ColumnDefinition Width="10"/>
-        </Grid.ColumnDefinitions>
-        
-        <Button Grid.Row="1" 
-                Grid.RowSpan="3" 
-                Grid.Column="1" 
-                Name="_buttonLeftManyArrow" 
-                Style="{StaticResource StyleLeftArrow}" 
-                Command="{Binding LeftManyArrow}"/>
-        
-        <Button Grid.Row="1" 
-                Grid.RowSpan="3" 
-                Grid.Column="3" 
-                Name="_buttonLeftArrow" 
-                Style="{StaticResource StyleLeftArrow}" 
-                Command="{Binding LeftArrow}"/>
-        
-        <Button Grid.Row="1" 
-                Grid.RowSpan="3" 
-                Grid.Column="7" 
-                Name="_buttonRightArrow" 
-                Style="{StaticResource StyleRightArrow}" 
-                Command="{Binding RightArrow}"/>
-        
-        <Button Grid.Row="1" 
-                Grid.RowSpan="3" 
-                Grid.Column="9" 
-                Name="_buttonRightManyArrow" 
-                Style="{StaticResource StyleRightArrow}" 
-                Command="{Binding RightManyArrow}"/>
-        
-        <Label Grid.Row="1" 
-               Grid.Column="5" 
-               Content="{Binding SelectedRadioStationDAB.Name}" 
-               FontSize="32" 
-               Foreground="White" 
-               HorizontalAlignment="Center"/>
-        
-        <Label Grid.Row="3" 
-               Grid.Column="5" 
-               Content="{Binding SelectedRadioStationDAB.Text}" 
-               FontSize="20" 
-               Foreground="White" 
-               HorizontalAlignment="Center"/>
 
-        <Carousel:CarouselControl x:Name="_carouselDABRadioStations"
-                                            Grid.Row="5" 
-                                            Grid.Column="3"
-                                            Grid.ColumnSpan="5"  
-                                            ItemsSource="{Binding RadioStationsDAB}" 
-                                            SelectedItem="{Binding SelectedRadioStationDAB,Mode=TwoWay}"
-                                            ShowRotation="True"  
-                                            TiltInDegrees="10" 
-                                            AutoSizeToParent="true"
-                                            RotationSpeed="100" 
-                                            VerticalOrientation="False" 
-                                            HorizontalAlignment="Stretch" 
-                                            VerticalAlignment="Stretch">
-            
-            <Carousel:CarouselControl.Style>
-                <Style TargetType="Carousel:CarouselControl">
-                    <Setter Property="CarouselItemTemplate" >
-                        <Setter.Value>
-                            <ControlTemplate>
-                                <Border BorderThickness="1" 
-                                        BorderBrush="Gainsboro" 
-                                        Background="SteelBlue" 
-                                        Width="250" 
-                                        Height="150">
-                                    <Grid>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="*"/>
-                                            <RowDefinition Height="30"/>
-                                        </Grid.RowDefinitions>
-                                        <Border Grid.Row="0" 
-                                                BorderThickness="0" 
-                                                Background="White">
-                                            <Image Grid.Row="0" 
-                                                   Source="{Binding ImageSource}" 
-                                                   VerticalAlignment="Center" 
-                                                   HorizontalAlignment="Center" 
-                                                   Height="100"/>
-                                        </Border>
-                                        <Label Grid.Row="1" 
-                                               Content="{Binding ShortName}" 
-                                               Foreground="White" 
-                                               Background="Transparent" 
-                                               FontSize="20" 
-                                               FontFamily="Arial" 
-                                               Style="{StaticResource labelStyleCentred}" 
-                                               DockPanel.Dock="Bottom" 
-                                               Height="Auto"/>
-                                    </Grid>
-                                </Border>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style>
-            </Carousel:CarouselControl.Style>
-        </Carousel:CarouselControl>
-        
-        <Grid Grid.Row="7" 
-              Grid.Column="5">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <CheckBox Grid.Row="0" 
-                      Grid.Column="0" 
-                      Name="_checkBoxVerticalCarousel"
-                      Content="Vertical Carousel"
-                      IsChecked="{Binding VerticalCarousel}"
-                      Click="_checkBoxVerticalCarousel_Click"/>
-            
-            <Button Grid.Row="0" 
-                    Grid.Column="2" 
-                    Name="_buttonDelete" 
-                    Content="Delete" 
-                    Click="_buttonDelete_Click" 
-                    Padding="4" 
-                    Width="80"/>
-        </Grid>
-    </Grid>
+    <ListView SelectionMode="Single"
+              ItemsSource="{Binding ProductionDeck}"
+              Background="BlanchedAlmond"
+              Margin="20"
+              Width="450"
+              ScrollViewer.HorizontalScrollBarVisibility="Hidden"
+              ItemTemplateSelector="{StaticResource ProdCard_DataTemplateSelector}"
 
+              >
+
+        
+        <ListView.ItemsPanel>
+            <ItemsPanelTemplate>
+                <WrapPanel Orientation="Horizontal"/>
+            </ItemsPanelTemplate>
+        </ListView.ItemsPanel>
+
+        <ListView.ItemContainerStyle>
+            <Style TargetType="ListViewItem">
+
+            </Style>
+        </ListView.ItemContainerStyle>
+
+
+        <!--<ListView.ItemTemplate>
+                <TextBlock Text="Step: " 
+                            Grid.Column="0"
+                            Grid.Row="0"/>
+                <TextBlock Text="{Binding StepDataDisplay}"
+                            Grid.Column="0"
+                            Grid.Row="1"/>
+                <TextBlock Text="Time: " 
+                            HorizontalAlignment="Right"
+                            Grid.Column="2"
+                            Grid.Row="0"/>
+                <TextBlock Text="{Binding StepActiveTime}"
+                            Grid.Column="3"
+                            Grid.Row="0"/>
+                <TextBlock Text="Step Point Data: "
+                            Grid.Column="0"
+                            Grid.Row="2"/>
+                <TextBlock Text="{Binding StepPointData}"
+                            Grid.Column="0"
+                            Grid.Row="3"/>
+                <TextBlock Text="Step Status: "
+                            HorizontalAlignment="Right"
+                            Grid.Column="2"
+                            Grid.Row="1"/>
+                <TextBlock Text="{Binding StepStatus}"
+                            Grid.Column="3"
+                            Grid.Row="1"/>
+            </ListView.ItemTemplate>-->
+
+    </ListView>
 </UserControl>
 
-
-<!--<Grid>
-
-    <Grid VerticalAlignment="Stretch"
-                  DockPanel.Dock="Bottom">
-
-        <ScrollViewer VerticalScrollBarVisibility="Hidden"
-                          HorizontalAlignment="Stretch"
-                          CanContentScroll="True"
-                          VerticalContentAlignment="Stretch"
-                          HorizontalContentAlignment="Center"
-                          Margin="44">
-
-            <ListView SelectionMode="Single"
-                          ItemsSource="{Binding ProductionDeck}"
-                          Background="BlanchedAlmond">
-
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel IsItemsHost="True" 
-                                                    Orientation="Horizontal"
-                                                    VerticalAlignment="Bottom"
-                                                    UseLayoutRounding="True"
-                                                    Background="DarkCyan"
-                                                    HorizontalAlignment="Center"/>
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid Background="Aqua"
-                                  Margin="2,1"
-                                  ClipToBounds ="True">
-
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
-
-                            <Grid.Children>
-                                <TextBlock Text="Step: " 
-                                               Grid.Column="0"
-                                               Grid.Row="0"/>
-                                <TextBlock Text="{Binding StepDataDisplay}"
-                                               Grid.Column="0"
-                                               Grid.Row="1"/>
-                                <TextBlock Text="Time: " 
-                                               HorizontalAlignment="Right"
-                                               Grid.Column="2"
-                                               Grid.Row="0"/>
-                                <TextBlock Text="{Binding StepActiveTime}"
-                                               Grid.Column="3"
-                                               Grid.Row="0"/>
-                                <TextBlock Text="Step Point Data: "
-                                               Grid.Column="0"
-                                               Grid.Row="2"/>
-                                <TextBlock Text="{Binding StepPointData}"
-                                               Grid.Column="0"
-                                               Grid.Row="3"/>
-                                <TextBlock Text="Step Status: "
-                                               HorizontalAlignment="Right"
-                                               Grid.Column="2"
-                                               Grid.Row="1"/>
-                                <TextBlock Text="{Binding StepStatus}"
-                                               Grid.Column="3"
-                                               Grid.Row="1"/>
-                                <CheckBox IsChecked="{Binding StepComplete}"
-                                              Content="Complete "
-                                              HorizontalAlignment="Right"
-                                              IsEnabled="False"
-                                               Grid.Column="2"
-                                               Grid.Row="3"/>
-
-                                <CheckBox IsChecked="{Binding IsActiveStep}"
-                                              Content="Active"
-                                              IsEnabled="False"
-                                               Grid.Column="3"
-                                               Grid.Row="3"/>
-                            </Grid.Children>
-                        </Grid>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
-
-            </ListView>
-        </ScrollViewer>
-    </Grid>
-</Grid>-->
-    

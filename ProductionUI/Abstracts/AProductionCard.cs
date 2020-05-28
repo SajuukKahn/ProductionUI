@@ -3,8 +3,11 @@ using ProductionUI.Models;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Threading;
 
@@ -114,6 +117,36 @@ namespace ProductionUI.Abstracts
                 OnPropertyChanged("IsActiveStep");
             }
         }
+
+        private bool _stepPassed;
+        public bool StepPassed
+        {
+            get
+            {
+                return _stepPassed;
+            }
+            set
+            {
+                _stepPassed = value;
+                OnPropertyChanged("Step Passed");
+            }
+        }
+
+
+        private bool _breakOnError;
+        public bool BreakOnError
+        {
+            get
+            {
+                return _breakOnError;
+            }
+            set
+            {
+                _breakOnError = value;
+                OnPropertyChanged("BreakOnError");
+            }
+        }
+
 
         private readonly DispatcherTimer t;
 
