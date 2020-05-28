@@ -29,13 +29,15 @@ namespace ProductionUI.Tests
         {
             _pcdm = pcdm;
 
-            int randSize = random.Next(3, 9);
+            int randSize = random.Next(25, 120);
 
             for (int i = 0; i < randSize; i++)
             {
-                ProductionCardModel cardModel = new ProductionCardModel();
-                cardModel.StepDataDisplay = new Random().Next().ToString() + " Step Data";
-                cardModel.StepPointData = "Step Point Data: " + random.Next().ToString();
+                ProductionCardModel cardModel = new ProductionCardModel
+                {
+                    StepDataDisplay = new Random().Next().ToString() + " Step Data",
+                    StepPointData = "Step Point Data: " + random.Next().ToString()
+                };
                 _pcdm.Add(cardModel);
             }
 
