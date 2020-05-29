@@ -15,14 +15,7 @@ namespace ProductionUI.ViewModels
     public class ProductionCardDeckViewModel : INotifyPropertyChanged
     {
         public ProductionCardDeckModel ProductionDeck { get; private set; }
-        private ProductionCardDeckModel _productionDeck = new ProductionCardDeckModel();
-
-        public ICommand LeftManyArrow { get; set; }
-        public ICommand LeftArrow { get; set; }
-        public ICommand RightManyArrow { get; set; }
-        public ICommand RightArrow { get; set; }
-        public ICommand VertCheck { get; set; }
-        public ICommand DeleteButton { get; set; }
+        private readonly ProductionCardDeckModel _productionDeck = new ProductionCardDeckModel();
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string prop)
@@ -33,13 +26,6 @@ namespace ProductionUI.ViewModels
         public ProductionCardDeckViewModel()
         {
             ProductionDeck = new RandomProgramGenerator().GenerateRandom(_productionDeck);
-            LeftManyArrow = new RelayCommand(o => LeftManyArrowPressed());
-            LeftArrow = new RelayCommand(o => LeftArrowPressed());
-            RightManyArrow = new RelayCommand(o => RightManyArrowPressed());
-            RightArrow = new RelayCommand(o => RightArrowPressed());
-            VertCheck = new RelayCommand(o => VertCheckPressed());
-            DeleteButton = new RelayCommand(o => DeleteButtonPressed());
-
         }
 
         private ProductionCardModel _currentCard;
@@ -52,40 +38,10 @@ namespace ProductionUI.ViewModels
             set
             {
                 _currentCard = value;
-                _productionDeck.All(x => x.IsActiveStep == true);
                 OnPropertyChanged("CurrentCard");
             }
         }
 
-        private void LeftManyArrowPressed()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void LeftArrowPressed()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void RightManyArrowPressed()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void RightArrowPressed()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void VertCheckPressed()
-        {
-            throw new NotImplementedException();
-        }
-
-        private void DeleteButtonPressed()
-        {
-            throw new NotImplementedException();
-        }
     }
 }
 

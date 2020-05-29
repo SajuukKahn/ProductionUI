@@ -7,31 +7,25 @@
         xmlns:userControls="clr-namespace:ProductionUI.Views"
         mc:Ignorable="d"
         Title="Container"
-        ResizeMode="NoResize"
-        SizeToContent="WidthAndHeight">
+        Height="500"
+        Width="900">
 
     <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/List-3D.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
 
     </Window.Resources>
 
-    <Grid x:Name="Dock">
+    <DockPanel LastChildFill="True"
+               Margin="23,3">
+        <userControls:ProcessContainerView DockPanel.Dock="Top"
+                                           Panel.ZIndex="99999999"/>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="4*"/>
-        </Grid.RowDefinitions>
-
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="500"/>
-        </Grid.ColumnDefinitions>
-
-        <userControls:ProcessContainerView Height="25"
-                                           Grid.Row="0"/>
-
-        <userControls:ProductionCardDeckView Grid.Row="1"/>
-
-
-    </Grid>
+        <userControls:ProductionCardDeckView DockPanel.Dock="Bottom"/>
+    </DockPanel>
 
 
 </Window>
