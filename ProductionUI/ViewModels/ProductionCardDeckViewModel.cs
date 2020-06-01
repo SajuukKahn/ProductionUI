@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
 using System.Text;
 using System.Windows.Controls;
@@ -17,6 +18,8 @@ namespace ProductionUI.ViewModels
         public ProductionCardDeckModel ProductionDeck { get; private set; }
         private readonly ProductionCardDeckModel _productionDeck = new ProductionCardDeckModel();
 
+        public static ProductionCardModel SelectedIndex;
+
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string prop)
         {
@@ -26,22 +29,8 @@ namespace ProductionUI.ViewModels
         public ProductionCardDeckViewModel()
         {
             ProductionDeck = new RandomProgramGenerator().GenerateRandom(_productionDeck);
+            SelectedIndex = ProductionDeck[0];
         }
-
-        private ProductionCardModel _currentCard;
-        public ProductionCardModel CurrentCard
-        {
-            get
-            {
-                return _currentCard;
-            }
-            set
-            {
-                _currentCard = value;
-                OnPropertyChanged("CurrentCard");
-            }
-        }
-
     }
 }
 

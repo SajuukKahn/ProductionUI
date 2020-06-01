@@ -9,25 +9,29 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace ProductionUI.Abstracts
 {
-    public abstract class AProductionCard : IProductionCard , INotifyPropertyChanged
+    public abstract class AProductionCard : IProductionCard, INotifyPropertyChanged
     {
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string prop)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-            if(prop == "IsActiveStep")
+            if (prop == "IsActiveStep")
             {
                 if (IsActiveStep == false)
                 {
+                    ImageVisible = Visibility.Collapsed;
                     t.Stop();
                 }
                 else
                 {
+                    ImageVisible = Visibility.Visible;
+                    ResetRunTime();
                     t.Start();
                 }
             }
@@ -89,6 +93,36 @@ namespace ProductionUI.Abstracts
                 OnPropertyChanged("StepStatus");
             }
         }
+
+
+        private ImageSource _stepImage;
+        public ImageSource StepImage
+        {
+            get
+            {
+                return _stepImage;
+            }
+            set
+            {
+                _stepImage = value;
+                OnPropertyChanged("StepImage");
+            }
+        }
+
+        private Visibility _imageVisible;
+        public Visibility ImageVisible
+        {
+            get
+            {
+                return _imageVisible;
+            }
+            set
+            {
+                _imageVisible = value;
+                OnPropertyChanged("ImageVisible");
+            }
+        }
+
         private bool _stepComplete;
         public bool StepComplete
         {
@@ -102,7 +136,6 @@ namespace ProductionUI.Abstracts
                 OnPropertyChanged("StepComplete");
             }
         }
-
 
         private bool _isActiveStep;
         public bool IsActiveStep
@@ -132,7 +165,6 @@ namespace ProductionUI.Abstracts
             }
         }
 
-
         private bool _breakOnError;
         public bool BreakOnError
         {
@@ -146,7 +178,6 @@ namespace ProductionUI.Abstracts
                 OnPropertyChanged("BreakOnError");
             }
         }
-
 
         private readonly DispatcherTimer t;
 
@@ -177,7 +208,6 @@ namespace ProductionUI.Abstracts
         {
             StepActiveTime = Convert.ToString(DateTime.Now - _startTime);
         }
-
 
         ~AProductionCard()
         {

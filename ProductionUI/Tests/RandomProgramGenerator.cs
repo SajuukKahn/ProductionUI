@@ -2,9 +2,15 @@
 using ProductionUI.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Versioning;
 using System.Text;
+using System.Windows.Automation;
+using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace ProductionUI.Tests
 {
@@ -31,10 +37,14 @@ namespace ProductionUI.Tests
 
             int randSize = random.Next(25, 120);
 
+            var image = new BitmapImage(new Uri(@"C:\Users\mcannon\Source\Repos\ProductionUI2\ProductionUI\Tests\TestImages\PCB6.bmp"));
+
             for (int i = 0; i < randSize; i++)
             {
-                ProductionCardModel cardModel = new ProductionCardModel
+
+                ProductionCardModel cardModel = new ProductionCardModel()
                 {
+                    StepImage = image,
                     StepDataDisplay = new Random().Next().ToString() + " Step Data",
                     StepPointData = "Step Point Data: " + random.Next().ToString()
                 };

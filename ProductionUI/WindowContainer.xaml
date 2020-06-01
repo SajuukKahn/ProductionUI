@@ -6,23 +6,12 @@
         xmlns:local="clr-namespace:ProductionUI"
         xmlns:userControls="clr-namespace:ProductionUI.Views"
         mc:Ignorable="d"
-        Title="Container"
-        Height="500"
-        Width="900">
-
-    <Window.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/List-3D.xaml"/>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-
-    </Window.Resources>
+        Title="Container">
 
     <DockPanel LastChildFill="True"
-               Margin="23,3">
+               Margin="0,0">
         <userControls:ProcessContainerView DockPanel.Dock="Top"
-                                           Panel.ZIndex="99999999"/>
+                                           Panel.ZIndex="99999999"/> 
 
         <userControls:ProductionCardDeckView DockPanel.Dock="Bottom"/>
     </DockPanel>
