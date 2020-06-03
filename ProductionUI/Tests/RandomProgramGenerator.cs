@@ -6,11 +6,13 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Versioning;
 using System.Text;
+using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Resources;
 
 namespace ProductionUI.Tests
 {
@@ -35,18 +37,16 @@ namespace ProductionUI.Tests
         {
             _pcdm = pcdm;
 
-            int randSize = random.Next(25, 120);
+            int randSize = random.Next(30, 120);
 
-            var image = new BitmapImage(new Uri(@"C:\Users\mcannon\Source\Repos\ProductionUI2\ProductionUI\Tests\TestImages\PCB6.bmp"));
+            BitmapImage image = new BitmapImage(new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative));
 
             for (int i = 0; i < randSize; i++)
             {
-
                 ProductionCardModel cardModel = new ProductionCardModel()
                 {
                     StepImage = image,
-                    StepDataDisplay = new Random().Next().ToString() + " Step Data",
-                    StepPointData = "Step Point Data: " + random.Next().ToString()
+                    StepDataDisplay = new Random().Next().ToString() + " Step Data"
                 };
                 _pcdm.Add(cardModel);
             }

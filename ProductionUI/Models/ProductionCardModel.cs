@@ -13,11 +13,10 @@ namespace ProductionUI.Models
     { 
 
         public ProductionCardModel( ImageSource imageSource = null,
-                                    Visibility ImageVisible = Visibility.Collapsed,
                                     bool isActiveStep = false,
                                     bool stepComplete = false,
                                     string stepActiveTime = "0",
-                                    string stepDataDisplay = "No Data",
+                                    string stepDataLog = "No Data",
                                     string stepPointData = "PolyLine ... ",
                                     string stepStatus = "Waiting...")
         {
@@ -25,9 +24,9 @@ namespace ProductionUI.Models
             IsActiveStep = isActiveStep;
             StepComplete = stepComplete;
             StepActiveTime = stepActiveTime;
-            StepDataDisplay = stepDataDisplay;
+            StepDataDisplay = stepDataLog;
             StepStatus = stepStatus;
-            StepPointData = stepPointData;
+            StepDataLog = stepPointData;
         }
     }
 }

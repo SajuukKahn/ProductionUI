@@ -66,17 +66,17 @@ namespace ProductionUI.Abstracts
             }
         }
 
-        private string _stepPointData;
-        public string StepPointData
+        private string _stepDataLog;
+        public string StepDataLog
         {
             get
             {
-                return _stepPointData;
+                return _stepDataLog;
             }
             set
             {
-                _stepPointData = value;
-                OnPropertyChanged("StepPointData");
+                _stepDataLog = value;
+                OnPropertyChanged("StepDataLog");
             }
         }
 
