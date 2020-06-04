@@ -58,6 +58,7 @@ namespace ProductionUI.ViewModels
         public ProductionCardDeckViewModel()
         {
             ProductionDeck = new RandomProgramGenerator().GenerateRandom(_productionDeck);
+            //first or default (null check) - ryan says do it in the XAML selectedindex =0 in the xaml
             SelectedIndex = ProductionDeck[0];
             programStep = new ProgramStep(this, ProductionDeck.Count);
         }
