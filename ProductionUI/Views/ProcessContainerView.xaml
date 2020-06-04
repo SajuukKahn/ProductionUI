@@ -11,9 +11,32 @@
     <UserControl.DataContext>
         <vm:ProcessContainerViewModel/>
     </UserControl.DataContext>
-    <Grid>
+
+    <UserControl.Resources>
+        <Style TargetType="Label">
+            <Setter Property="FontFamily" Value="Segoe UI Bold"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Foreground">
+                <Setter.Value>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" SpreadMethod="Reflect">
+                        <GradientStop Color="#200"/>
+                        <GradientStop Color="#000" Offset="1"/>
+                        <LinearGradientBrush.Transform>
+                            <RotateTransform Angle="45"/>
+                        </LinearGradientBrush.Transform>
+                    </LinearGradientBrush>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        
+
+    </UserControl.Resources>
+
+    <Grid Background="Gray"
+          VerticalAlignment="Center">
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -22,34 +45,95 @@
             <ColumnDefinition Width="5*"/>
         </Grid.ColumnDefinitions>
         <StackPanel Orientation="Horizontal"
-                        Grid.Column="0" >
+                    Grid.Column="0" 
+                    VerticalAlignment="Center">
             <Label Content="Zone: "/>
             <Label Content="{Binding ProcessLocation}"/>
         </StackPanel>
 
         <StackPanel Orientation="Horizontal"
-                        Grid.Column="1">
+                    Grid.Column="1"
+                    VerticalAlignment="Center">
             <Label Content="Program: "/>
             <Label Content="{Binding ProgramName}"/>
-
         </StackPanel>
-
 
         <DockPanel Grid.Column="2"
                    LastChildFill="False">
-            <Button Content="Play"
-                        Command="{Binding PlayButton}"
-                        Padding="12, 0"
-                        Margin="2">
+
+            <Button x:Name="PlayButton"
+                    Command="{Binding PlayButton}"
+                    MinWidth="40"
+                    Background="Transparent"
+                    BorderThickness="0">
+                <Button.Template>
+                    <ControlTemplate>
+                        <ControlTemplate.Triggers>
+                            <DataTrigger Binding="{Binding PlayBackRunning}" Value="False">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <Path Fill="#FF239118">
+                                <Path.Stroke>
+                                    <LinearGradientBrush EndPoint="0,0" StartPoint="1,1">
+                                        <GradientStop Color="#FF215D0A" Offset="1"/>
+                                        <GradientStop Color="#FF239118"/>
+                                    </LinearGradientBrush>
+                                </Path.Stroke>
+                                <Path.Data>
+                                    <PathGeometry>
+                                        <PathGeometry.Figures>
+                                            <PathFigureCollection>
+                                                <PathFigure IsClosed="True" StartPoint="0,0" IsFilled="True">
+                                                    <PathFigure.Segments>
+                                                        <PathSegmentCollection>
+                                                            <LineSegment Point="0,24" />
+                                                            <LineSegment Point="19,12" />
+                                                        </PathSegmentCollection>
+                                                    </PathFigure.Segments>
+                                                </PathFigure>
+                                            </PathFigureCollection>
+                                        </PathGeometry.Figures>
+                                    </PathGeometry>
+                                </Path.Data>
+                            </Path>
+                        </StackPanel>
+                    </ControlTemplate>
+                </Button.Template>
             </Button>
 
-            <Button Content="Pause"
-                        Command="{Binding PauseButton}"
-                        Padding="12, 0"
-                        Margin="2">
+            <Button x:Name="PauseButton"
+                    Command="{Binding PauseButton}"
+                    MinWidth="40"
+                    Background="Transparent"
+                    BorderThickness="0">
+                <Button.Template>
+                    <ControlTemplate>
+                        <ControlTemplate.Triggers>
+                            <DataTrigger Binding="{Binding PlayBackRunning}" Value="True">
+                                <Setter Property="Visibility" Value="Collapsed"/>
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                        <StackPanel Orientation="Horizontal"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center">
+                            <Rectangle Width="8"
+                                   Fill="#c00"
+                                   Height="25"/>
+                            <Rectangle Width="3"
+                                   Fill="Transparent"
+                                   Height="25"/>
+                            <Rectangle Width="8"
+                                   Fill="#c00"
+                                   Height="25"/>
+                        </StackPanel>
+
+                    </ControlTemplate>
+                </Button.Template>
             </Button>
-
-
         </DockPanel>
     </Grid>
 </UserControl>

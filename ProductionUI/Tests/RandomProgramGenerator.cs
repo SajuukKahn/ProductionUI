@@ -39,13 +39,13 @@ namespace ProductionUI.Tests
 
             int randSize = random.Next(30, 120);
 
-            BitmapImage image = new BitmapImage(new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative));
 
             for (int i = 0; i < randSize; i++)
             {
+                BitmapImage image = new BitmapImage(new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative));
                 ProductionCardModel cardModel = new ProductionCardModel()
                 {
-                    StepImage = image,
+                StepImage = image,
                     StepDataDisplay = new Random().Next().ToString() + " Step Data"
                 };
                 _pcdm.Add(cardModel);

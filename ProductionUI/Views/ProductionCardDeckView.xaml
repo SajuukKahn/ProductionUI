@@ -19,8 +19,8 @@
                     <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Red" />
                 </Style.Resources>
 
-                <Setter Property="BorderThickness" Value="0" /> 
-                <Setter Property="Background" Value="{x:Null}" />
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Background" Value="{x:Null}"/>
 
                 <Setter Property="ItemsPanel">
                     <Setter.Value>
@@ -33,13 +33,14 @@
                     </Setter.Value>
                 </Setter>
 
-                <Setter Property="Template">
+                <Setter Property="Template">   
                     <Setter.Value>
                         <ControlTemplate TargetType="ListBox">
                             <Grid VerticalAlignment="Bottom">
                                 <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                                 HorizontalAlignment="Center"
-                                                VerticalAlignment="Stretch"/>
+                                                VerticalAlignment="Stretch"
+                                                />
                             </Grid>
                         </ControlTemplate>
                     </Setter.Value>
@@ -48,7 +49,7 @@
             </Style>
 
             <!-- ItemContainerStyle with the Trigger for Selected -->
-            <Style x:Key="RedGlowItemContainer" TargetType="{x:Type ListBoxItem}">
+            <Style x:Key="CardContainer" TargetType="{x:Type ListBoxItem}">
 
                 <Setter Property="Template">
                     <Setter.Value>
@@ -57,11 +58,12 @@
                                                        VerticalAlignment="Stretch"
                                                        HorizontalAlignment="Center"
                                                        Height="auto">
+
                                 <Border Background="LightGray"
                                         CornerRadius="11"
                                         BorderThickness="2"
-                                        BorderBrush="Gray"
-                                        x:Name="IconBorder"
+                                        BorderBrush="#522"
+                                        x:Name="CardBorder"
                                         Margin="-100"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center">
@@ -70,7 +72,8 @@
                                             <DataTemplate>
                                      
 
-                                                <DockPanel Margin="15"
+                                                <DockPanel x:Name="deckDockPanel"
+                                                           Margin="15"
                                                            HorizontalAlignment="Center"
                                                            VerticalAlignment="Center" 
                                                            LastChildFill="True"
@@ -84,13 +87,12 @@
                                                         <Label Content="{Binding StepDataDisplay}"/>
                                                         <Label Content="{Binding StepStatus}"/>
                                                         <Label Content="{Binding StepActiveTime}"/>
-                                                        <Label Content="{Binding StepPassed}"/>
                                                     </StackPanel>
 
                                                     <Image Source="{Binding StepImage}"
                                                            x:Name="image1"
                                                            Visibility="Collapsed"
-                                                            DockPanel.Dock="Right"/>
+                                                           DockPanel.Dock="Right"/>
 
                                                 </DockPanel>
 
@@ -99,6 +101,9 @@
                                                                             {RelativeSource Mode=FindAncestor, AncestorType=
                                                                                 {x:Type ListBoxItem}},Path=IsSelected}" Value="True">
                                                         <Setter TargetName="image1" Property="Visibility" Value="Visible"/>
+                                                        <Setter TargetName="deckDockPanel" Property="MinHeight" Value="200"/>
+                                                        <Setter TargetName="deckDockPanel" Property="MinWidth" Value="200"/>
+                                                        <Setter TargetName="deckDockPanel" Property="Margin" Value="1"/>
                                                     </DataTrigger>
                                                 </DataTemplate.Triggers>
                                                 
@@ -128,7 +133,7 @@
              HorizontalContentAlignment="Center"
              VerticalAlignment="Bottom"
              VerticalContentAlignment="Bottom"
-             ItemContainerStyle="{StaticResource  RedGlowItemContainer}">
+             ItemContainerStyle="{StaticResource CardContainer}">
     </ListBox>
 
 </UserControl>

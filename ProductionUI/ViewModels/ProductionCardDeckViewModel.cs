@@ -19,6 +19,21 @@ namespace ProductionUI.ViewModels
         private readonly ProductionCardDeckModel _productionDeck = new ProductionCardDeckModel();
 
         public static ProductionCardModel SelectedIndex;
+       
+        private ProductionCardModel _currentIndex;
+        public ProductionCardModel CurrentIndex
+        {
+            get
+            {
+                return _currentIndex;
+            }
+            set
+            {
+                _currentIndex = value;
+                OnPropertyChanged("CurrentIndex");
+            }
+        }
+        
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string prop)
@@ -26,10 +41,25 @@ namespace ProductionUI.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
+        public void NextCard(string StepDataLog, bool StepPassed = true, bool StepComplete = true)
+        {
+            SelectedIndex.StepComplete = StepComplete;
+            SelectedIndex.StepDataLog = StepDataLog;
+            SelectedIndex.StepPassed = StepPassed;
+            SelectedIndex.IsActiveStep = false;
+            SelectedIndex.stopCardTimer();
+            SelectedIndex = ProductionDeck[ProductionDeck.IndexOf(SelectedIndex) + 1];
+            SelectedIndex.IsActiveStep = true;
+            SelectedIndex.startCardTimer();
+        }
+
+        private ProgramStep programStep;
+
         public ProductionCardDeckViewModel()
         {
             ProductionDeck = new RandomProgramGenerator().GenerateRandom(_productionDeck);
             SelectedIndex = ProductionDeck[0];
+            programStep = new ProgramStep(this, ProductionDeck.Count);
         }
     }
 }

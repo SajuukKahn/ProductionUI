@@ -25,12 +25,10 @@ namespace ProductionUI.Abstracts
             {
                 if (IsActiveStep == false)
                 {
-                    ImageVisible = Visibility.Collapsed;
                     t.Stop();
                 }
                 else
                 {
-                    ImageVisible = Visibility.Visible;
                     ResetRunTime();
                     t.Start();
                 }
@@ -197,6 +195,17 @@ namespace ProductionUI.Abstracts
                 t.Tick += Tick;
                 ResetRunTime();
             }
+        }
+
+        public void stopCardTimer()
+        {
+            t.Stop();
+        }
+
+        public void startCardTimer()
+        {
+            ResetRunTime();
+            t.Start();
         }
 
         public void ResetRunTime()

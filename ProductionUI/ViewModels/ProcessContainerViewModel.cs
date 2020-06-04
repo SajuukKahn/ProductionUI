@@ -22,8 +22,33 @@ namespace ProductionUI.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
+        public event EventHandler PlayBackRunningChanged;
+
+        protected virtual void OnPlayBackRunningChanged(EventArgs e)
+        {
+            EventHandler handler = PlayBackRunningChanged;
+            handler?.Invoke(this, e);
+        }
+
+        public static bool PlayBackIsRunning = true;
+        
         public ICommand PlayButton { get; set; }
         public ICommand PauseButton { get; set; }
+
+        private bool _playBackRunning;
+        public bool PlayBackRunning
+        {
+            get
+            {
+                return _playBackRunning;
+            }
+            set
+            {
+                _playBackRunning = value;
+                PlayBackIsRunning = value;
+                OnPropertyChanged("PlayBackRunning");
+            }
+        }
 
 
         private string _processLocation;
@@ -67,12 +92,12 @@ namespace ProductionUI.ViewModels
 
         private void PausePressed()
         {
-            
+            PlayBackIsRunning ^= true;
         }
 
         private void PlayPressed()
         {
-            
+            PlayBackIsRunning ^= true;
         }
     }
 }
