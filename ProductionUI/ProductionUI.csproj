@@ -6,4 +6,28 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Tests\TestImages\PCB1.bmp" />
+    <None Remove="Tests\TestImages\PCB2.bmp" />
+    <None Remove="Tests\TestImages\PCB3.bmp" />
+    <None Remove="Tests\TestImages\PCB4.bmp" />
+    <None Remove="Tests\TestImages\PCB5.bmp" />
+    <None Remove="Tests\TestImages\PCB6.bmp" />
+    <None Remove="Tests\TestImages\PCB7.bmp" />
+    <None Remove="Tests\TestImages\PCB8.bmp" />
+    <None Remove="Tests\TestImages\PCB9.bmp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Tests\TestImages\PCB1.bmp" />
+    <Resource Include="Tests\TestImages\PCB2.bmp" />
+    <Resource Include="Tests\TestImages\PCB3.bmp" />
+    <Resource Include="Tests\TestImages\PCB4.bmp" />
+    <Resource Include="Tests\TestImages\PCB5.bmp" />
+    <Resource Include="Tests\TestImages\PCB6.bmp" />
+    <Resource Include="Tests\TestImages\PCB7.bmp" />
+    <Resource Include="Tests\TestImages\PCB8.bmp" />
+    <Resource Include="Tests\TestImages\PCB9.bmp" />
+  </ItemGroup>
+
 </Project>

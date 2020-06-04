@@ -51,6 +51,14 @@ namespace ProductionUI.CustomControls
             double center = finalSize.Width / 2;
             center -= ((_rWidth * 2) /3) ;
 
+            Children[selectedIndex].Arrange(new Rect(center - (_rWidth / 3), top - (_rHeight * 1.5), _rWidth * 2, _rHeight * 2));
+            CarouselPanel.SetAngle(Children[selectedIndex], 0);
+            Panel.SetZIndex(Children[selectedIndex], 69000);
+
+            ProductionCardDeckViewModel.SelectedIndex.IsActiveStep = false;
+            ProductionCardDeckViewModel.SelectedIndex = (ProductionCardModel)listBox.SelectedItem;
+            ProductionCardDeckViewModel.SelectedIndex.IsActiveStep = true;
+
             for (int leftCounter = 0; leftCounter < selectedIndex; leftCounter++)
             {
                 var left = center - ((selectedIndex - leftCounter) * (_rWidth * .25)) - (_rWidth/2);
@@ -72,16 +80,6 @@ namespace ProductionUI.CustomControls
                 Panel.SetZIndex(Children[rightCounter], zIndex);
                 zIndex++;
             }
-
-            Children[selectedIndex].Arrange(new Rect(center - (_rWidth / 3), top - (_rHeight * 1.5), _rWidth*1.5, _rHeight*1.5));
-            CarouselPanel.SetAngle(Children[selectedIndex], 0);
-            Panel.SetZIndex(Children[selectedIndex], 69000);
-
-
-            ProductionCardDeckViewModel.SelectedIndex.IsActiveStep = false;
-            ProductionCardDeckViewModel.SelectedIndex = (ProductionCardModel)listBox.SelectedItem;
-            ProductionCardDeckViewModel.SelectedIndex.IsActiveStep = true;
-            
 
             return base.ArrangeOverride(finalSize);
         }
