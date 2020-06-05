@@ -10,6 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace ProductionUI.ViewModels
 {
@@ -19,7 +21,36 @@ namespace ProductionUI.ViewModels
         private readonly ProductionCardDeckModel _productionDeck = new ProductionCardDeckModel();
 
         public static ProductionCardModel SelectedIndex;
-       
+
+        private MediaElement _processImage;
+        public MediaElement ProcessImage
+        {
+            get
+            {
+                return _processImage;
+            }
+            set
+            {
+                _processImage = value;
+                OnPropertyChanged("ProcessImage");
+            }
+        }
+
+
+        private ImageSource _processDisplay;
+        public ImageSource ProcessDisplay
+        {
+            get
+            {
+                return _processDisplay;
+            }
+            set
+            {
+                _processDisplay = value;
+                OnPropertyChanged("ProcessDisplay");
+            }
+        }
+
         private ProductionCardModel _currentIndex;
         public ProductionCardModel CurrentIndex
         {
@@ -53,14 +84,17 @@ namespace ProductionUI.ViewModels
             SelectedIndex.startCardTimer();
         }
 
-        private ProgramStep programStep;
+        //private ProgramStep programStep;
 
         public ProductionCardDeckViewModel()
         {
             ProductionDeck = new RandomProgramGenerator().GenerateRandom(_productionDeck);
             //first or default (null check) - ryan says do it in the XAML selectedindex =0 in the xaml
             SelectedIndex = ProductionDeck[0];
-            programStep = new ProgramStep(this, ProductionDeck.Count);
+            //ProcessImage = new MediaElement();
+            //ProcessImage.Source = new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative);
+            ProcessDisplay = new BitmapImage(new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative));
+
         }
     }
 }

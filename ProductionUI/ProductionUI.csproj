@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Tests\TestImages\drawer.gif" />
     <None Remove="Tests\TestImages\PCB1.bmp" />
     <None Remove="Tests\TestImages\PCB2.bmp" />
     <None Remove="Tests\TestImages\PCB3.bmp" />
@@ -19,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Tests\TestImages\drawer.gif" />
     <Resource Include="Tests\TestImages\PCB1.bmp" />
     <Resource Include="Tests\TestImages\PCB2.bmp" />
     <Resource Include="Tests\TestImages\PCB3.bmp" />
