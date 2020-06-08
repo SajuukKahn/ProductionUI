@@ -6,7 +6,8 @@
              xmlns:local="clr-namespace:ProductionUI.Views"
              xmlns:vm="clr-namespace:ProductionUI.ViewModels"
              mc:Ignorable="d"
-             d:DesignHeight="35" d:DesignWidth="800">
+             d:DesignHeight="500" d:DesignWidth="400"
+             Background="LightGray">
 
     <UserControl.DataContext>
         <vm:ProcessContainerViewModel/>
@@ -14,41 +15,39 @@
 
     <UserControl.Resources>
         <Style TargetType="Label">
-            <Setter Property="FontFamily" Value="Segoe UI Bold"/>
+            <Setter Property="FontFamily" Value="Courier New Bold"/>
             <Setter Property="FontSize" Value="16"/>
         </Style>
 
-        
-
     </UserControl.Resources>
 
-    <Grid Background="Gray"
-          VerticalAlignment="Center">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="50"/>
-        </Grid.RowDefinitions>
+    <StackPanel Background="Gray"
+                VerticalAlignment="Stretch"
+                HorizontalAlignment="Right">
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="5*"/>
-        </Grid.ColumnDefinitions>
-        <StackPanel Orientation="Horizontal"
-                    Grid.Column="0" 
-                    VerticalAlignment="Center">
+        <UniformGrid VerticalAlignment="Center"
+                     HorizontalAlignment="Center"
+                     Columns="2"
+                     Margin="5">
+            <UniformGrid.Resources>
+                <Style TargetType="Label">
+                    <Setter Property="BorderBrush" Value="AliceBlue"/>
+                    <Setter Property="BorderThickness" Value="1"/>
+                </Style>
+            </UniformGrid.Resources>
             <Label Content="Zone: "/>
             <Label Content="{Binding ProcessLocation}"/>
-        </StackPanel>
-
-        <StackPanel Orientation="Horizontal"
-                    Grid.Column="1"
-                    VerticalAlignment="Center">
             <Label Content="Program: "/>
             <Label Content="{Binding ProgramName}"/>
-        </StackPanel>
+            <Label Content="Cycle Count: "/>
+            <Label Content="{Binding CycleCount}"/>
+            <Label Content="Cycle Time: "/>
+            <Label Content="{Binding CycleTime}"/>
+        </UniformGrid>
 
-        <DockPanel Grid.Column="2"
-                   LastChildFill="False">
+        <DockPanel LastChildFill="False"
+                   HorizontalAlignment="Center"
+                   Margin="25">
 
             <Button x:Name="PlayButton"
                     Command="{Binding PlayButton}"
@@ -124,5 +123,7 @@
                 </Button.Template>
             </Button>
         </DockPanel>
-    </Grid>
+
+        
+    </StackPanel>
 </UserControl>

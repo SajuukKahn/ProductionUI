@@ -38,8 +38,8 @@ namespace ProductionUI.Tests
             _productionCardDeckModel = productionCardDeckModel;
             
             int randSize = new Random().Next(30, 120);
-            BitmapImage image = new BitmapImage(new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative));
-
+            BitmapImage image;//= new BitmapImage(new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative));
+            image = new BitmapImage(new Uri("/Tests/TestImages/PCB5.bmp", UriKind.Relative));
 
             for (int i = 0; i < randSize; i++)
             {
@@ -47,6 +47,11 @@ namespace ProductionUI.Tests
                 {
                     StepDataDisplay = new Random().Next().ToString() + " Step Data"
                 };
+                if(i % 5 == 0)
+                {
+                    cardModel.StepImage = image;
+                }
+
                 _productionCardDeckModel.Add(cardModel);
             }
 

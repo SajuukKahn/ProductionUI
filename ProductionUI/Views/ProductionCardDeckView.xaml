@@ -5,8 +5,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:ProductionUI.ViewModels"
              xmlns:CustomControls="clr-namespace:ProductionUI.CustomControls" 
+             xmlns:userControls="clr-namespace:ProductionUI.Views"
              mc:Ignorable="d"
              Height="auto"
+             MaxWidth="800"
              VerticalContentAlignment="Stretch"
              VerticalAlignment="Bottom">
     
@@ -14,17 +16,13 @@
         <ResourceDictionary>
 
             <CustomControls:FirstDegreeFunctionConverter x:Key="AddOneToValue" 
-                                                      A="1" 
-                                                      B="1"/>
+                                                         A="1" 
+                                                         B="1"/>
             <CustomControls:FirstDegreeFunctionConverter x:Key="DoubleValue"
-                                                      A="2"
-                                                      B="0"/>
+                                                         A="2"
+                                                         B="0"/>
 
             <Style TargetType="{x:Type ListBox}" x:Key="ListBox3DStyle">
-                <Style.Resources>
-                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
-                    <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Red" />
-                </Style.Resources>
 
                 <Setter Property="BorderThickness" Value="0"/>
                 <Setter Property="Background" Value="{x:Null}"/>
@@ -33,7 +31,7 @@
                     <Setter.Value>
                         <ItemsPanelTemplate>
                             <CustomControls:CarouselPanel IsItemsHost="True"
-                                                        ClipToBounds="False"/>
+                                                          ClipToBounds="False"/>
                         </ItemsPanelTemplate>
                     </Setter.Value>
                 </Setter>
@@ -45,7 +43,8 @@
                             <Grid VerticalAlignment="Bottom">
                                 <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                                 x:Name="ListBoxControlTemplateItemsPresenter"
-                                                />
+                                                MaxHeight="1000"/>
+
                             </Grid>
                         </ControlTemplate>
                     </Setter.Value>
@@ -54,56 +53,58 @@
             </Style>
 
             <!-- ItemContainerStyle with the Trigger for Selected -->
-            <Style x:Key="ListBoxItemCardStyler" 
+            <Style x:Key="ListBoxItemCardStyler"
                    TargetType="{x:Type ListBoxItem}">
 
                 <Setter Property="Template" x:Name="ListBoxItemCardStyleSetter">
                     <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type ListBoxItem}" x:Name="CardControlTemplate">
+                        <ControlTemplate TargetType="{x:Type ListBoxItem}" 
+                                         x:Name="CardControlTemplate">
                             <CustomControls:FloatingGrid Margin="0"
-                                                       x:Name="FloatingGridCardContainer">
+                                                         x:Name="FloatingGridCardContainer"
+                                                         SnapsToDevicePixels="True">
 
                                 <Border Background="LightGray"
-                                        CornerRadius="3"
+                                        CornerRadius="5"
                                         BorderThickness="1"
                                         BorderBrush="#322"
                                         x:Name="CardBorder"
+                                        ClipToBounds="False"
                                         VerticalAlignment="Stretch"
-                                        HorizontalAlignment="Stretch"
-                                        Margin="0">
+                                        HorizontalAlignment="Stretch">
                                     <ContentPresenter x:Name="CardContentPresenter">
                                         <ContentPresenter.ContentTemplate>
                                             <DataTemplate>
-                                     
 
                                                 <DockPanel x:Name="CardDataDockPanel"
-                                                           Margin="0"
-                                                           HorizontalAlignment="Stretch"
-                                                           VerticalAlignment="Stretch"
-                                                           LastChildFill="True">
+                                                                Margin="0"
+                                                                HorizontalAlignment="Stretch"
+                                                                VerticalAlignment="Stretch"
+                                                                LastChildFill="True"
+                                                                SnapsToDevicePixels="True">
 
-                                                    <StackPanel x:Name="CardDataStackPanel"
-                                                                DockPanel.Dock="Left"
-                                                                VerticalAlignment="Center"
-                                                                HorizontalAlignment="Center">
+                                                        <StackPanel x:Name="CardDataStackPanel"
+                                                                    DockPanel.Dock="Left"
+                                                                    VerticalAlignment="Center"
+                                                                    HorizontalAlignment="Center"
+                                                                    Margin="5">
 
-                                                        <StackPanel Orientation="Horizontal">
-                                                            <TextBlock Text="Program Step: "/>
-                                                            <TextBlock Text="{Binding RelativeSource=
-                                                                                {RelativeSource TemplatedParent}, Converter={StaticResource AddOneToValue}, Path=TemplatedParent.(ItemsControl.AlternationIndex)}"/>
-                                                            <TextBlock Text=" / "/>
-                                                            <TextBlock Text="{Binding ElementName=CardDeckListBox, Path=Items.Count}"/>
+                                                            <TextBlock Text="{Binding StepDataDisplay}"/>
+                                                            <TextBlock Text="{Binding StepStatus}"/>
+                                                            <TextBlock Text="{Binding StepActiveTime}"/>
                                                         </StackPanel>
-                                                        <TextBlock Text="{Binding StepDataDisplay}"/>
-                                                        <TextBlock Text="{Binding StepStatus}"/>
-                                                        <TextBlock Text="{Binding StepActiveTime}"/>
-                                                    </StackPanel>
+
+
 
                                                     <Image Source="{Binding StepImage}"
-                                                           x:Name="StepImage"
-                                                           Visibility="Collapsed"
-                                                           DockPanel.Dock="Right"/>
-
+                                                               x:Name="StepImage"
+                                                               Visibility="Collapsed"
+                                                               Stretch="Uniform"
+                                                               VerticalAlignment="Center"
+                                                               Height="0"
+                                                               Width="0"
+                                                               HorizontalAlignment="Left"
+                                                               DockPanel.Dock="Right"/>
                                                 </DockPanel>
 
                                                 <DataTemplate.Triggers>
@@ -111,10 +112,20 @@
                                                                             {RelativeSource Mode=FindAncestor, AncestorType=
                                                                                 {x:Type ListBoxItem}},Path=IsSelected}" Value="True">
                                                         <Setter TargetName="StepImage" Property="Visibility" Value="Visible"/>
-                                                        <Setter TargetName="CardDataStackPanel" Property="DockPanel.Dock" Value="Top"/>
+                                                        <Setter TargetName="CardDataStackPanel" Property="DockPanel.Dock" Value="Left"/>
+                                                        <Setter TargetName="StepImage" Property="Height" Value="128"/>
+                                                        <Setter TargetName="StepImage" Property="Width" Value="128"/>
                                                     </DataTrigger>
+
+                                                    <DataTrigger Binding="{Binding RelativeSource=
+                                                                            {RelativeSource Mode=FindAncestor,AncestorType=
+                                                                                {x:Type ListBox}},Path = SelectedIndex}"
+                                                                 Value=">">
+
+                                                    </DataTrigger>
+
                                                 </DataTemplate.Triggers>
-                                                
+
                                             </DataTemplate>
                                         </ContentPresenter.ContentTemplate>
                                     </ContentPresenter>
@@ -123,10 +134,7 @@
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
-
-
             </Style>
-
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -134,20 +142,40 @@
         <vm:ProductionCardDeckViewModel/>
     </UserControl.DataContext>
 
-    <Grid HorizontalAlignment="Center"
-          VerticalAlignment="Stretch">
+    <Grid x:Name="TopPanelGrid"
+            HorizontalAlignment="Center"
+          VerticalAlignment="Top">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="2*"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
+        <DockPanel LastChildFill="True"
+                   VerticalAlignment="Top">
 
-        <Image Source="{Binding ProcessDisplay}"
-                   Stretch="Uniform"
-                   StretchDirection="Both">
-        </Image>
 
+            <userControls:ProcessContainerView DockPanel.Dock="Left"
+                                               MinWidth="50"
+                                               Panel.ZIndex="99999999"/>
+
+
+            <StackPanel Orientation="Horizontal" 
+                        DockPanel.Dock="Bottom"
+                        HorizontalAlignment="Center">
+                <Label Content="Program Step: "/>
+                <Label Content="{Binding ElementName=CardDeckListBox, Converter={StaticResource AddOneToValue}, Path=SelectedIndex}"/>
+                <Label Content=" / "/>
+                <Label Content="{Binding ElementName=CardDeckListBox, Path=Items.Count}"/>
+            </StackPanel>
+
+            <Image Source="{Binding ProcessDisplay}"
+                        Stretch="Uniform"
+                        StretchDirection="Both"
+                        DockPanel.Dock="Left"
+                        HorizontalAlignment="Center">
+            </Image>
+        </DockPanel>
 
         <!--<MediaElement x:Name="ProcessImage"
                       Width="auto"
@@ -174,7 +202,9 @@
                  MaxHeight="300"
                  ItemContainerStyle="{StaticResource ListBoxItemCardStyler}"
                  DockPanel.Dock="Bottom"
+                 SnapsToDevicePixels="True"
                  Grid.Row="1">
+            
         </ListBox>
     </Grid>
 </UserControl>

@@ -80,6 +80,34 @@ namespace ProductionUI.ViewModels
             }
         }
 
+        private Timer _cycleTime;
+        public Timer CycleTime
+        {
+            get 
+            { 
+                return _cycleTime; 
+            }
+            set 
+            { 
+                _cycleTime = value; 
+                OnPropertyChanged("CycleTime");
+            }
+        }
+
+
+        private long _cycleCount;
+        public long CycleCount
+        {
+            get
+            {
+                return _cycleCount;
+            }
+            set
+            {
+                _cycleCount = value;
+            }
+        }
+
         public ProcessContainerViewModel()
         {
             PlayButton = new RelayCommand(o => PlayPressed());

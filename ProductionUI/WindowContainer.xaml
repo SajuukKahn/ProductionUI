@@ -6,17 +6,9 @@
         xmlns:local="clr-namespace:ProductionUI"
         xmlns:userControls="clr-namespace:ProductionUI.Views"
         mc:Ignorable="d"
-        Title="Container">
+        Title="Container"
+        Background="DarkGray">
 
-    <DockPanel LastChildFill="True"
-               Margin="0,0"
-               Background="#444">
-        <userControls:ProcessContainerView DockPanel.Dock="Top"
-                                           Panel.ZIndex="99999999"/>
-
-        <userControls:ProductionCardDeckView DockPanel.Dock="Bottom"/>
-
-    </DockPanel>
-
+    <userControls:ProductionCardDeckView DockPanel.Dock="Bottom"/>
 
 </Window>

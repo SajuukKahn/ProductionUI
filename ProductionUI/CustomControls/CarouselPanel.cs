@@ -5,61 +5,88 @@ using System.ComponentModel;
 using ProductionUI.ViewModels;
 using ProductionUI.Models;
 using System;
+using System.Windows.Documents;
+using System.Collections.ObjectModel;
+using Microsoft.VisualBasic;
+using System.Linq;
+using System.Collections;
+using System.Diagnostics;
 
 namespace ProductionUI.CustomControls
 {
     public class CarouselPanel : Panel
     {
-        private bool _eventHooked = false;
+        //private bool _eventHooked = false;
 
         private double _rWidth;
         private double _rHeight;
+        private long counter = 0;
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            if (!_eventHooked)
+            counter++;
+            Debug.WriteLine("MeasureOverride Called " + counter);
+            //if (!_eventHooked)
+            //{
+            //    Debug.WriteLine("event hooked up");
+            //    var listBox = GetListBox();
+            //    if (listBox != null)
+            //    {
+            //        listBox.SelectionChanged += (sender, e) => InvalidateArrange();
+            //        _eventHooked = true;
+            //    }
+            //}
+
+            // double _minHeight = 1;
+            // double _minWidth = 1;
+            // double _absoluteMinWidth = Double.MaxValue;
+            // double _absoluteMinHeight = Double.MaxValue;
+            // 
+            // foreach (UIElement child in Children)
+            // {
+            // 
+            //     //child.Measure(availableSize);
+            // 
+            //     if (!(_minWidth.CompareTo(child.DesiredSize.Width) > 0))
+            //     {
+            //         _minWidth = child.DesiredSize.Width;
+            //     }
+            //     if (!(_minHeight.CompareTo(child.DesiredSize.Height) > 0))
+            //     {
+            //         _minHeight = child.DesiredSize.Height;
+            //     }
+            //     if(_minHeight < _absoluteMinHeight)
+            //     {
+            //         _absoluteMinHeight = _minHeight;
+            //     }
+            //     if(_minWidth < _absoluteMinWidth)
+            //     {
+            //         _absoluteMinWidth = _minWidth;
+            //     }
+            // }
+
+            _rWidth = Math.Ceiling(availableSize.Width / 7) - 10;
+            
+            if(_rWidth < 150)
             {
-                var listBox = GetListBox();
-                if (listBox != null)
-                {
-                    listBox.SelectionChanged += (sender, e) => InvalidateArrange();
-                    _eventHooked = true;
-                }
+                _rWidth = 150;
             }
 
-            double _minHeight = 1;
-            double _minWidth = 1;
-
-            foreach (UIElement child in Children)
+            _rHeight = Math.Ceiling(availableSize.Height / 2) - 10;
+            if(_rHeight < 90)
             {
-
-                child.Measure(availableSize);
-
-                if (!(_minWidth.CompareTo(child.DesiredSize.Width) > 0))
-                {
-                    _minWidth = child.DesiredSize.Width;
-                }
-                if (!(_minHeight.CompareTo(child.DesiredSize.Height) > 0))
-                {
-                    _minHeight = child.DesiredSize.Height;
-                }
-                
-                if (_rWidth < _minWidth)
-                {
-                    _rWidth = _minWidth;
-                }
-                if (_rHeight < _minHeight)
-                {
-                    _rHeight = _minHeight;
-                }
-
+                _rHeight = 90;
             }
-            base.MeasureOverride(availableSize);
+            Debug.WriteLine("W:\t" + +_rWidth + "\tH:\t" + _rHeight);
+
             return availableSize;
         }
 
         protected override Size ArrangeOverride(Size finalSize)
         {
+
+            Debug.WriteLine("arrange override run");
+
             var listBox = GetListBox();
             if (listBox == null) return base.ArrangeOverride(finalSize);
             if (listBox.SelectedIndex < 0) listBox.SelectedIndex = 0;
@@ -70,43 +97,44 @@ namespace ProductionUI.CustomControls
 
 
             double center = finalSize.Width / 2;
-            center -= ((_rWidth * 2) /3) ;
 
-            Children[selectedIndex].Arrange(new Rect(center - (_rWidth / 3), top, _rWidth * 2, _rHeight * 2));
+            Children[selectedIndex].Arrange(new Rect(center - _rWidth, top, _rWidth * 2, _rHeight * 2));
             Panel.SetZIndex(Children[selectedIndex], 69000);
 
             ProductionCardDeckViewModel.SelectedIndex.IsActiveStep = false;
             ProductionCardDeckViewModel.SelectedIndex = (ProductionCardModel)listBox.SelectedItem;
             ProductionCardDeckViewModel.SelectedIndex.IsActiveStep = true;
 
-            for (int leftCounter = 0; leftCounter < selectedIndex; leftCounter++)
+            center -= _rWidth;
+
+            for (int leftCounter = selectedIndex  - 1; leftCounter > -1; leftCounter--)
             {
-                var left = (center - ((selectedIndex - leftCounter) / 10 * (_rWidth * _rWidth)) - (_rWidth));
-                //var left2 = center - (_rWidth + (_rWidth / (2 - (Math.Exp(1-leftCounter))));
-                var left2 = center - (center/2 * (1 - (Math.Exp(0- (selectedIndex - leftCounter)))));
-                var magic = (2 / Math.Sqrt(selectedIndex - leftCounter));
-                var finalRect = new Rect(left2, top, _rWidth * magic , _rHeight* magic);
+                int xval = selectedIndex - leftCounter;
+                var left = center - (_rWidth * (xval / Math.Sqrt(xval)));
+                var finalRect = new Rect(left, top, _rWidth, _rHeight);
                 Children[leftCounter].Arrange(finalRect);
-                Panel.SetZIndex(Children[leftCounter], zIndex);
-                zIndex++;
+                Panel.SetZIndex(Children[leftCounter], zIndex--);
             }
 
-            center -= (_rWidth / 3);
+            center += _rWidth;
 
-            for (int rightCounter = Children.Count - 1; rightCounter > selectedIndex; rightCounter--)
+            for (int rightCounter = selectedIndex + 1; rightCounter < Children.Count; rightCounter++)
             {
-                var left = (center + ((rightCounter - selectedIndex) / 10 * (_rWidth * _rWidth)) + (_rWidth));
+                //   var left = center + (((rightCounter - selectedIndex) / 10) * (_rWidth * _rWidth)) + _rWidth;
                 //var left2 = center + (_rWidth + (_rWidth / (2 - Math.Exp(1-rightCounter))));
+                int xval = rightCounter - selectedIndex;
+                var left = center + (_rWidth * (xval / Math.Sqrt(xval)));
 
-                var left2 = center + (center/2 * (1 - (Math.Exp(0 - (rightCounter - selectedIndex)))));
-                var magic = (2 / Math.Sqrt(rightCounter - selectedIndex));
-                var finalRect = new Rect(left2, top, _rWidth * magic, _rHeight * magic);
+                //var left2 = center + ((center / 2) * (1 - (Math.Exp(0 - (rightCounter - selectedIndex)))));
+
+                //var magic = 2 / Math.Sqrt(xval);
+                var finalRect = new Rect(left, top, _rWidth, _rHeight);
                 Children[rightCounter].Arrange(finalRect);
-                Panel.SetZIndex(Children[rightCounter], zIndex);
-                zIndex++;
+                Panel.SetZIndex(Children[rightCounter], zIndex--);
             }
 
-            return base.ArrangeOverride(finalSize);
+            return finalSize;
+            //return base.ArrangeOverride(finalSize);
         }
 
         private ListBox GetListBox()

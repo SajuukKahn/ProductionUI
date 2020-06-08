@@ -83,8 +83,6 @@ namespace ProductionUI.CustomControls
             _animateY.From = comingFromY - goingToY;
             _lastGoingToY = goingToY;
 
-            
-
             _animation.Begin(this, HandoffBehavior.SnapshotAndReplace, true);
         }
     }

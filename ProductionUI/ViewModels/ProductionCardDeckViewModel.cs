@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
 using System.Text;
@@ -21,6 +22,14 @@ namespace ProductionUI.ViewModels
         private readonly ProductionCardDeckModel _productionDeck = new ProductionCardDeckModel();
 
         public static ProductionCardModel SelectedIndex;
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged(string prop)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
+
+
 
         private MediaElement _processImage;
         public MediaElement ProcessImage
@@ -66,12 +75,6 @@ namespace ProductionUI.ViewModels
         }
         
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged(string prop)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-        }
-
         public void NextCard(string StepDataLog, bool StepPassed = true, bool StepComplete = true)
         {
             SelectedIndex.StepComplete = StepComplete;
@@ -84,7 +87,7 @@ namespace ProductionUI.ViewModels
             SelectedIndex.startCardTimer();
         }
 
-        //private ProgramStep programStep;
+        public ICommand ChangeCardCommand { get; set; }
 
         public ProductionCardDeckViewModel()
         {
@@ -95,6 +98,13 @@ namespace ProductionUI.ViewModels
             //ProcessImage.Source = new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative);
             ProcessDisplay = new BitmapImage(new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative));
 
+            ChangeCardCommand = new RelayCommand(o => ChangeCardDelegate());
+
+        }
+
+        private void ChangeCardDelegate()
+        {
+            Debug.WriteLine("delegate method invoked");
         }
     }
 }
