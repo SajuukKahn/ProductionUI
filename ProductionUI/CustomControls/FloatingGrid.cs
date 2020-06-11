@@ -18,6 +18,8 @@ namespace ProductionUI.CustomControls
         private double _lastGoingToX = 0;
         private double _lastGoingToY = 0;
 
+        private static bool _inAnimation = false;
+
         private static bool _doAnimations = true;
         public static bool DoAnimations
         {
@@ -62,6 +64,16 @@ namespace ProductionUI.CustomControls
         }
 
         private void This_LayoutUpdated(object sender, EventArgs e)
+        {
+            if (_inAnimation == false)
+            {
+                _inAnimation = true;
+                AnimateLayout();
+                _inAnimation = false;
+            }
+        }
+
+        private void AnimateLayout()
         {
             if (!DoAnimations) return;
 

@@ -29,8 +29,6 @@ namespace ProductionUI.ViewModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
-
-
         private MediaElement _processImage;
         public MediaElement ProcessImage
         {
@@ -73,7 +71,6 @@ namespace ProductionUI.ViewModels
                 OnPropertyChanged("CurrentIndex");
             }
         }
-        
 
         public void NextCard(string StepDataLog, bool StepPassed = true, bool StepComplete = true)
         {
@@ -98,13 +95,12 @@ namespace ProductionUI.ViewModels
             //ProcessImage.Source = new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative);
             ProcessDisplay = new BitmapImage(new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative));
 
-            ChangeCardCommand = new RelayCommand(o => ChangeCardDelegate());
-
+            ChangeCardCommand = new RelayCommand(o => ChangeCardMethod());
         }
 
-        private void ChangeCardDelegate()
+        private void ChangeCardMethod()
         {
-            Debug.WriteLine("delegate method invoked");
+            Debug.WriteLine("Change Card Fired");
         }
     }
 }
