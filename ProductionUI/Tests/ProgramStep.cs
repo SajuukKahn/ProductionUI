@@ -45,7 +45,7 @@
             for (int i = 0; i < _numberOfIndices; i++)
             {
                 Thread.Sleep(TimeSpan.FromSeconds(new Random().Next(0, 4) + new Random().NextDouble()));
-                _vm.NextCard("Step Data Log Passed Parameter" + i.ToString());
+                //_vm.NextCard("Step Data Log Passed Parameter" + i.ToString());
             }
         }
     }

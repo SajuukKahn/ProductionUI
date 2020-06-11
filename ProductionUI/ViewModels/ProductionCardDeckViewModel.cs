@@ -19,9 +19,7 @@ namespace ProductionUI.ViewModels
     public class ProductionCardDeckViewModel : INotifyPropertyChanged
     {
         public ProductionCardDeckModel ProductionDeck { get; private set; }
-        private readonly ProductionCardDeckModel _productionDeck = new ProductionCardDeckModel();
-
-        public static ProductionCardModel SelectedIndex;
+        private ProductionCardDeckModel _productionDeck = new ProductionCardDeckModel();
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string prop)
@@ -58,8 +56,8 @@ namespace ProductionUI.ViewModels
             }
         }
 
-        private ProductionCardModel _currentIndex;
-        public ProductionCardModel CurrentIndex
+        private int _currentIndex;
+        public int CurrentIndex
         {
             get
             {
@@ -67,41 +65,58 @@ namespace ProductionUI.ViewModels
             }
             set
             {
-                _currentIndex = value;
+                _currentIndex = NextCard(value);
                 OnPropertyChanged("CurrentIndex");
             }
         }
 
-        public void NextCard(string StepDataLog, bool StepPassed = true, bool StepComplete = true)
+        public int NextCard(int value, string StepDataLog = "no data", bool StepPassed = true, bool StepComplete = true)
         {
-            SelectedIndex.StepComplete = StepComplete;
-            SelectedIndex.StepDataLog = StepDataLog;
-            SelectedIndex.StepPassed = StepPassed;
-            SelectedIndex.IsActiveStep = false;
-            SelectedIndex.stopCardTimer();
-            SelectedIndex = ProductionDeck[ProductionDeck.IndexOf(SelectedIndex) + 1];
-            SelectedIndex.IsActiveStep = true;
-            SelectedIndex.startCardTimer();
-        }
+            if (CurrentIndex > -1 && CurrentIndex < _productionDeck.Count)
+            {
 
-        public ICommand ChangeCardCommand { get; set; }
+                bool setCompleted = false;
+                int i = value, ceiling = CurrentIndex;
+
+                if (CurrentIndex < value)
+                {
+                    setCompleted = true;
+                    i = CurrentIndex;
+                    ceiling = value;
+                }
+
+                for (int j = i; j <= ceiling; j++)
+                {
+                    if (setCompleted)
+                    {
+                        _productionDeck[j].StepPassed = StepPassed;
+                        _productionDeck[j].StepDataLog = StepDataLog;
+                        _productionDeck[j].StepComplete = StepComplete;
+                    }
+                    else
+                    {
+                        _productionDeck[j].StepPassed = false;
+                        _productionDeck[j].StepDataLog = null;
+                        _productionDeck[j].StepComplete = false;
+                    }
+                    _productionDeck[j].IsActiveStep = false;
+                    _productionDeck[j].stopCardTimer();
+                }
+
+                _productionDeck[value].IsActiveStep = true;
+                _productionDeck[value].StepComplete = false;
+                _productionDeck[value].startCardTimer();
+            }
+
+            return value;
+        }
 
         public ProductionCardDeckViewModel()
         {
             ProductionDeck = new RandomProgramGenerator().GenerateRandom(_productionDeck);
-            //first or default (null check) - ryan says do it in the XAML selectedindex =0 in the xaml
-            SelectedIndex = ProductionDeck[0];
-            //ProcessImage = new MediaElement();
-            //ProcessImage.Source = new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative);
             ProcessDisplay = new BitmapImage(new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative));
-
-            ChangeCardCommand = new RelayCommand(o => ChangeCardMethod());
         }
 
-        private void ChangeCardMethod()
-        {
-            Debug.WriteLine("Change Card Fired");
-        }
     }
 }
 

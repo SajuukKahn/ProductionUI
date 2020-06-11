@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualBasic;
+using ProductionUI.Models;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -9,8 +10,7 @@ namespace ProductionUI.CustomControls
 {
     public class ListBoxDataTemplateSelector : DataTemplateSelector
     {
-        public DataTemplate ListItemFocusedWithImage { get; set; }
-        public DataTemplate ListItemFocusedNoImage { get; set; }
+        public DataTemplate ListItemFocus { get; set; }
         public DataTemplate ListItemRightOfFocus { get; set; }
         public DataTemplate ListItemLeftOfFocus { get; set; }
 
@@ -19,11 +19,20 @@ namespace ProductionUI.CustomControls
             if(item == null)
             {
                 return null;
-            }    
-            var fard = container;
-            var poop = item;
+            }
 
-            return ListItemFocusedWithImage;
+            var card = item as ProductionCardModel;
+            
+            if(card.IsActiveStep)
+            {
+                return ListItemFocus;
+            }
+            else if(card.StepPassed)
+            {
+                return ListItemLeftOfFocus;
+            }
+
+            return ListItemRightOfFocus;
 
         }
 

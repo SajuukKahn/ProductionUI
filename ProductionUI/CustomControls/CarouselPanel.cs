@@ -25,7 +25,6 @@ namespace ProductionUI.CustomControls
         protected override Size MeasureOverride(Size availableSize)
         {
             counter++;
-            Debug.WriteLine("MeasureOverride Called " + counter);
             //if (!_eventHooked)
             //{
             //    Debug.WriteLine("event hooked up");
@@ -65,47 +64,41 @@ namespace ProductionUI.CustomControls
             //     }
             // }
 
-            _rWidth = Math.Ceiling(availableSize.Width / 7) - 10;
+            _rWidth = Math.Ceiling(availableSize.Width / 9) - 10;
             
-            if(_rWidth < 150)
+            if(_rWidth < 25)
             {
-                _rWidth = 150;
+                _rWidth = 25;
             }
 
-            _rHeight = Math.Ceiling(availableSize.Height / 2) - 10;
-            if(_rHeight < 90)
+            _rHeight = Math.Ceiling(availableSize.Height) - 10;
+            if(_rHeight < 150)
             {
-                _rHeight = 90;
+                _rHeight = 150;
             }
-            Debug.WriteLine("W:\t" + +_rWidth + "\tH:\t" + _rHeight);
 
             return availableSize;
         }
 
         protected override Size ArrangeOverride(Size finalSize)
         {
-
-            Debug.WriteLine("arrange override run");
-
             var listBox = GetListBox();
             if (listBox == null) return base.ArrangeOverride(finalSize);
             if (listBox.SelectedIndex < 0) listBox.SelectedIndex = 0;
 
             int selectedIndex = listBox.SelectedIndex;
-            double top = (finalSize.Height / 2) - _rHeight;
+            double top = (finalSize.Height / 2) - (_rHeight / 2);
             int zIndex = 10000;
 
+            
+            double _bigWidth = _rWidth * 2;
 
             double center = finalSize.Width / 2;
 
-            Children[selectedIndex].Arrange(new Rect(center - _rWidth, top, _rWidth * 2, _rHeight * 2));
+            Children[selectedIndex].Arrange(new Rect(center - _bigWidth, top, _rWidth, _rHeight));
             Panel.SetZIndex(Children[selectedIndex], 69000);
 
-            ProductionCardDeckViewModel.SelectedIndex.IsActiveStep = false;
-            ProductionCardDeckViewModel.SelectedIndex = (ProductionCardModel)listBox.SelectedItem;
-            ProductionCardDeckViewModel.SelectedIndex.IsActiveStep = true;
-
-            center -= _rWidth;
+            center -= _bigWidth;
 
             for (int leftCounter = selectedIndex  - 1; leftCounter > -1; leftCounter--)
             {
@@ -116,7 +109,7 @@ namespace ProductionUI.CustomControls
                 Panel.SetZIndex(Children[leftCounter], zIndex--);
             }
 
-            center += _rWidth;
+            center += _bigWidth + _rWidth;
 
             for (int rightCounter = selectedIndex + 1; rightCounter < Children.Count; rightCounter++)
             {

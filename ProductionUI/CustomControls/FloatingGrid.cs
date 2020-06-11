@@ -20,13 +20,6 @@ namespace ProductionUI.CustomControls
 
         private static bool _inAnimation = false;
 
-        private static bool _doAnimations = true;
-        public static bool DoAnimations
-        {
-            get { return _doAnimations; }
-            set { _doAnimations = value; }
-        }
-
         public FloatingGrid()
         {
             LayoutUpdated += This_LayoutUpdated;
@@ -75,7 +68,6 @@ namespace ProductionUI.CustomControls
 
         private void AnimateLayout()
         {
-            if (!DoAnimations) return;
 
             _animation.Stop(this);
 
