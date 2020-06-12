@@ -20,11 +20,9 @@ namespace ProductionUI.CustomControls
 
         private double _rWidth;
         private double _rHeight;
-        private long counter = 0;
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            counter++;
             //if (!_eventHooked)
             //{
             //    Debug.WriteLine("event hooked up");
@@ -95,7 +93,7 @@ namespace ProductionUI.CustomControls
 
             double center = finalSize.Width / 2;
 
-            Children[selectedIndex].Arrange(new Rect(center - _bigWidth, top, _rWidth, _rHeight));
+            Children[selectedIndex].Arrange(new Rect(center - _bigWidth, top, _bigWidth * 2, _rHeight));
             Panel.SetZIndex(Children[selectedIndex], 69000);
 
             center -= _bigWidth;
@@ -103,7 +101,7 @@ namespace ProductionUI.CustomControls
             for (int leftCounter = selectedIndex  - 1; leftCounter > -1; leftCounter--)
             {
                 int xval = selectedIndex - leftCounter;
-                var left = center - (_rWidth * (xval / Math.Sqrt(xval)));
+                var left = center - (_rWidth * Math.Sqrt(xval));
                 var finalRect = new Rect(left, top, _rWidth, _rHeight);
                 Children[leftCounter].Arrange(finalRect);
                 Panel.SetZIndex(Children[leftCounter], zIndex--);
@@ -113,10 +111,10 @@ namespace ProductionUI.CustomControls
 
             for (int rightCounter = selectedIndex + 1; rightCounter < Children.Count; rightCounter++)
             {
-                //   var left = center + (((rightCounter - selectedIndex) / 10) * (_rWidth * _rWidth)) + _rWidth;
+                //var left = center + (((rightCounter - selectedIndex) / 10) * (_rWidth * _rWidth)) + _rWidth;
                 //var left2 = center + (_rWidth + (_rWidth / (2 - Math.Exp(1-rightCounter))));
                 int xval = rightCounter - selectedIndex;
-                var left = center + (_rWidth * (xval / Math.Sqrt(xval)));
+                var left = center + (_rWidth * Math.Sqrt(xval));
 
                 //var left2 = center + ((center / 2) * (1 - (Math.Exp(0 - (rightCounter - selectedIndex)))));
 

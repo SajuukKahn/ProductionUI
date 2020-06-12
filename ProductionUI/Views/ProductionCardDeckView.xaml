@@ -15,13 +15,17 @@
     <UserControl.Resources>
         <ResourceDictionary>
 
-            <DataTemplate x:Key="ListItemFocus">
+            <DataTemplate x:Key="ListItemDataTemplate">
                 <DockPanel x:Name="CardDataDockPanel"
                            Margin="0"
                            HorizontalAlignment="Stretch"
                            VerticalAlignment="Stretch"
                            LastChildFill="False"
                            SnapsToDevicePixels="True">
+                    <DockPanel.RenderTransform>
+                        <ScaleTransform/>
+                    </DockPanel.RenderTransform>
+                    
 
 
                     <StackPanel x:Name="CardDataStackPanel"
@@ -33,7 +37,11 @@
                         <TextBlock Text="{Binding StepDataDisplay}"
                                    x:Name="StepDataDisplay">
                             <TextBlock.RenderTransform>
-                                <RotateTransform Angle="0"/>
+                                <TransformGroup>
+                                    <RotateTransform Angle="0" 
+                                                     CenterX="0.5" 
+                                                     CenterY="0.5"/>
+                                </TransformGroup>
                             </TextBlock.RenderTransform>
                         </TextBlock>
                         <TextBlock Text="{Binding StepStatus}"
@@ -55,7 +63,6 @@
                           HorizontalAlignment="Center"/>
 
                 </DockPanel>
-
 
                 <DataTemplate.Triggers>
                     <MultiDataTrigger>
@@ -104,53 +111,124 @@
                         <Setter TargetName="StepImage" Property="Width" Value="128"/>
                     </DataTrigger>
 
+
+
+                    <!--<MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding IsActiveStep}" Value="False"/>
+                            <Condition Binding="{Binding ElementName=CardDataDockPanel, Path=IsMouseOver}" Value="True"/>
+                        </MultiDataTrigger.Conditions>
+                        <MultiDataTrigger.EnterActions>
+                            <BeginStoryboard x:Name="ListBoxItemHoverStoryBoard">
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="CardDataDockPanel"
+                                                     Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                                     Duration="00:00:00.01"
+                                                     To="1.1"/>
+                                    <DoubleAnimation Storyboard.TargetName="CardDataDockPanel"
+                                                     Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                                     Duration="00:00:00.01"
+                                                     To="1.1"/>
+
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </MultiDataTrigger.EnterActions>
+                        <MultiDataTrigger.ExitActions>
+                            <RemoveStoryboard BeginStoryboardName="ListBoxItemHoverStoryBoard"/>
+
+                        </MultiDataTrigger.ExitActions>
+                        
+                    </MultiDataTrigger>-->
+
                 </DataTemplate.Triggers>
 
             </DataTemplate>
-
 
             <CustomControls:FirstDegreeFunctionConverter x:Key="AddOneToValue" 
                                                          A="1" 
                                                          B="1"/>
             <CustomControls:FirstDegreeFunctionConverter x:Key="DoubleValue"
                                                          A="2"
-                                                         B="0"/> 
+                                                         B="0"/>
 
             <!-- ItemContainerStyle with the Trigger for Selected -->
             <Style x:Key="ListBoxItemCardStyler"
                    TargetType="{x:Type ListBoxItem}">
 
-                <Setter Property="Template" x:Name="ListBoxItemCardStyleSetter">
+                <Setter Property="Template">
                     <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type ListBoxItem}" 
-                                         x:Name="CardControlTemplate">
-                            <CustomControls:FloatingGrid Margin="0"
-                                                         x:Name="FloatingGridCardContainer"
-                                                         x:Uid="FloatingGridCardContainer"
-                                                         SnapsToDevicePixels="True">
+                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                            <CustomControls:FloatingGrid x:Name="FloatingGridContentHost"
+                                                         Cursor="Hand"
+                                                         >
+                                <CustomControls:FloatingGrid.RenderTransform>
+                                    <TranslateTransform/>
+                                </CustomControls:FloatingGrid.RenderTransform>
                                 <CustomControls:FloatingGrid.Triggers>
+                                    <EventTrigger RoutedEvent="MouseEnter">
+
+                                        <BeginStoryboard x:Name="ListBoxMouseEnterAnimation">
+                                            <Storyboard Storyboard.TargetName="FloatingGridContentHost">
+                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Y"
+                                                                    Duration="00:00:00.25"
+                                                                    To="-25">
+                                                </DoubleAnimation>
+                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.X"
+                                                                    Duration="00:00:00.25"
+                                                                    To="25">
+
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+
+                                    <EventTrigger RoutedEvent="MouseLeave">
+
+                                        <BeginStoryboard x:Name="ListBoxMouseExitAnimation">
+                                            <Storyboard Storyboard.TargetName="FloatingGridContentHost">
+                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Y"
+                                                                        Duration="00:00:00.25"
+                                                                        To="0">
+                                                </DoubleAnimation>
+                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.X"
+                                                                        Duration="00:00:00.25"
+                                                                        To="0">
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
                                     
                                 </CustomControls:FloatingGrid.Triggers>
-
-                                <Border Background="LightGray"
-                                        CornerRadius="5"
+                                
+                                
+                                <Border CornerRadius="5"
                                         BorderThickness="1"
-                                        BorderBrush="#322"
+                                        BorderBrush="#444"
                                         x:Name="CardBorder"
                                         ClipToBounds="False"
                                         VerticalAlignment="Stretch"
                                         HorizontalAlignment="Stretch">
+
+                                    <Border.Background>
+                                        <LinearGradientBrush EndPoint="0.5,2" StartPoint="3,0">
+                                            <GradientStop Color="#FFAEAEAE" Offset="0.6"/>
+                                            <GradientStop Color="#FE6A6A6A" Offset="1.2"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+                                    <Border.BitmapEffect>
+                                        <BlurBitmapEffect Radius="1" KernelType="Gaussian"/>
+                                    </Border.BitmapEffect>
+
                                     <ContentPresenter x:Name="CardContentPresenter"
-                                                      ContentTemplate="{StaticResource ListItemFocus}"/>
-
-                                    <!--Style="{StaticResource selectableContentStyle}"-->
-
+                                                      ContentTemplate="{StaticResource ListItemDataTemplate}"/>
                                 </Border>
                             </CustomControls:FloatingGrid>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
             </Style>
+
+
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -159,7 +237,7 @@
     </UserControl.DataContext>
 
     <Grid x:Name="TopPanelGrid"
-            HorizontalAlignment="Center"
+          HorizontalAlignment="Center"
           VerticalAlignment="Top">
 
         <Grid.RowDefinitions>
@@ -174,7 +252,7 @@
                                                MinWidth="50"
                                                Panel.ZIndex="99999999"/>
 
-            <StackPanel Orientation="Horizontal" 
+            <StackPanel Orientation="Horizontal"
                         DockPanel.Dock="Bottom"
                         HorizontalAlignment="Center">
                 <Label Content="Program Step: "/>
@@ -185,7 +263,6 @@
 
             <Image Source="{Binding ProcessDisplay}"
                         Stretch="Uniform"
-                        StretchDirection="Both"
                         DockPanel.Dock="Left"
                         HorizontalAlignment="Center">
             </Image>
@@ -197,29 +274,35 @@
                  MaxHeight="300"
                  DockPanel.Dock="Bottom"
                  SelectedIndex="{Binding CurrentIndex}"
-                 ItemContainerStyle="{StaticResource ListBoxItemCardStyler}"
-                 SnapsToDevicePixels="True"
-                 BorderThickness="0"
-                 Background="Transparent"
+                 ItemContainerStyle="{DynamicResource ListBoxItemCardStyler}"
+                 Background="Violet"
                  Grid.Row="1">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <CustomControls:CarouselPanel IsItemsHost="True"
-                                                  ClipToBounds="False"/>
+                                                  x:Name="CarouselPanelItemHost">
+                        <CustomControls:CarouselPanel.Triggers>
+                            
+                        </CustomControls:CarouselPanel.Triggers>
+                    </CustomControls:CarouselPanel>
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
             <ListBox.Template>
-                <ControlTemplate TargetType="{x:Type ListBox}" 
-                                 x:Name="ListBoxControlTemplate">
+                <ControlTemplate TargetType="{x:Type ListBox}">
                     <Grid VerticalAlignment="Stretch">
                         <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                                        x:Name="ListBoxControlTemplateItemsPresenter"
                                         MaxHeight="1000">
                         </ItemsPresenter>
 
                     </Grid>
                 </ControlTemplate>
             </ListBox.Template>
+
+            <ListBox.Resources>
+
+            </ListBox.Resources>
+
         </ListBox>
+
     </Grid>
 </UserControl>

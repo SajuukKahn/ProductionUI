@@ -19,7 +19,7 @@ namespace ProductionUI.ViewModels
     public class ProductionCardDeckViewModel : INotifyPropertyChanged
     {
         public ProductionCardDeckModel ProductionDeck { get; private set; }
-        private ProductionCardDeckModel _productionDeck = new ProductionCardDeckModel();
+        private readonly ProductionCardDeckModel _productionDeck = new ProductionCardDeckModel();
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string prop)
@@ -100,12 +100,12 @@ namespace ProductionUI.ViewModels
                         _productionDeck[j].StepComplete = false;
                     }
                     _productionDeck[j].IsActiveStep = false;
-                    _productionDeck[j].stopCardTimer();
+                    _productionDeck[j].StopCardTimer();
                 }
 
                 _productionDeck[value].IsActiveStep = true;
                 _productionDeck[value].StepComplete = false;
-                _productionDeck[value].startCardTimer();
+                _productionDeck[value].StartCardTimer();
             }
 
             return value;

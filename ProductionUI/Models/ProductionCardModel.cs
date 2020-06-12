@@ -204,12 +204,12 @@ namespace ProductionUI.Models
         private DateTime _startTime;
 
 
-        public void stopCardTimer()
+        public void StopCardTimer()
         {
             _dispatchTimer.Stop();
         }
 
-        public void startCardTimer()
+        public void StartCardTimer()
         {
             ResetRunTime();
             _dispatchTimer.Start();

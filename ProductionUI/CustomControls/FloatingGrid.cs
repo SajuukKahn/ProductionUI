@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -9,12 +10,9 @@ namespace ProductionUI.CustomControls
     class FloatingGrid : Grid
     {
         private readonly TranslateTransform _translation = new TranslateTransform();
-        private readonly ScaleTransform _scale = new ScaleTransform();
         private readonly Storyboard _animation = new Storyboard();
         private readonly DoubleAnimation _animateX;
         private readonly DoubleAnimation _animateY;
-        private readonly DoubleAnimation _scaleX;
-        private readonly DoubleAnimation _scaleY;
         private double _lastGoingToX = 0;
         private double _lastGoingToY = 0;
 
@@ -25,23 +23,13 @@ namespace ProductionUI.CustomControls
             LayoutUpdated += This_LayoutUpdated;
             RenderTransform = _translation;
 
-            VisualTransform = _scale;
-
             _animateX = new DoubleAnimation(0, new Duration(TimeSpan.FromSeconds(.1)));
             Storyboard.SetTargetProperty(_animateX, new PropertyPath("(0).(1)", new[] { RenderTransformProperty, TranslateTransform.XProperty }));
-            _animation.Children.Add(_animateX);
+            _animation.Children.Append(_animateX);
 
             _animateY = new DoubleAnimation(0, new Duration(TimeSpan.FromSeconds(.1)));
             Storyboard.SetTargetProperty(_animateY, new PropertyPath("(0).(1)", new[] { RenderTransformProperty, TranslateTransform.YProperty }));
-            _animation.Children.Add(_animateY);
-
-            _scaleX = new DoubleAnimation(0, new Duration(TimeSpan.FromSeconds(.5)));
-            Storyboard.SetTargetProperty(_scaleX, new PropertyPath("(0).(1)", new[] { RenderTransformProperty, ScaleTransform.ScaleXProperty }));
-            _animation.Children.Add(_scaleX);
-
-            _scaleY = new DoubleAnimation(0, new Duration(TimeSpan.FromSeconds(.5)));
-            Storyboard.SetTargetProperty(_scaleY, new PropertyPath("(0).(1)", new[] { RenderTransformProperty, ScaleTransform.ScaleYProperty }));
-            _animation.Children.Add(_scaleY);
+            _animation.Children.Append(_animateY);
         }
 
         private Visual FindPanel(Visual visual)
@@ -69,15 +57,13 @@ namespace ProductionUI.CustomControls
         private void AnimateLayout()
         {
 
-            _animation.Stop(this);
+            //_animation.Stop(this);
 
             var panel = FindPanel(this);
             if (panel == null) return;
 
             var comingFromX = _lastGoingToX + _translation.X;
             var comingFromY = _lastGoingToY + _translation.Y;
-
-            var scalingX = panel;
 
             var transform = (Transform)TransformToAncestor(panel);
             var goingToX = transform.Value.OffsetX - _translation.X;
@@ -86,8 +72,8 @@ namespace ProductionUI.CustomControls
             var goingToY = transform.Value.OffsetY - _translation.Y;
             _animateY.From = comingFromY - goingToY;
             _lastGoingToY = goingToY;
-
-            _animation.Begin(this, HandoffBehavior.SnapshotAndReplace, true);
+            _animation.Begin(this, HandoffBehavior.SnapshotAndReplace, false);
+            //_animation.Begin(this, HandoffBehavior.Compose, true);
         }
     }
 }

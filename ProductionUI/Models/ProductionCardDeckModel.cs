@@ -9,7 +9,18 @@ namespace ProductionUI.Models
 {
     public class ProductionCardDeckModel : ObservableCollection<ProductionCardModel>
     {
-        private readonly List<ProductionCardModel> _productionCardModel = new List<ProductionCardModel>();
+        public List<ProductionCardModel> ProductionCardModels
+        {
+            get
+            {
+                return _productionCardModel;
+            }
+            set
+            {
+                _productionCardModel = value;
+            }
+        }
+        private List<ProductionCardModel> _productionCardModel = new List<ProductionCardModel>();
 
         public MediaElement MediaElement { get; set; }
         
