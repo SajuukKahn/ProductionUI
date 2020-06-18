@@ -11,119 +11,10 @@
              Height="auto"
              MaxWidth="1200"
              VerticalContentAlignment="Stretch"
-             VerticalAlignment="Bottom">
+             VerticalAlignment="Stretch">
 
     <UserControl.Resources>
         <ResourceDictionary>
-
-            <Style x:Key="LabelStyler" TargetType="{x:Type Label}">
-                <Setter Property="FontFamily" Value="Segoe UI Bold"/>
-                <Setter Property="FontSize" Value="14"/>
-            </Style>
-            
-            <DataTemplate x:Key="ListItemDataTemplate">
-                <DockPanel x:Name="CardDataDockPanel"
-                           LastChildFill="True"
-                           SnapsToDevicePixels="True">
-                    <DockPanel.RenderTransform>
-                        <ScaleTransform/>
-                    </DockPanel.RenderTransform>
-
-                    <StackPanel x:Name="CardDataStackPanel"
-                                DockPanel.Dock="Left"
-                                VerticalAlignment="Center"
-                                HorizontalAlignment="Center"
-                                Margin="5"
-                                UseLayoutRounding="True">
-
-                        <TextBlock Text="{Binding StepTitle}"
-                                   FontFamily="Segoe UI Bold"
-                                   FontSize="14"
-                                   x:Name="StepTitle"
-                                   UseLayoutRounding="True">
-                            <TextBlock.LayoutTransform>
-                                <TransformGroup>
-                                    <RotateTransform Angle="0" 
-                                                     CenterX="0.5" 
-                                                     CenterY="0.5"/>
-                                </TransformGroup>
-                            </TextBlock.LayoutTransform>
-                        </TextBlock>
-                        <TextBlock Text="{Binding StepStatus}"
-                                   FontFamily="Segoe UI Bold"
-                                   FontSize="14"
-                                   x:Name="StepStatus"
-                                   UseLayoutRounding="True">
-                        </TextBlock>
-                        <TextBlock Text="{Binding StepActiveTime}"
-                                   FontFamily="Segoe UI Bold"
-                                   FontSize="14"
-                                   x:Name="StepActiveTime"
-                                   UseLayoutRounding="True">
-                        </TextBlock>
-                    </StackPanel>
-
-
-                    <Image Source="{Binding StepImage}"
-                          x:Name="StepImage"
-                          Visibility="Collapsed"
-                          Stretch="Uniform"
-                          Height="0"
-                          Width="0"
-                          UseLayoutRounding="True"/>
-
-                </DockPanel>
-
-                <DataTemplate.Triggers>
-                    <MultiDataTrigger>
-                        <MultiDataTrigger.Conditions>
-                            <Condition Binding="{Binding IsActiveStep}" Value="False"/>
-                            <Condition Binding="{Binding StepComplete}" Value="False"/>
-                        </MultiDataTrigger.Conditions>
-                        <MultiDataTrigger.Setters>
-                            <Setter TargetName="StepTitle" Property="LayoutTransform">
-                                <Setter.Value>
-                                    <RotateTransform Angle="90"/>
-                                </Setter.Value>
-                            </Setter>
-                            <Setter TargetName="StepStatus" Property="Visibility" Value="Collapsed"/>
-                            <Setter TargetName="StepActiveTime" Property="Visibility" Value="Collapsed"/>
-                            <Setter TargetName="StepImage" Property="Visibility" Value="Collapsed"/>
-                            <Setter TargetName="StepImage" Property="Height" Value="0"/>
-                            <Setter TargetName="StepImage" Property="Width" Value="0"/>
-                            <Setter TargetName="CardDataStackPanel" Property="DockPanel.Dock" Value="Right"/>
-                        </MultiDataTrigger.Setters>
-                    </MultiDataTrigger>
-                    
-                    <MultiDataTrigger>
-                        <MultiDataTrigger.Conditions>
-                            <Condition Binding="{Binding IsActiveStep}" Value="False"/>
-                            <Condition Binding="{Binding StepComplete}" Value="True"/>
-                        </MultiDataTrigger.Conditions>
-                        <MultiDataTrigger.Setters>
-                            <Setter TargetName="StepTitle" Property="LayoutTransform">
-                                <Setter.Value>
-                                    <RotateTransform Angle="90"/>
-                                </Setter.Value>
-                            </Setter>
-                            <Setter TargetName="StepStatus" Property="Visibility" Value="Collapsed"/>
-                            <Setter TargetName="StepActiveTime" Property="Visibility" Value="Collapsed"/>
-                            <Setter TargetName="StepImage" Property="Visibility" Value="Collapsed"/>
-                            <Setter TargetName="StepImage" Property="Height" Value="0"/>
-                            <Setter TargetName="StepImage" Property="Width" Value="0"/>
-                            <Setter TargetName="CardDataStackPanel" Property="DockPanel.Dock" Value="Left" />
-                        </MultiDataTrigger.Setters>
-                    </MultiDataTrigger>
-
-                    <DataTrigger Binding="{Binding IsActiveStep}" Value="True">
-                        <Setter TargetName="StepImage" Property="Visibility" Value="Visible"/>
-                        <Setter TargetName="StepImage" Property="Height" Value="{Binding ElementName=CardDataDockPanel, Path=ActualHeight, Converter={StaticResource TwoThirdValue}}"/>
-                        <Setter TargetName="StepImage" Property="Width" Value="{Binding ElementName=CardDataDockPanel, Path=ActualWidth}, Converter={StaticResource TwoThirdValue}"/>
-                    </DataTrigger>
-
-                </DataTemplate.Triggers>
-
-            </DataTemplate>
 
             <CustomControls:FirstDegreeFunctionConverter x:Key="AddOneToValue" 
                                                          A="1" 
@@ -134,51 +25,143 @@
             <CustomControls:FirstDegreeFunctionConverter x:Key="OneThirdValue"
                                                          A=".3333"
                                                          B="0"/>
-
             <CustomControls:FirstDegreeFunctionConverter x:Key="TwoThirdValue"
                                                          A=".6"
                                                          B="0"/>
+            <CustomControls:FirstDegreeFunctionConverter x:Key="AutoFontSizer"
+                                                         A=".08"
+                                                         B="0"/>
 
-            <!-- ItemContainerStyle with the Trigger for Selected -->
-            <Style x:Key="ListBoxItemCardStyler"
-                   TargetType="{x:Type ListBoxItem}">
-
-                <Setter Property="Template">
-                    <Setter.Value>
-                        <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                            <CustomControls:FloatingGrid x:Name="FloatingGridContentHost"
-                                                         Cursor="Hand">
-                                <CustomControls:FloatingGrid.RenderTransform>
-                                    <TranslateTransform/>
-                                </CustomControls:FloatingGrid.RenderTransform>
-
-
-                                <Border CornerRadius="5"
-                                        BorderThickness="1"
-                                        BorderBrush="#444"
-                                        x:Name="CardBorder"
-                                        VerticalAlignment="Stretch"
-                                        HorizontalAlignment="Stretch">
-
-                                    <Border.Background>
-                                        <LinearGradientBrush EndPoint="0.5,2" StartPoint="3,0">
-                                            <GradientStop Color="#FFAEAEAE" Offset="0.6"/>
-                                            <GradientStop Color="#FE6A6A6A" Offset="1.2"/>
-                                        </LinearGradientBrush>
-                                    </Border.Background>
-                                    <Border.BitmapEffect>
-                                        <BlurBitmapEffect Radius="1" KernelType="Gaussian"/>
-                                    </Border.BitmapEffect>
-
-                                    <ContentPresenter x:Name="CardContentPresenter"
-                                                      ContentTemplate="{StaticResource ListItemDataTemplate}"/>
-                                </Border>
-                            </CustomControls:FloatingGrid>
-                        </ControlTemplate>
-                    </Setter.Value>
-                </Setter>
+            <Style x:Key="LabelStyler" TargetType="{x:Type Label}">
+                <Setter Property="FontFamily" Value="Consolas"/>
+                <Setter Property="FontSize" Value="16"/>
             </Style>
 
+
+            <DataTemplate x:Key="ListItemDataTemplate">
+                <Border CornerRadius="12"
+                        BorderThickness="2"
+                        BorderBrush="#432"
+                        ClipToBounds="False"
+                        x:Name="CardBorder"
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Stretch"
+                        UseLayoutRounding="True">
+
+                    <Border.Background>
+                        <LinearGradientBrush EndPoint="0.5,2" StartPoint="3,0">
+                            <GradientStop Color="#999" Offset="0.7"/>
+                            <GradientStop Color="#fff" Offset="1.1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    
+                    <Border.BitmapEffect>
+                        <BlurBitmapEffect Radius="1" KernelType="Gaussian"/>
+                    </Border.BitmapEffect>
+
+                    <DockPanel x:Name="CardDataDockPanel"
+                           LastChildFill="True"
+                           SnapsToDevicePixels="True">
+                        <DockPanel.RenderTransform>
+                            <ScaleTransform/>
+                        </DockPanel.RenderTransform>
+
+                        <StackPanel x:Name="CardDataStackPanel"
+                                DockPanel.Dock="Left"
+                                VerticalAlignment="Stretch"
+                                HorizontalAlignment="Stretch"
+                                Margin="5"
+                                UseLayoutRounding="True">
+
+                            <TextBlock Text="{Binding StepTitle}"
+                                       FontFamily="Consolas"
+                                       FontSize="14"
+                                       x:Name="StepTitle"
+                                       ClipToBounds="True"
+                                       UseLayoutRounding="True"
+                                       TextTrimming="CharacterEllipsis">
+                                <TextBlock.LayoutTransform>
+                                    <TransformGroup>
+                                        <RotateTransform Angle="90" 
+                                                     CenterX="0.5" 
+                                                     CenterY="0.5"/>
+                                    </TransformGroup>
+                                </TextBlock.LayoutTransform>
+                            </TextBlock>
+
+                            <TextBlock Text="{Binding StepStatus}"
+                                    FontFamily="Consolas"
+                                    FontSize="14"
+                                    x:Name="StepStatus"
+                                    UseLayoutRounding="True">
+                            </TextBlock>
+
+                            <TextBlock Text="{Binding StepActiveTime}"
+                                   FontFamily="Consolas"
+                                   FontSize="14"
+                                   x:Name="StepActiveTime"
+                                   UseLayoutRounding="True">
+                            </TextBlock>
+                        </StackPanel>
+
+                        <Image Source="{Binding StepImage}"
+                          x:Name="StepImage"
+                          Visibility="Collapsed"
+                          Stretch="Uniform"
+                          Height="0"
+                          Width="0"
+                          UseLayoutRounding="True"/>
+
+                    </DockPanel>
+                </Border>
+
+                <DataTemplate.Triggers>
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding IsActiveStep}" Value="False"/>
+                            <Condition Binding="{Binding StepComplete}" Value="False"/>
+                        </MultiDataTrigger.Conditions>
+                        <MultiDataTrigger.Setters>
+                            <Setter TargetName="StepTitle" Property="TextBlock.FontSize" Value="10"/>
+                            <Setter TargetName="StepStatus" Property="Visibility" Value="Collapsed"/>
+                            <Setter TargetName="StepActiveTime" Property="Visibility" Value="Collapsed"/>
+                            <Setter TargetName="StepImage" Property="Visibility" Value="Collapsed"/>
+                            <Setter TargetName="StepImage" Property="Height" Value="0"/>
+                            <Setter TargetName="StepImage" Property="Width" Value="0"/>
+                            <Setter TargetName="CardDataStackPanel" Property="DockPanel.Dock" Value="Right"/>
+                        </MultiDataTrigger.Setters>
+                    </MultiDataTrigger>
+
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding IsActiveStep}" Value="False"/>
+                            <Condition Binding="{Binding StepComplete}" Value="True"/>
+                        </MultiDataTrigger.Conditions>
+                        <MultiDataTrigger.Setters>
+                            <Setter TargetName="StepTitle" Property="TextBlock.FontSize" Value="10"/>
+                            <Setter TargetName="StepStatus" Property="Visibility" Value="Collapsed"/>
+                            <Setter TargetName="StepActiveTime" Property="Visibility" Value="Collapsed"/>
+                            <Setter TargetName="StepImage" Property="Visibility" Value="Collapsed"/>
+                            <Setter TargetName="StepImage" Property="Height" Value="0"/>
+                            <Setter TargetName="StepImage" Property="Width" Value="0"/>
+                            <Setter TargetName="CardDataStackPanel" Property="DockPanel.Dock" Value="Left" />
+                        </MultiDataTrigger.Setters>
+                    </MultiDataTrigger>
+
+                    <DataTrigger Binding="{Binding IsActiveStep}" Value="True">
+                        <Setter TargetName="StepTitle" Property="LayoutTransform">
+                            <Setter.Value>
+                                <RotateTransform Angle="0"/>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter TargetName="StepImage" Property="Visibility" Value="Visible"/>
+                        <Setter TargetName="StepImage" Property="Height" Value="{Binding ElementName=CardDataDockPanel, Path=ActualHeight, Converter={StaticResource TwoThirdValue}}"/>
+                        <Setter TargetName="StepImage" Property="Width" Value="{Binding ElementName=CardDataDockPanel, Path=ActualWidth, Converter={StaticResource TwoThirdValue}}"/>
+                    </DataTrigger>
+
+                </DataTemplate.Triggers>
+
+            </DataTemplate>
 
         </ResourceDictionary>
     </UserControl.Resources>
@@ -188,28 +171,150 @@
     </UserControl.DataContext>
 
     <Grid x:Name="TopPanelGrid"
-          HorizontalAlignment="Center"
+          HorizontalAlignment="Stretch"
           VerticalAlignment="Stretch">
 
         <Grid.RowDefinitions>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="*" MinHeight="120"/>
+            <RowDefinition Height="3*" MinHeight="220"/>
+            <RowDefinition Height="2*" MinHeight="120"/>
         </Grid.RowDefinitions>
 
         <DockPanel LastChildFill="True"
-                   VerticalAlignment="Stretch"
                    Background="#555">
 
-            <userControls:ProcessContainerView DockPanel.Dock="Left"
-                                               MinWidth="15">
-                
-            </userControls:ProcessContainerView>
 
+            <StackPanel Background="Gray"
+                VerticalAlignment="Stretch"
+                HorizontalAlignment="Right">
+                <Viewbox Stretch="Uniform" StretchDirection="DownOnly">
+                    <Border BorderBrush="#333"
+                BorderThickness="2"
+                Margin="5">
+                        <UniformGrid VerticalAlignment="Center"
+                     HorizontalAlignment="Center"
+                     Columns="2">
+                            <Label Content="Zone: "
+                   Style="{StaticResource LabelStyler}"/>
+                            <Label Content="{Binding ProcessLocation}"
+                   Style="{StaticResource LabelStyler}"/>
+                            <Label Content="Program: "
+                   Style="{StaticResource LabelStyler}"/>
+                            <Label Content="{Binding ProgramName}"
+                   Style="{StaticResource LabelStyler}"/>
+                            <Label Content="Cycle Count: "
+                   Style="{StaticResource LabelStyler}"/>
+                            <Label Content="{Binding CycleCount}"
+                   Style="{StaticResource LabelStyler}"/>
+                            <Label Content="Cycle Time: "
+                   Style="{StaticResource LabelStyler}"/>
+                            <Label Content="{Binding CycleTime}"
+                   Style="{StaticResource LabelStyler}"/>
+                        </UniformGrid>
+                    </Border>
+                </Viewbox>
+
+                <DockPanel LastChildFill="False"
+                   HorizontalAlignment="Center"
+                   Margin="5"
+                   Grid.Column="1">
+
+                    <Button x:Name="PlayButton"
+                    Command="{Binding PlayButton}"
+                    Background="Transparent"
+                    BorderThickness="1">
+                        <Button.Template>
+                            <ControlTemplate>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding PlayBackRunning}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+
+                                </ControlTemplate.Triggers>
+                                <Border x:Name="PlayButtonBorder" 
+                        BorderBrush="DimGray" 
+                        BorderThickness="2" 
+                        Padding="0">
+                                    <Grid Height="32" Width="32">
+                                        <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center">
+                                            <Path Fill="#FF239118">
+                                                <Path.Stroke>
+                                                    <LinearGradientBrush EndPoint="0,0" StartPoint="1,1">
+                                                        <GradientStop Color="#FF215D0A" Offset="1"/>
+                                                        <GradientStop Color="#FF239118"/>
+                                                    </LinearGradientBrush>
+                                                </Path.Stroke>
+                                                <Path.Data>
+                                                    <PathGeometry>
+                                                        <PathGeometry.Figures>
+                                                            <PathFigureCollection>
+                                                                <PathFigure IsClosed="True" StartPoint="0,0" IsFilled="True">
+                                                                    <PathFigure.Segments>
+                                                                        <PathSegmentCollection>
+                                                                            <LineSegment Point="0,24" />
+                                                                            <LineSegment Point="19,12" />
+                                                                        </PathSegmentCollection>
+                                                                    </PathFigure.Segments>
+                                                                </PathFigure>
+                                                            </PathFigureCollection>
+                                                        </PathGeometry.Figures>
+                                                    </PathGeometry>
+                                                </Path.Data>
+                                            </Path>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+
+                    <Button x:Name="PauseButton"
+                    Command="{Binding PauseButton}"
+                    Background="Transparent"
+                    BorderThickness="1">
+                        <Button.Template>
+                            <ControlTemplate>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding PlayBackRunning}" Value="false">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+
+                                </ControlTemplate.Triggers>
+                                <Border x:Name="PauseButtonBorder" 
+                        BorderBrush="DimGray" 
+                        BorderThickness="2" 
+                        Padding="0">
+                                    <Grid Width="32" Height="32" >
+                                        <StackPanel Orientation="Horizontal"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center">
+                                            <Rectangle Width="8"
+                                       Fill="#c00"
+                                       Height="25"/>
+                                            <Rectangle Width="3"
+                                       Fill="Transparent"
+                                       Height="25"/>
+                                            <Rectangle Width="8"
+                                       Fill="#c00"
+                                       Height="25"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </ControlTemplate>
+                        </Button.Template>
+                    </Button>
+                </DockPanel>
+            </StackPanel>
+
+            <!--<userControls:ProcessContainerView DockPanel.Dock="Left"
+                                               MinWidth="15"/>-->
 
             <StackPanel Orientation="Horizontal"
                         DockPanel.Dock="Bottom"
-                        HorizontalAlignment="Center"
-                        Background="AntiqueWhite">
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"
+                        Background="#ccc">
                 <Label Content="Program Step: " 
                        Style="{StaticResource LabelStyler}"/>
                 <Label Content="{Binding ElementName=CardDeckListBox, Converter={StaticResource AddOneToValue}, Path=SelectedIndex}"
@@ -221,13 +326,12 @@
             </StackPanel>
 
             <Viewbox HorizontalAlignment="Center"
-                     VerticalAlignment="Top"
+                     VerticalAlignment="Center"
                      Stretch="Uniform"
-                     DockPanel.Dock="Left"
-                     >
+                     DockPanel.Dock="Top"
+                     StretchDirection="DownOnly">
             <Image Source="{Binding ProcessDisplay}"
-                   Margin="5"
-                   />
+                   Margin="5"/>
             </Viewbox>
         </DockPanel>
 
@@ -238,25 +342,33 @@
                  DockPanel.Dock="Bottom"
                  VerticalAlignment="Stretch"
                  SelectedIndex="{Binding CurrentIndex}"
-                 ItemContainerStyle="{DynamicResource ListBoxItemCardStyler}"
                  Background="Violet"
-                 Grid.Row="1">
+                 Grid.Row="1"
+                 IsHitTestVisible="False">
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <CustomControls:CarouselPanel IsItemsHost="True"
-                                                  x:Name="CarouselPanelItemHost">
-                        <CustomControls:CarouselPanel.Triggers>
-                            
-                        </CustomControls:CarouselPanel.Triggers>
-                    </CustomControls:CarouselPanel>
+                    <CustomControls:CarouselPanel IsItemsHost="True"/>
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
+
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="{x:Type ListBoxItem}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                <ContentPresenter ContentTemplate="{StaticResource ListItemDataTemplate}"/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            
             <ListBox.Template>
                 <ControlTemplate TargetType="{x:Type ListBox}">
                     <Grid VerticalAlignment="Bottom">
                         <ItemsPresenter/>
 
-
+            
                     </Grid>
                 </ControlTemplate>
             </ListBox.Template>
@@ -266,6 +378,5 @@
             </ListBox.Resources>
 
         </ListBox>
-
     </Grid>
 </UserControl>

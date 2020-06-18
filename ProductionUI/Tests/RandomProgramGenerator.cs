@@ -7,6 +7,8 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
@@ -17,20 +19,10 @@ using System.Windows.Resources;
 
 namespace ProductionUI.Tests
 {
-    class RandomProgramGenerator
+    public class RandomProgramGenerator
     {
-        ProcessContainerViewModel _processContainerViewModel;
         ProductionCardDeckModel _productionCardDeckModel;
-
-        public ProcessContainerViewModel GenerateRandom(ProcessContainerViewModel processContainerViewModel)
-        {
-            _processContainerViewModel = processContainerViewModel;
-
-            _processContainerViewModel.ProcessLocation = ProcessLocation;
-            _processContainerViewModel.ProgramName = ProgramName;
-            
-            return _processContainerViewModel;
-        }
+        ProductionCardDeckViewModel _productionCardDeckViewModel;
 
         public ProductionCardDeckModel GenerateRandom(ProductionCardDeckModel productionCardDeckModel)
         {
@@ -46,8 +38,8 @@ namespace ProductionUI.Tests
                 "Part Presense Check"
             };
             _productionCardDeckModel = productionCardDeckModel;
-            
-            int randSize = new Random().Next(30, 120);
+
+            int randSize = new Random().Next(250, 1200);
             BitmapImage image;//= new BitmapImage(new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative));
             image = new BitmapImage(new Uri("/Tests/TestImages/PCB5.bmp", UriKind.Relative));
 
@@ -81,6 +73,26 @@ namespace ProductionUI.Tests
             }
 
             return _productionCardDeckModel;
+        }
+
+        public ProductionCardDeckViewModel GenerateRandom(ProductionCardDeckViewModel productionCardDeckViewModel)
+        {
+            _productionCardDeckViewModel = productionCardDeckViewModel;
+            _productionCardDeckViewModel.ProcessLocation = ProcessLocation;
+            _productionCardDeckViewModel.ProgramName = ProgramName;
+            return _productionCardDeckViewModel;
+        }
+
+        public async void RunRandomProgram(ProductionCardDeckViewModel productionCardDeckViewModel)
+        {
+            for (int i = 0; i < productionCardDeckViewModel.ProductionDeck.Count - 1; i++)
+            {
+                while (!productionCardDeckViewModel.PlayBackRunning)
+                {
+                }
+                await Task.Delay(TimeSpan.FromSeconds(new Random().Next(0, 4) + new Random().NextDouble()));
+                productionCardDeckViewModel.CurrentIndex++;
+            }
         }
 
         private string ProcessLocation

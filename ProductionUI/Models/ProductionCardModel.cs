@@ -19,7 +19,7 @@ namespace ProductionUI.Models
                                     string stepActiveTime = "0",
                                     string stepDataLog = "No Data",
                                     string stepPointData = "PolyLine ... ",
-                                    string stepStatus = "Waiting...")
+                                    string stepStatus = "Running")
         {
 
        //    _dispatchTimer = new DispatcherTimer

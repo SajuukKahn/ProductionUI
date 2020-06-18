@@ -9,8 +9,10 @@
         Background="DarkGray"
         WindowStyle="ThreeDBorderWindow"
         WindowState="Normal"
-        SizeToContent="WidthAndHeight"
+        SizeToContent="Manual"
         WindowStartupLocation="CenterOwner"
+        Width="722"
+        Height="531"
         ResizeMode="CanResize">
 
     <local:ProductionCardDeckView />

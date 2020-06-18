@@ -21,7 +21,7 @@ namespace ProductionUI.CustomControls
 
             double x = FirstDegreeFunction(value, 0.0);
 
-            return (a * x) + B;
+            return Math.Round((a * x) + B);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -30,7 +30,7 @@ namespace ProductionUI.CustomControls
 
             double y = FirstDegreeFunction(value, 0.0);
 
-            return (y - B) / a;
+            return Math.Round((y - B) / a);
         }
 
         private double FirstDegreeFunction(object parameter, double defaultValue)
