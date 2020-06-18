@@ -29,7 +29,7 @@ namespace ProductionUI.ViewModels
             handler?.Invoke(this, e);
         }
 
-        public static bool PlayBackIsRunning = true;
+        public static bool PlayBackIsRunning = false;
         
         public ICommand PlayButton { get; set; }
         public ICommand PauseButton { get; set; }
@@ -44,7 +44,6 @@ namespace ProductionUI.ViewModels
             set
             {
                 _playBackRunning = value;
-                PlayBackIsRunning = value;
                 OnPropertyChanged("PlayBackRunning");
             }
         }
@@ -119,12 +118,12 @@ namespace ProductionUI.ViewModels
 
         private void PausePressed()
         {
-            PlayBackIsRunning ^= true;
+            PlayBackIsRunning = false;
         }
 
         private void PlayPressed()
         {
-            PlayBackIsRunning ^= true;
+            PlayBackIsRunning = true;
         }
     }
 }

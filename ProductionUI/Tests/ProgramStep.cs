@@ -20,7 +20,6 @@
             _displayMessage = displayMessage;
             _numberOfIndices = numberofindices;
             _vm = vm;
-
         }
 
         public string StepName

@@ -100,12 +100,12 @@ namespace ProductionUI.ViewModels
                         _productionDeck[j].StepComplete = false;
                     }
                     _productionDeck[j].IsActiveStep = false;
-                    _productionDeck[j].StopCardTimer();
+                 //   _productionDeck[j].StopCardTimer();
                 }
 
                 _productionDeck[value].IsActiveStep = true;
                 _productionDeck[value].StepComplete = false;
-                _productionDeck[value].StartCardTimer();
+              //  _productionDeck[value].StartCardTimer();
             }
 
             return value;
@@ -115,6 +115,7 @@ namespace ProductionUI.ViewModels
         {
             ProductionDeck = new RandomProgramGenerator().GenerateRandom(_productionDeck);
             ProcessDisplay = new BitmapImage(new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative));
+            NextCard(0);
         }
 
     }

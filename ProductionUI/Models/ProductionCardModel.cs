@@ -22,19 +22,19 @@ namespace ProductionUI.Models
                                     string stepStatus = "Waiting...")
         {
 
-            _dispatchTimer = new DispatcherTimer
-            {
-                IsEnabled = true,
-                Interval = TimeSpan.FromMilliseconds(1)
-            };
-            _dispatchTimer.Tick += Tick;
-            ResetRunTime();
+       //    _dispatchTimer = new DispatcherTimer
+       //    {
+       //        IsEnabled = true,
+       //        Interval = TimeSpan.FromMilliseconds(1)
+       //    };
+       //    _dispatchTimer.Tick += Tick;
+       //    ResetRunTime();
 
             StepImage = imageSource;
             IsActiveStep = isActiveStep;
             StepComplete = stepComplete;
             StepActiveTime = stepActiveTime;
-            StepDataDisplay = stepDataLog;
+            StepTitle = stepDataLog;
             StepStatus = stepStatus;
             StepDataLog = stepPointData;
         }
@@ -47,17 +47,17 @@ namespace ProductionUI.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
-        private string _stepDataDisplay;
-        public string StepDataDisplay
+        private string _stepTitle;
+        public string StepTitle
         {
             get
             {
-                return _stepDataDisplay;
+                return _stepTitle;
             }
             set
             {
-                _stepDataDisplay = value;
-                OnPropertyChanged("StepDataDisplay");
+                _stepTitle = value;
+                OnPropertyChanged("StepTitle");
             }
         }
 
@@ -159,15 +159,15 @@ namespace ProductionUI.Models
             {
                 _isActiveStep = value;
                 OnPropertyChanged("IsActiveStep");
-                if (value == false)
-                {
-                    _dispatchTimer.Stop();
-                }
-                else
-                {
-                    ResetRunTime();
-                    _dispatchTimer.Start();
-                }
+               // if (value == false)
+               // {
+               //     _dispatchTimer.Stop();
+               // }
+               // else
+               // {
+               //     ResetRunTime();
+               //     _dispatchTimer.Start();
+               // }
             }
         }
 
@@ -199,37 +199,37 @@ namespace ProductionUI.Models
             }
         }
 
-        private readonly DispatcherTimer _dispatchTimer;
-
-        private DateTime _startTime;
-
-
-        public void StopCardTimer()
-        {
-            _dispatchTimer.Stop();
-        }
-
-        public void StartCardTimer()
-        {
-            ResetRunTime();
-            _dispatchTimer.Start();
-        }
-
-        public void ResetRunTime()
-        {
-            _startTime = System.DateTime.Now;
-        }
-
-        private void Tick(object sender, EventArgs e)
-        {
-            StepActiveTime = Convert.ToString(DateTime.Now - _startTime);
-        }
-
-        ~ProductionCardModel()
-        {
-            _dispatchTimer.Stop();
-            _dispatchTimer.IsEnabled = false;
-        }
+      //  private readonly DispatcherTimer _dispatchTimer;
+      //
+      //  private DateTime _startTime;
+      //
+      //
+      //  public void StopCardTimer()
+      //  {
+      //      _dispatchTimer.Stop();
+      //  }
+      //
+      //  public void StartCardTimer()
+      //  {
+      //      ResetRunTime();
+      //      _dispatchTimer.Start();
+      //  }
+      //
+      //  public void ResetRunTime()
+      //  {
+      //      _startTime = System.DateTime.Now;
+      //  }
+      //
+      //  private void Tick(object sender, EventArgs e)
+      //  {
+      //      StepActiveTime = Convert.ToString(DateTime.Now - _startTime);
+      //  }
+      //
+      //  ~ProductionCardModel()
+      //  {
+      //      _dispatchTimer.Stop();
+      //      _dispatchTimer.IsEnabled = false;
+      //  }
 
     }
 }

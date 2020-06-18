@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace ProductionUI
+namespace ProductionUI.Views
 {
     /// <summary>
     /// Interaction logic for WindowContainer.xaml
     /// </summary>
-    public partial class WindowContainer : Window
+    public partial class ProcessUIMainWindow : Window
     {
-        public WindowContainer()
+        public ProcessUIMainWindow()
         {
             InitializeComponent();
         }

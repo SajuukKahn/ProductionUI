@@ -19,6 +19,21 @@
             <Setter Property="FontSize" Value="16"/>
         </Style>
 
+        <ControlTemplate x:Key="Template1">
+            <ControlTemplate.Triggers>
+                <EventTrigger RoutedEvent="MouseEnter">
+                    <BeginStoryboard>
+
+                    </BeginStoryboard>
+                </EventTrigger>
+
+                <EventTrigger RoutedEvent="MouseLeave">
+                    <BeginStoryboard>
+
+                    </BeginStoryboard>
+                </EventTrigger>
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
     </UserControl.Resources>
 
     <StackPanel Background="Gray"
@@ -45,21 +60,73 @@
             <Label Content="{Binding CycleTime}"/>
         </UniformGrid>
 
-        <DockPanel LastChildFill="False"
-                   HorizontalAlignment="Center"
-                   Margin="25">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
-            <Button x:Name="PlayButton"
+            <Label Content="Playback: "
+                   VerticalAlignment="Center"
+                   HorizontalAlignment="Right"/>
+
+            <DockPanel LastChildFill="False"
+                   HorizontalAlignment="Left"
+                   Margin="5"
+                   Grid.Column="1">
+
+                <Button x:Name="PlayButton"
                     Command="{Binding PlayButton}"
                     MinWidth="40"
                     Background="Transparent"
-                    BorderThickness="0">
+                    BorderThickness="1">
                 <Button.Template>
                     <ControlTemplate>
                         <ControlTemplate.Triggers>
                             <DataTrigger Binding="{Binding PlayBackRunning}" Value="False">
                                 <Setter Property="Visibility" Value="Collapsed"/>
                             </DataTrigger>
+                            
+                            
+                            <EventTrigger RoutedEvent="MouseEnter">
+                                <BeginStoryboard x:Name="PlayButtonMouseEnterAnimation">
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty=""
+                                                         Duration="00:00:00.25"
+                                                         To="1.1">
+                                            <DoubleAnimation.EasingFunction>
+                                                <SineEase EasingMode="EaseInOut"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                                         Duration="00:00:00.25"
+                                                         To="1.1">
+
+                                            <DoubleAnimation.EasingFunction>
+                                                <SineEase EasingMode="EaseInOut"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            
+                            <EventTrigger RoutedEvent="MouseLeave">
+
+                                <BeginStoryboard x:Name="PlayButtonMouseExitAnimation">
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Y"
+                                                         Duration="00:00:00.25"
+                                                         To="1">
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetProperty="RenderTransform.X"
+                                                         Duration="00:00:00.25"
+                                                         To="1">
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+
+
                         </ControlTemplate.Triggers>
                         <StackPanel Orientation="Horizontal"
                                     HorizontalAlignment="Center"
@@ -93,37 +160,64 @@
                 </Button.Template>
             </Button>
 
-            <Button x:Name="PauseButton"
+                <Border x:Name="PauseButtonBorder" 
+                        BorderBrush="DimGray" 
+                        BorderThickness="2" 
+                        Padding="0,6">
+                    <Button x:Name="PauseButton"
                     Command="{Binding PauseButton}"
                     MinWidth="40"
                     Background="Transparent"
-                    BorderThickness="0">
-                <Button.Template>
-                    <ControlTemplate>
-                        <ControlTemplate.Triggers>
-                            <DataTrigger Binding="{Binding PlayBackRunning}" Value="True">
-                                <Setter Property="Visibility" Value="Collapsed"/>
-                            </DataTrigger>
-                        </ControlTemplate.Triggers>
-                        <StackPanel Orientation="Horizontal"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center">
-                            <Rectangle Width="8"
-                                   Fill="#c00"
-                                   Height="25"/>
-                            <Rectangle Width="3"
-                                   Fill="Transparent"
-                                   Height="25"/>
-                            <Rectangle Width="8"
-                                   Fill="#c00"
-                                   Height="25"/>
-                        </StackPanel>
+                    BorderThickness="1">
+                    <Button.RenderTransform>
+                            <ScaleTransform CenterX="0.5"
+                                    CenterY="0.5"/>
+                    </Button.RenderTransform>
+                    <Button.Template>
+                        <ControlTemplate>
+                            <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding PlayBackRunning}" Value="True">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
 
-                    </ControlTemplate>
-                </Button.Template>
-            </Button>
-        </DockPanel>
+                                    <EventTrigger RoutedEvent="MouseLeave">
 
+                                        <BeginStoryboard x:Name="PauseButtonMouseExitAnimation">
+                                            <Storyboard>
+                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleY"
+                                                             Duration="00:00:00.25"
+                                                             To="1">
+                                                </DoubleAnimation>
+                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.ScaleX"
+                                                             Duration="00:00:00.25"
+                                                             To="1">
+                                                </DoubleAnimation>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+
+                                </ControlTemplate.Triggers>
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center">
+                                <Rectangle Width="8"
+                                       Fill="#c00"
+                                       Height="25"/>
+                                <Rectangle Width="3"
+                                       Fill="Transparent"
+                                       Height="25"/>
+                                <Rectangle Width="8"
+                                       Fill="#c00"
+                                       Height="25"/>
+                            </StackPanel>
+
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+                </Border>
+            </DockPanel>
+
+        </Grid>
         
     </StackPanel>
 </UserControl>

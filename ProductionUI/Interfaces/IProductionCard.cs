@@ -10,7 +10,7 @@ namespace ProductionUI.Interfaces
 {
     interface IProductionCard
     {
-        public string StepDataDisplay { get; set; }
+        public string StepTitle { get; set; }
         public string StepActiveTime { get; set; }
         public string StepStatus { get; set; }
         public string StepDataLog { get; set; }

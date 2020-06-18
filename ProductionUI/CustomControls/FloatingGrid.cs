@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -12,24 +13,20 @@ namespace ProductionUI.CustomControls
         private readonly TranslateTransform _translation = new TranslateTransform();
         private readonly Storyboard _animation = new Storyboard();
         private readonly DoubleAnimation _animateX;
-        private readonly DoubleAnimation _animateY;
         private double _lastGoingToX = 0;
-        private double _lastGoingToY = 0;
-
-        private static bool _inAnimation = false;
 
         public FloatingGrid()
         {
             LayoutUpdated += This_LayoutUpdated;
             RenderTransform = _translation;
 
-            _animateX = new DoubleAnimation(0, new Duration(TimeSpan.FromSeconds(.1)));
+            _animateX = new DoubleAnimation(0, new Duration(TimeSpan.FromSeconds(.2)));
             Storyboard.SetTargetProperty(_animateX, new PropertyPath("(0).(1)", new[] { RenderTransformProperty, TranslateTransform.XProperty }));
-            _animation.Children.Append(_animateX);
+            SineEase sineEase = new SineEase();
+            sineEase.EasingMode = EasingMode.EaseOut;
+            _animateX.EasingFunction = sineEase;
+            _animation.Children.Add(_animateX);
 
-            _animateY = new DoubleAnimation(0, new Duration(TimeSpan.FromSeconds(.1)));
-            Storyboard.SetTargetProperty(_animateY, new PropertyPath("(0).(1)", new[] { RenderTransformProperty, TranslateTransform.YProperty }));
-            _animation.Children.Append(_animateY);
         }
 
         private Visual FindPanel(Visual visual)
@@ -46,34 +43,20 @@ namespace ProductionUI.CustomControls
 
         private void This_LayoutUpdated(object sender, EventArgs e)
         {
-            if (_inAnimation == false)
-            {
-                _inAnimation = true;
-                AnimateLayout();
-                _inAnimation = false;
-            }
-        }
-
-        private void AnimateLayout()
-        {
-
             //_animation.Stop(this);
 
             var panel = FindPanel(this);
-            if (panel == null) return;
+            if (panel == null) return; 
 
             var comingFromX = _lastGoingToX + _translation.X;
-            var comingFromY = _lastGoingToY + _translation.Y;
 
             var transform = (Transform)TransformToAncestor(panel);
             var goingToX = transform.Value.OffsetX - _translation.X;
             _animateX.From = comingFromX - goingToX;
             _lastGoingToX = goingToX;
-            var goingToY = transform.Value.OffsetY - _translation.Y;
-            _animateY.From = comingFromY - goingToY;
-            _lastGoingToY = goingToY;
-            _animation.Begin(this, HandoffBehavior.SnapshotAndReplace, false);
-            //_animation.Begin(this, HandoffBehavior.Compose, true);
+            _animation.Begin(this, HandoffBehavior.SnapshotAndReplace, true);
+
+
         }
     }
 }

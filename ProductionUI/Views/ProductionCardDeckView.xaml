@@ -6,49 +6,60 @@
              xmlns:vm="clr-namespace:ProductionUI.ViewModels"
              xmlns:CustomControls="clr-namespace:ProductionUI.CustomControls" 
              xmlns:userControls="clr-namespace:ProductionUI.Views"
+             xmlns:local="clr-namespace:ProductionUI"
              mc:Ignorable="d"
              Height="auto"
-             MaxWidth="800"
+             MaxWidth="1200"
              VerticalContentAlignment="Stretch"
              VerticalAlignment="Bottom">
 
     <UserControl.Resources>
         <ResourceDictionary>
 
+            <Style x:Key="LabelStyler" TargetType="{x:Type Label}">
+                <Setter Property="FontFamily" Value="Segoe UI Bold"/>
+                <Setter Property="FontSize" Value="14"/>
+            </Style>
+            
             <DataTemplate x:Key="ListItemDataTemplate">
                 <DockPanel x:Name="CardDataDockPanel"
-                           Margin="0"
-                           HorizontalAlignment="Stretch"
-                           VerticalAlignment="Stretch"
-                           LastChildFill="False"
+                           LastChildFill="True"
                            SnapsToDevicePixels="True">
                     <DockPanel.RenderTransform>
                         <ScaleTransform/>
                     </DockPanel.RenderTransform>
-                    
-
 
                     <StackPanel x:Name="CardDataStackPanel"
                                 DockPanel.Dock="Left"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Center"
-                                Margin="5">
+                                Margin="5"
+                                UseLayoutRounding="True">
 
-                        <TextBlock Text="{Binding StepDataDisplay}"
-                                   x:Name="StepDataDisplay">
-                            <TextBlock.RenderTransform>
+                        <TextBlock Text="{Binding StepTitle}"
+                                   FontFamily="Segoe UI Bold"
+                                   FontSize="14"
+                                   x:Name="StepTitle"
+                                   UseLayoutRounding="True">
+                            <TextBlock.LayoutTransform>
                                 <TransformGroup>
                                     <RotateTransform Angle="0" 
                                                      CenterX="0.5" 
                                                      CenterY="0.5"/>
                                 </TransformGroup>
-                            </TextBlock.RenderTransform>
+                            </TextBlock.LayoutTransform>
                         </TextBlock>
                         <TextBlock Text="{Binding StepStatus}"
-                                   x:Name="StepStatus">
+                                   FontFamily="Segoe UI Bold"
+                                   FontSize="14"
+                                   x:Name="StepStatus"
+                                   UseLayoutRounding="True">
                         </TextBlock>
                         <TextBlock Text="{Binding StepActiveTime}"
-                                   x:Name="StepActiveTime">
+                                   FontFamily="Segoe UI Bold"
+                                   FontSize="14"
+                                   x:Name="StepActiveTime"
+                                   UseLayoutRounding="True">
                         </TextBlock>
                     </StackPanel>
 
@@ -57,10 +68,9 @@
                           x:Name="StepImage"
                           Visibility="Collapsed"
                           Stretch="Uniform"
-                          VerticalAlignment="Center"
                           Height="0"
                           Width="0"
-                          HorizontalAlignment="Center"/>
+                          UseLayoutRounding="True"/>
 
                 </DockPanel>
 
@@ -71,7 +81,7 @@
                             <Condition Binding="{Binding StepComplete}" Value="False"/>
                         </MultiDataTrigger.Conditions>
                         <MultiDataTrigger.Setters>
-                            <Setter TargetName="StepDataDisplay" Property="LayoutTransform">
+                            <Setter TargetName="StepTitle" Property="LayoutTransform">
                                 <Setter.Value>
                                     <RotateTransform Angle="90"/>
                                 </Setter.Value>
@@ -91,7 +101,7 @@
                             <Condition Binding="{Binding StepComplete}" Value="True"/>
                         </MultiDataTrigger.Conditions>
                         <MultiDataTrigger.Setters>
-                            <Setter TargetName="StepDataDisplay" Property="LayoutTransform">
+                            <Setter TargetName="StepTitle" Property="LayoutTransform">
                                 <Setter.Value>
                                     <RotateTransform Angle="90"/>
                                 </Setter.Value>
@@ -105,40 +115,11 @@
                         </MultiDataTrigger.Setters>
                     </MultiDataTrigger>
 
-                    <DataTrigger Binding="{Binding ElementName=CardDeckListBox, Path=IsSelected}" Value="True">
+                    <DataTrigger Binding="{Binding IsActiveStep}" Value="True">
                         <Setter TargetName="StepImage" Property="Visibility" Value="Visible"/>
-                        <Setter TargetName="StepImage" Property="Height" Value="128"/>
-                        <Setter TargetName="StepImage" Property="Width" Value="128"/>
+                        <Setter TargetName="StepImage" Property="Height" Value="{Binding ElementName=CardDataDockPanel, Path=ActualHeight, Converter={StaticResource TwoThirdValue}}"/>
+                        <Setter TargetName="StepImage" Property="Width" Value="{Binding ElementName=CardDataDockPanel, Path=ActualWidth}, Converter={StaticResource TwoThirdValue}"/>
                     </DataTrigger>
-
-
-
-                    <!--<MultiDataTrigger>
-                        <MultiDataTrigger.Conditions>
-                            <Condition Binding="{Binding IsActiveStep}" Value="False"/>
-                            <Condition Binding="{Binding ElementName=CardDataDockPanel, Path=IsMouseOver}" Value="True"/>
-                        </MultiDataTrigger.Conditions>
-                        <MultiDataTrigger.EnterActions>
-                            <BeginStoryboard x:Name="ListBoxItemHoverStoryBoard">
-                                <Storyboard>
-                                    <DoubleAnimation Storyboard.TargetName="CardDataDockPanel"
-                                                     Storyboard.TargetProperty="RenderTransform.ScaleX"
-                                                     Duration="00:00:00.01"
-                                                     To="1.1"/>
-                                    <DoubleAnimation Storyboard.TargetName="CardDataDockPanel"
-                                                     Storyboard.TargetProperty="RenderTransform.ScaleY"
-                                                     Duration="00:00:00.01"
-                                                     To="1.1"/>
-
-                                </Storyboard>
-                            </BeginStoryboard>
-                        </MultiDataTrigger.EnterActions>
-                        <MultiDataTrigger.ExitActions>
-                            <RemoveStoryboard BeginStoryboardName="ListBoxItemHoverStoryBoard"/>
-
-                        </MultiDataTrigger.ExitActions>
-                        
-                    </MultiDataTrigger>-->
 
                 </DataTemplate.Triggers>
 
@@ -150,6 +131,13 @@
             <CustomControls:FirstDegreeFunctionConverter x:Key="DoubleValue"
                                                          A="2"
                                                          B="0"/>
+            <CustomControls:FirstDegreeFunctionConverter x:Key="OneThirdValue"
+                                                         A=".3333"
+                                                         B="0"/>
+
+            <CustomControls:FirstDegreeFunctionConverter x:Key="TwoThirdValue"
+                                                         A=".6"
+                                                         B="0"/>
 
             <!-- ItemContainerStyle with the Trigger for Selected -->
             <Style x:Key="ListBoxItemCardStyler"
@@ -159,53 +147,16 @@
                     <Setter.Value>
                         <ControlTemplate TargetType="{x:Type ListBoxItem}">
                             <CustomControls:FloatingGrid x:Name="FloatingGridContentHost"
-                                                         Cursor="Hand"
-                                                         >
+                                                         Cursor="Hand">
                                 <CustomControls:FloatingGrid.RenderTransform>
                                     <TranslateTransform/>
                                 </CustomControls:FloatingGrid.RenderTransform>
-                                <CustomControls:FloatingGrid.Triggers>
-                                    <EventTrigger RoutedEvent="MouseEnter">
 
-                                        <BeginStoryboard x:Name="ListBoxMouseEnterAnimation">
-                                            <Storyboard Storyboard.TargetName="FloatingGridContentHost">
-                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Y"
-                                                                    Duration="00:00:00.25"
-                                                                    To="-25">
-                                                </DoubleAnimation>
-                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.X"
-                                                                    Duration="00:00:00.25"
-                                                                    To="25">
 
-                                                </DoubleAnimation>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger>
-
-                                    <EventTrigger RoutedEvent="MouseLeave">
-
-                                        <BeginStoryboard x:Name="ListBoxMouseExitAnimation">
-                                            <Storyboard Storyboard.TargetName="FloatingGridContentHost">
-                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.Y"
-                                                                        Duration="00:00:00.25"
-                                                                        To="0">
-                                                </DoubleAnimation>
-                                                <DoubleAnimation Storyboard.TargetProperty="RenderTransform.X"
-                                                                        Duration="00:00:00.25"
-                                                                        To="0">
-                                                </DoubleAnimation>
-                                            </Storyboard>
-                                        </BeginStoryboard>
-                                    </EventTrigger>
-                                    
-                                </CustomControls:FloatingGrid.Triggers>
-                                
-                                
                                 <Border CornerRadius="5"
                                         BorderThickness="1"
                                         BorderBrush="#444"
                                         x:Name="CardBorder"
-                                        ClipToBounds="False"
                                         VerticalAlignment="Stretch"
                                         HorizontalAlignment="Stretch">
 
@@ -238,41 +189,54 @@
 
     <Grid x:Name="TopPanelGrid"
           HorizontalAlignment="Center"
-          VerticalAlignment="Top">
+          VerticalAlignment="Stretch">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="2*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="*" MinHeight="120"/>
         </Grid.RowDefinitions>
 
         <DockPanel LastChildFill="True"
-                   VerticalAlignment="Top">
+                   VerticalAlignment="Stretch"
+                   Background="#555">
 
             <userControls:ProcessContainerView DockPanel.Dock="Left"
-                                               MinWidth="50"
-                                               Panel.ZIndex="99999999"/>
+                                               MinWidth="15">
+                
+            </userControls:ProcessContainerView>
+
 
             <StackPanel Orientation="Horizontal"
                         DockPanel.Dock="Bottom"
-                        HorizontalAlignment="Center">
-                <Label Content="Program Step: "/>
-                <Label Content="{Binding ElementName=CardDeckListBox, Converter={StaticResource AddOneToValue}, Path=SelectedIndex}"/>
-                <Label Content=" / "/>
-                <Label Content="{Binding ElementName=CardDeckListBox, Path=Items.Count}"/>
+                        HorizontalAlignment="Center"
+                        Background="AntiqueWhite">
+                <Label Content="Program Step: " 
+                       Style="{StaticResource LabelStyler}"/>
+                <Label Content="{Binding ElementName=CardDeckListBox, Converter={StaticResource AddOneToValue}, Path=SelectedIndex}"
+                       Style="{StaticResource LabelStyler}"/>
+                <Label Content=" / "
+                       Style="{StaticResource LabelStyler}"/>
+                <Label Content="{Binding ElementName=CardDeckListBox, Path=Items.Count}"
+                       Style="{StaticResource LabelStyler}"/>
             </StackPanel>
 
+            <Viewbox HorizontalAlignment="Center"
+                     VerticalAlignment="Top"
+                     Stretch="Uniform"
+                     DockPanel.Dock="Left"
+                     >
             <Image Source="{Binding ProcessDisplay}"
-                        Stretch="Uniform"
-                        DockPanel.Dock="Left"
-                        HorizontalAlignment="Center">
-            </Image>
+                   Margin="5"
+                   />
+            </Viewbox>
         </DockPanel>
 
         <ListBox x:Name="CardDeckListBox"
                  ItemsSource="{Binding ProductionDeck}"
                  AlternationCount="{Binding ProductionDeck.Count}"
-                 MaxHeight="300"
+                 MaxHeight="{Binding ElementName=TopPanelGrid, Path=ActualHeight}"
                  DockPanel.Dock="Bottom"
+                 VerticalAlignment="Stretch"
                  SelectedIndex="{Binding CurrentIndex}"
                  ItemContainerStyle="{DynamicResource ListBoxItemCardStyler}"
                  Background="Violet"
@@ -289,10 +253,9 @@
             </ListBox.ItemsPanel>
             <ListBox.Template>
                 <ControlTemplate TargetType="{x:Type ListBox}">
-                    <Grid VerticalAlignment="Stretch">
-                        <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
-                                        MaxHeight="1000">
-                        </ItemsPresenter>
+                    <Grid VerticalAlignment="Bottom">
+                        <ItemsPresenter/>
+
 
                     </Grid>
                 </ControlTemplate>

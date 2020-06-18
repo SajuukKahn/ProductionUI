@@ -35,17 +35,42 @@ namespace ProductionUI.Tests
         public ProductionCardDeckModel GenerateRandom(ProductionCardDeckModel productionCardDeckModel)
         {
 
+            string[] TitleArray =
+            {
+                "PolyLine 3D",
+                "Area",
+                "PolyLine",
+                "Arc",
+                "Spiral",
+                "Dot",
+                "Part Presense Check"
+            };
             _productionCardDeckModel = productionCardDeckModel;
             
             int randSize = new Random().Next(30, 120);
             BitmapImage image;//= new BitmapImage(new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative));
             image = new BitmapImage(new Uri("/Tests/TestImages/PCB5.bmp", UriKind.Relative));
 
+            ProductionCardModel firstCardModel = new ProductionCardModel()
+            {
+                StepTitle = "Fiducial Check",
+                StepImage = image
+            };
+
+            _productionCardDeckModel.Add(firstCardModel);
+            ProductionCardModel secondCardModel = new ProductionCardModel()
+            {
+                StepTitle = "Surface Height Check",
+                StepImage = image
+            };
+
+            _productionCardDeckModel.Add(secondCardModel);
+
             for (int i = 0; i < randSize; i++)
             {
                 ProductionCardModel cardModel = new ProductionCardModel()
                 {
-                    StepDataDisplay = new Random().Next().ToString() + " Step Data"
+                    StepTitle = TitleArray[new Random().Next(TitleArray.Length)]
                 };
                 if(i % 5 == 0)
                 {
