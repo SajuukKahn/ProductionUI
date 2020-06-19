@@ -4,19 +4,18 @@ using ProductionUI.Tests;
 using System;
 using System.ComponentModel;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Threading;
 
 namespace ProductionUI.ViewModels
 {
     public class ProductionCardDeckViewModel : INotifyPropertyChanged
     {
-        public ProductionCardDeckModel ProductionDeck { get; private set; }
-        private readonly ProductionCardDeckModel _productionDeck = new ProductionCardDeckModel();
+        private Thread _thread;
+        public ProductionCardCollection ProductionDeck { get; private set; }
+        private readonly ProductionCardCollection _productionDeck = new ProductionCardCollection();
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string prop)
@@ -153,7 +152,7 @@ namespace ProductionUI.ViewModels
 
         public int NextCard(int value, string StepDataLog = "no data", bool StepPassed = true, bool StepComplete = true)
         {
-            if (CurrentIndex > -1 && CurrentIndex < _productionDeck.Count)
+            if (value > -1 && CurrentIndex > -1 && CurrentIndex < _productionDeck.Count)
             {
 
                 bool setCompleted = false;
@@ -188,16 +187,27 @@ namespace ProductionUI.ViewModels
                 _productionDeck[value].StepComplete = false;
               //  _productionDeck[value].StartCardTimer();
             }
+            
             return value;
         }
 
         private void PausePressed()
         {
             PlayBackRunning = false;
+            _productionDeck.Insert(CurrentIndex, new ProductionCardModel()
+            {
+                StepTitle = "Press Play to Continue Playback",
+                StepStatus = "",
+                StepRequiresUserInteraction = true
+            });
         }
 
         private void PlayPressed()
         {
+            if(PlayBackRunning == false)
+            {
+                _productionDeck.RemoveAt(CurrentIndex);
+            }
             PlayBackRunning = true;
         }
 
@@ -210,10 +220,22 @@ namespace ProductionUI.ViewModels
             PlayButton = new RelayCommand(o => PlayPressed());
             PauseButton = new RelayCommand(o => PausePressed());
 
+            _productionDeck.Insert(0, new ProductionCardModel()
+            {
+                StepTitle = "Press Play to Begin Playback",
+                StepStatus = "",
+                StepRequiresUserInteraction = true
+            });
             NextCard(0);
 
-            Thread thread = new Thread(() => randomProgramGenerator.RunRandomProgram(this));
-            thread.Start();
+            _thread = new Thread(() => randomProgramGenerator.RunRandomProgram(this));
+            _thread.IsBackground = true;
+            _thread.Start();
+        }
+
+        ~ProductionCardDeckViewModel()
+        {
+            _thread.Abort();
         }
     }
 }

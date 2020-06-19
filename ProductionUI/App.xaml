@@ -5,6 +5,8 @@
              xmlns:views="clr-namespace:ProductionUI.Views"
              StartupUri="Views/ProcessUIMainWindow.xaml">
     <Application.Resources>
-
+        <Style TargetType="{x:Type FrameworkElement}">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        </Style>
     </Application.Resources>
 </Application>

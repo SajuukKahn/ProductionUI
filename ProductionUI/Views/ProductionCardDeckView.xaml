@@ -5,8 +5,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:vm="clr-namespace:ProductionUI.ViewModels"
              xmlns:CustomControls="clr-namespace:ProductionUI.CustomControls" 
-             xmlns:userControls="clr-namespace:ProductionUI.Views"
-             xmlns:local="clr-namespace:ProductionUI"
              mc:Ignorable="d"
              Height="auto"
              MaxWidth="1200"
@@ -31,15 +29,92 @@
             <CustomControls:FirstDegreeFunctionConverter x:Key="AutoFontSizer"
                                                          A=".08"
                                                          B="0"/>
+         
 
             <Style x:Key="LabelStyler" TargetType="{x:Type Label}">
                 <Setter Property="FontFamily" Value="Consolas"/>
-                <Setter Property="FontSize" Value="16"/>
+                <Setter Property="FontSize" Value="12"/>
             </Style>
+
+            <Style x:Key="ButtonStyler" TargetType="{x:Type Button}">
+                <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            </Style>
+
+            <ControlTemplate TargetType="Button" x:Key="PlayBackButtonControlTemplate">
+                <Viewbox x:Name="ContentGrid" Stretch="Uniform" Height="96">
+
+                    <Border x:Name="ButtonBorder" 
+                            BorderBrush="Transparent" 
+                            BorderThickness="2"
+                            Background="Gray"
+                            Padding="0">
+                        <Border.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform ScaleX="1"/>
+                                <SkewTransform AngleX="0" AngleY="0"/>
+                                <RotateTransform/>
+                                <TranslateTransform/>
+                            </TransformGroup>
+                        </Border.RenderTransform>
+                        <ContentPresenter HorizontalAlignment="Center"
+                            VerticalAlignment="Center"/>
+                    </Border>
+                </Viewbox>
+                <ControlTemplate.Triggers>
+
+                    <EventTrigger RoutedEvent="MouseEnter">
+                        <BeginStoryboard>
+                            <Storyboard Storyboard.TargetName="ButtonBorder" Storyboard.TargetProperty="BorderThickness" FillBehavior="HoldEnd">
+                                <ThicknessAnimation Duration="00:00:00:1" To="3">
+                                    <ThicknessAnimation.EasingFunction>
+                                        <BackEase EasingMode="EaseOut"/>
+                                    </ThicknessAnimation.EasingFunction>
+                                </ThicknessAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                    <EventTrigger RoutedEvent="MouseLeave">
+                        <BeginStoryboard>
+                            <Storyboard Storyboard.TargetName="ButtonBorder" Storyboard.TargetProperty="BorderThickness" FillBehavior="HoldEnd">
+                                <ThicknessAnimation Duration="00:00:00:1" To="2">
+                                    <ThicknessAnimation.EasingFunction>
+                                        <BackEase EasingMode="EaseOut"/>
+                                    </ThicknessAnimation.EasingFunction>
+                                </ThicknessAnimation>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                    <EventTrigger RoutedEvent="MouseDown">
+                        <BeginStoryboard>
+                            <Storyboard FillBehavior="HoldEnd">
+                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ButtonBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
+                                    <EasingDoubleKeyFrame KeyTime="00:00:00.0000000" Value="1"/>
+                                    <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="0.7"/>
+                                </DoubleAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+                    <EventTrigger RoutedEvent="MouseUp">
+                        <BeginStoryboard>
+                            <Storyboard FillBehavior="HoldEnd">
+                                <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ButtonBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
+                                    <EasingDoubleKeyFrame KeyTime="00:00:00.0000000" Value="0.7"/>
+                                    <EasingDoubleKeyFrame KeyTime="00:00:00.3000000" Value="0"/>
+                                </DoubleAnimationUsingKeyFrames>
+                                <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ButtonBorder" Storyboard.TargetProperty="(UIElement.Visibility)">
+                                    <DiscreteObjectKeyFrame KeyTime="00:00:00.3000000" Value="{x:Static Visibility.Collapsed}"/>
+                                </ObjectAnimationUsingKeyFrames>
+                            </Storyboard>
+                        </BeginStoryboard>
+                    </EventTrigger>
+
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
 
 
             <DataTemplate x:Key="ListItemDataTemplate">
                 <Border CornerRadius="12"
+                        FocusVisualStyle="{x:Null}"
                         BorderThickness="2"
                         BorderBrush="#432"
                         ClipToBounds="False"
@@ -193,25 +268,34 @@
                         <UniformGrid VerticalAlignment="Center"
                      HorizontalAlignment="Center"
                      Columns="2">
-                            <Label Content="Zone: "
-                   Style="{StaticResource LabelStyler}"/>
+
                             <Label Content="{Binding ProcessLocation}"
-                   Style="{StaticResource LabelStyler}"/>
-                            <Label Content="Program: "
-                   Style="{StaticResource LabelStyler}"/>
+                                   Style="{StaticResource LabelStyler}"/>
                             <Label Content="{Binding ProgramName}"
-                   Style="{StaticResource LabelStyler}"/>
+                                   Style="{StaticResource LabelStyler}"/>
                             <Label Content="Cycle Count: "
-                   Style="{StaticResource LabelStyler}"/>
+                                   Style="{StaticResource LabelStyler}"/>
                             <Label Content="{Binding CycleCount}"
-                   Style="{StaticResource LabelStyler}"/>
+                                   Style="{StaticResource LabelStyler}"/>
+                            <Label Content="Program Step: " 
+                                   Style="{StaticResource LabelStyler}"/>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="{Binding ElementName=CardDeckListBox, Converter={StaticResource AddOneToValue}, Path=SelectedIndex}"
+                                   Style="{StaticResource LabelStyler}"/>
+                                <Label Content=" / "
+                                   Style="{StaticResource LabelStyler}"/>
+                                <Label Content="{Binding ElementName=CardDeckListBox, Path=Items.Count}"
+                                   Style="{StaticResource LabelStyler}"/>
+                            </StackPanel>
                             <Label Content="Cycle Time: "
-                   Style="{StaticResource LabelStyler}"/>
+                                   Style="{StaticResource LabelStyler}"/>
                             <Label Content="{Binding CycleTime}"
-                   Style="{StaticResource LabelStyler}"/>
+                                   Style="{StaticResource LabelStyler}"/>
                         </UniformGrid>
                     </Border>
                 </Viewbox>
+
+
 
                 <DockPanel LastChildFill="False"
                    HorizontalAlignment="Center"
@@ -219,110 +303,75 @@
                    Grid.Column="1">
 
                     <Button x:Name="PlayButton"
-                    Command="{Binding PlayButton}"
-                    Background="Transparent"
-                    BorderThickness="1">
-                        <Button.Template>
-                            <ControlTemplate>
-                                <ControlTemplate.Triggers>
-                                    <DataTrigger Binding="{Binding PlayBackRunning}" Value="True">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                    </DataTrigger>
+                            Command="{Binding PlayButton}"
+                            Background="Transparent"
+                            Style="{StaticResource ButtonStyler}"
+                            Template="{StaticResource PlayBackButtonControlTemplate}"
+                            BorderThickness="1"
+                            RenderTransformOrigin="0.5,0.5">
 
-                                </ControlTemplate.Triggers>
-                                <Border x:Name="PlayButtonBorder" 
-                        BorderBrush="DimGray" 
-                        BorderThickness="2" 
-                        Padding="0">
-                                    <Grid Height="32" Width="32">
-                                        <StackPanel Orientation="Horizontal"
+                        <Button.Content>
+                            <Grid Height="32" Width="32">
+                                <StackPanel Orientation="Horizontal"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center">
-                                            <Path Fill="#FF239118">
-                                                <Path.Stroke>
-                                                    <LinearGradientBrush EndPoint="0,0" StartPoint="1,1">
-                                                        <GradientStop Color="#FF215D0A" Offset="1"/>
-                                                        <GradientStop Color="#FF239118"/>
-                                                    </LinearGradientBrush>
-                                                </Path.Stroke>
-                                                <Path.Data>
-                                                    <PathGeometry>
-                                                        <PathGeometry.Figures>
-                                                            <PathFigureCollection>
-                                                                <PathFigure IsClosed="True" StartPoint="0,0" IsFilled="True">
-                                                                    <PathFigure.Segments>
-                                                                        <PathSegmentCollection>
-                                                                            <LineSegment Point="0,24" />
-                                                                            <LineSegment Point="19,12" />
-                                                                        </PathSegmentCollection>
-                                                                    </PathFigure.Segments>
-                                                                </PathFigure>
-                                                            </PathFigureCollection>
-                                                        </PathGeometry.Figures>
-                                                    </PathGeometry>
-                                                </Path.Data>
-                                            </Path>
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
-                            </ControlTemplate>
-                        </Button.Template>
+                                    <Path Fill="#FF239118">
+                                        <Path.Stroke>
+                                            <LinearGradientBrush EndPoint="0,0" StartPoint="1,1">
+                                                <GradientStop Color="#FF215D0A" Offset="1"/>
+                                                <GradientStop Color="#FF239118"/>
+                                            </LinearGradientBrush>
+                                        </Path.Stroke>
+                                        <Path.Data>
+                                            <PathGeometry>
+                                                <PathGeometry.Figures>
+                                                    <PathFigureCollection>
+                                                        <PathFigure IsClosed="True" StartPoint="0,0" IsFilled="True">
+                                                            <PathFigure.Segments>
+                                                                <PathSegmentCollection>
+                                                                    <LineSegment Point="0,24" />
+                                                                    <LineSegment Point="19,12" />
+                                                                </PathSegmentCollection>
+                                                            </PathFigure.Segments>
+                                                        </PathFigure>
+                                                    </PathFigureCollection>
+                                                </PathGeometry.Figures>
+                                            </PathGeometry>
+                                        </Path.Data>
+                                    </Path>
+                                </StackPanel>
+                            </Grid>
+                        </Button.Content>
                     </Button>
 
                     <Button x:Name="PauseButton"
-                    Command="{Binding PauseButton}"
-                    Background="Transparent"
-                    BorderThickness="1">
-                        <Button.Template>
-                            <ControlTemplate>
-                                <ControlTemplate.Triggers>
-                                    <DataTrigger Binding="{Binding PlayBackRunning}" Value="false">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                    </DataTrigger>
+                            Command="{Binding PauseButton}"
+                            Background="Transparent"
+                            Style="{StaticResource ButtonStyler}"
+                            Template="{StaticResource PlayBackButtonControlTemplate}"
+                            BorderThickness="1"
+                            RenderTransformOrigin="0.5,0.5">
 
-                                </ControlTemplate.Triggers>
-                                <Border x:Name="PauseButtonBorder" 
-                        BorderBrush="DimGray" 
-                        BorderThickness="2" 
-                        Padding="0">
-                                    <Grid Width="32" Height="32" >
-                                        <StackPanel Orientation="Horizontal"
+                        <Button.Content>
+                            <Grid Width="32" Height="32" >
+                                <StackPanel Orientation="Horizontal"
                                   HorizontalAlignment="Center"
                                   VerticalAlignment="Center">
-                                            <Rectangle Width="8"
+                                    <Rectangle Width="8"
                                        Fill="#c00"
                                        Height="25"/>
-                                            <Rectangle Width="3"
+                                    <Rectangle Width="3"
                                        Fill="Transparent"
                                        Height="25"/>
-                                            <Rectangle Width="8"
+                                    <Rectangle Width="8"
                                        Fill="#c00"
                                        Height="25"/>
-                                        </StackPanel>
-                                    </Grid>
-                                </Border>
-                            </ControlTemplate>
-                        </Button.Template>
+                                </StackPanel>
+                            </Grid>
+                        </Button.Content>
                     </Button>
                 </DockPanel>
-            </StackPanel>
 
-            <!--<userControls:ProcessContainerView DockPanel.Dock="Left"
-                                               MinWidth="15"/>-->
-
-            <StackPanel Orientation="Horizontal"
-                        DockPanel.Dock="Bottom"
-                        HorizontalAlignment="Stretch"
-                        VerticalAlignment="Stretch"
-                        Background="#ccc">
-                <Label Content="Program Step: " 
-                       Style="{StaticResource LabelStyler}"/>
-                <Label Content="{Binding ElementName=CardDeckListBox, Converter={StaticResource AddOneToValue}, Path=SelectedIndex}"
-                       Style="{StaticResource LabelStyler}"/>
-                <Label Content=" / "
-                       Style="{StaticResource LabelStyler}"/>
-                <Label Content="{Binding ElementName=CardDeckListBox, Path=Items.Count}"
-                       Style="{StaticResource LabelStyler}"/>
             </StackPanel>
 
             <Viewbox HorizontalAlignment="Center"
@@ -340,8 +389,10 @@
                  AlternationCount="{Binding ProductionDeck.Count}"
                  MaxHeight="{Binding ElementName=TopPanelGrid, Path=ActualHeight}"
                  DockPanel.Dock="Bottom"
+                 PreviewKeyDown="CardDeckListBox_PreviewKeyDown"
                  VerticalAlignment="Stretch"
                  SelectedIndex="{Binding CurrentIndex}"
+                 SelectionMode="Single"
                  Background="Violet"
                  Grid.Row="1"
                  IsHitTestVisible="False">
@@ -356,10 +407,12 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                <ContentPresenter ContentTemplate="{StaticResource ListItemDataTemplate}"/>
+                                <ContentPresenter ContentTemplate="{StaticResource ListItemDataTemplate}"
+                                                  FocusVisualStyle="{x:Null}"/>
                             </ControlTemplate>
                         </Setter.Value>
                     </Setter>
+                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                 </Style>
             </ListBox.ItemContainerStyle>
             
@@ -367,8 +420,6 @@
                 <ControlTemplate TargetType="{x:Type ListBox}">
                     <Grid VerticalAlignment="Bottom">
                         <ItemsPresenter/>
-
-            
                     </Grid>
                 </ControlTemplate>
             </ListBox.Template>

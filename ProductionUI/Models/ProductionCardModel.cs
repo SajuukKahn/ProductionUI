@@ -1,12 +1,6 @@
 ﻿using ProductionUI.Interfaces;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Threading;
 
 namespace ProductionUI.Models
 {

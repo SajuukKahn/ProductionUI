@@ -32,4 +32,8 @@
     <Resource Include="Tests\TestImages\PCB9.bmp" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Assets\" />
+  </ItemGroup>
+
 </Project>

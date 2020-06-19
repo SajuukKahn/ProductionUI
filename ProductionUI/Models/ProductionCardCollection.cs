@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
 using System.Windows.Controls;
 
 namespace ProductionUI.Models
 {
-    public class ProductionCardDeckModel : ObservableCollection<ProductionCardModel>
+    public class ProductionCardCollection : ObservableCollection<ProductionCardModel>
     {
         public List<ProductionCardModel> ProductionCardModels
         {
@@ -24,7 +21,7 @@ namespace ProductionUI.Models
 
         public MediaElement MediaElement { get; set; }
         
-        public ProductionCardDeckModel(MediaElement mediaElement = null)
+        public ProductionCardCollection(MediaElement mediaElement = null)
         {
             MediaElement = mediaElement;
         }
