@@ -7,7 +7,6 @@ namespace ProductionUI.Interfaces
         public string StepTitle { get; set; }
         public string StepActiveTime { get; set; }
         public string StepStatus { get; set; }
-        public string StepDataLog { get; set; }
         public ImageSource StepImage { get; set; }
         public bool StepRequiresUserInteraction { get; set; }
         public bool StepComplete { get; set; }

@@ -81,6 +81,7 @@ namespace ProductionUI.CustomControls
             var listBox = GetListBox();
             if (listBox == null) return base.ArrangeOverride(finalSize);
             if (listBox.SelectedIndex < 0) listBox.SelectedIndex = 0;
+            if (listBox.SelectedIndex < 0) return base.ArrangeOverride(finalSize);
 
             int selectedIndex = listBox.SelectedIndex;
 

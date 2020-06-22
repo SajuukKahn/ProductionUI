@@ -8,14 +8,60 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Xml.Schema;
 
 namespace ProductionUI.ViewModels
 {
     public class ProductionCardDeckViewModel : INotifyPropertyChanged
     {
         private Thread _thread;
-        public ProductionCardCollection ProductionDeck { get; private set; }
-        private readonly ProductionCardCollection _productionDeck = new ProductionCardCollection();
+
+        private ProductionCardCollection _productionDeck = new ProductionCardCollection();
+        public ProductionCardCollection ProductionDeck
+        {
+            get
+            {
+                return _productionDeck;
+            }
+            set
+            {
+                _productionDeck = value;
+                OnPropertyChanged(nameof(ProductionDeck));
+                OnPropertyChanged(nameof(CardCount));
+            }
+        }
+
+        private ProductionProgramCollection _productionPrograms = new ProductionProgramCollection();
+        public ProductionProgramCollection ProductionPrograms
+        {
+            get
+            {
+                return _productionPrograms;
+            }
+            set
+            {
+                _productionPrograms = value;
+                OnPropertyChanged(nameof(ProductionPrograms));
+            }
+        }
+
+        //public ProductionCardModel PauseCard { get; private set; }
+        //private readonly ProductionCardModel _defaultPauseCard = new ProductionCardModel()
+        //{
+        //    StepTitle = "Paused.\nPress Play to Continue Playback",
+        //    StepStatus = "",
+        //    StepRequiresUserInteraction = true,
+        //    StepActiveTime = null
+        //};
+
+        //public ProductionCardModel InitialCard { get; private set; }
+        //private ProductionCardModel _defaultInitialCard = new ProductionCardModel()
+        //{   
+        //    StepTitle = "Press Play to Begin Playback",
+        //    StepStatus = "",
+        //    StepRequiresUserInteraction = true,
+        //    StepActiveTime = null
+        //};
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string prop)
@@ -33,7 +79,7 @@ namespace ProductionUI.ViewModels
             set
             {
                 _processImage = value;
-                OnPropertyChanged("ProcessImage");
+                OnPropertyChanged(nameof(ProcessImage));
             }
         }
 
@@ -47,7 +93,7 @@ namespace ProductionUI.ViewModels
             set
             {
                 _processDisplay = value;
-                OnPropertyChanged("ProcessDisplay");
+                OnPropertyChanged(nameof(ProcessDisplay));
             }
         }
 
@@ -61,12 +107,27 @@ namespace ProductionUI.ViewModels
             set
             {
                 _currentIndex = NextCard(value);
-                OnPropertyChanged("CurrentIndex");
+                OnPropertyChanged(nameof(CurrentIndex));
             }
         }
 
-        public ICommand PlayButton { get; set; }
-        public ICommand PauseButton { get; set; }
+        private int _currentProgram  = -1;
+        public int CurrentProgram
+        {
+            get
+            {
+                return _currentProgram;
+            }
+            set
+            {
+                if(_currentProgram != value)
+                {
+                    _currentProgram = value;
+                    LoadProductionDeck();
+                    OnPropertyChanged(nameof(CurrentProgram));
+                }
+            }
+        }
 
         private bool _playBackRunning;
         public bool PlayBackRunning
@@ -78,25 +139,36 @@ namespace ProductionUI.ViewModels
             set
             {
                 _playBackRunning = value;
-                OnPropertyChanged("PlayBackRunning");
+                OnPropertyChanged(nameof(PlayBackRunning));
             }
         }
 
-
-        private string _processLocation;
-        public string ProcessLocation
+        private bool _playAvailable;
+        public bool PlayAvailable
         {
             get
             {
-                return _processLocation;
+                return _playAvailable;
             }
-
             set
             {
-                _processLocation = value;
-                OnPropertyChanged("ProcessLocation");
+                _playAvailable = value;
+                OnPropertyChanged(nameof(PlayAvailable));
             }
+        }
 
+        private bool _pauseAvailable;
+        public bool PauseAvailable
+        {
+            get
+            {
+                return _pauseAvailable;
+            }
+            set
+            {
+                _pauseAvailable = value;
+                OnPropertyChanged(nameof(PauseAvailable));
+            }
         }
 
         private string _programName;
@@ -109,16 +181,8 @@ namespace ProductionUI.ViewModels
             set
             {
                 _programName = value;
-                OnPropertyChanged("ProgramName");
+                OnPropertyChanged(nameof(ProgramName));
             }
-        }
-
-        public event EventHandler PlayBackRunningChanged;
-
-        protected virtual void OnPlayBackRunningChanged(EventArgs e)
-        {
-            EventHandler handler = PlayBackRunningChanged;
-            handler?.Invoke(this, e);
         }
 
         private Timer _cycleTime;
@@ -131,7 +195,7 @@ namespace ProductionUI.ViewModels
             set
             {
                 _cycleTime = value;
-                OnPropertyChanged("CycleTime");
+                OnPropertyChanged(nameof(CycleTime));
             }
         }
 
@@ -146,11 +210,19 @@ namespace ProductionUI.ViewModels
             set
             {
                 _cycleCount = value;
+                OnPropertyChanged(nameof(CycleCount));
             }
         }
 
+        public int CardCount
+        {
+            get
+            {
+                return _productionDeck.Count;
+            }
+        }
 
-        public int NextCard(int value, string StepDataLog = "no data", bool StepPassed = true, bool StepComplete = true)
+        public int NextCard(int value, bool StepPassed = true, bool StepComplete = true)
         {
             if (value > -1 && CurrentIndex > -1 && CurrentIndex < _productionDeck.Count)
             {
@@ -170,13 +242,11 @@ namespace ProductionUI.ViewModels
                     if (setCompleted)
                     {
                         _productionDeck[j].StepPassed = StepPassed;
-                        _productionDeck[j].StepDataLog = StepDataLog;
                         _productionDeck[j].StepComplete = StepComplete;
                     }
                     else
                     {
                         _productionDeck[j].StepPassed = false;
-                        _productionDeck[j].StepDataLog = null;
                         _productionDeck[j].StepComplete = false;
                     }
                     _productionDeck[j].IsActiveStep = false;
@@ -194,44 +264,67 @@ namespace ProductionUI.ViewModels
         private void PausePressed()
         {
             PlayBackRunning = false;
-            _productionDeck.Insert(CurrentIndex, new ProductionCardModel()
-            {
-                StepTitle = "Press Play to Continue Playback",
-                StepStatus = "",
-                StepRequiresUserInteraction = true
-            });
+            PlayAvailable = true;
+            PauseAvailable = false;
         }
 
         private void PlayPressed()
         {
             if(PlayBackRunning == false)
             {
-                _productionDeck.RemoveAt(CurrentIndex);
+                PlayAvailable = false;
+                PauseAvailable = true;
             }
             PlayBackRunning = true;
         }
 
-        public ProductionCardDeckViewModel()
+        public void LoadProductionDeck()
         {
+            PlayBackRunning = false;
+            LoadRandomProgram();
+            PlayAvailable = true;
+            PauseAvailable = false;
+        }
+
+        private void LoadRandomProgram()
+        {
+
             RandomProgramGenerator randomProgramGenerator = new RandomProgramGenerator();
+            ProcessDisplay = new BitmapImage(new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative));
+            _productionDeck.Clear();
             ProductionDeck = randomProgramGenerator.GenerateRandom(_productionDeck);
             randomProgramGenerator.GenerateRandom(this);
-            ProcessDisplay = new BitmapImage(new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative));
-            PlayButton = new RelayCommand(o => PlayPressed());
-            PauseButton = new RelayCommand(o => PausePressed());
 
-            _productionDeck.Insert(0, new ProductionCardModel()
-            {
-                StepTitle = "Press Play to Begin Playback",
-                StepStatus = "",
-                StepRequiresUserInteraction = true
-            });
             NextCard(0);
 
-            _thread = new Thread(() => randomProgramGenerator.RunRandomProgram(this));
-            _thread.IsBackground = true;
+            if (_thread != null && _thread.IsAlive)
+            {
+                _thread.Abort();
+            }
+            _thread = new Thread(() => randomProgramGenerator.RunRandomProgram(this))
+            {
+                IsBackground = true
+            };
             _thread.Start();
         }
+
+        public ProductionCardDeckViewModel()
+        {
+            PlayButton = new RelayCommand(o => PlayPressed());
+            PauseButton = new RelayCommand(o => PausePressed());
+            _playAvailable = false;
+            _pauseAvailable = false;
+        }
+
+        public event EventHandler PlayBackRunningChanged;
+        protected virtual void OnPlayBackRunningChanged(EventArgs e)
+        {
+            EventHandler handler = PlayBackRunningChanged;
+            handler?.Invoke(this, e);
+        }
+
+        public ICommand PlayButton { get; set; }
+        public ICommand PauseButton { get; set; }
 
         ~ProductionCardDeckViewModel()
         {

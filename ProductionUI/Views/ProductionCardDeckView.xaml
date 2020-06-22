@@ -29,7 +29,8 @@
             <CustomControls:FirstDegreeFunctionConverter x:Key="AutoFontSizer"
                                                          A=".08"
                                                          B="0"/>
-         
+            <CustomControls:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+
 
             <Style x:Key="LabelStyler" TargetType="{x:Type Label}">
                 <Setter Property="FontFamily" Value="Consolas"/>
@@ -38,10 +39,14 @@
 
             <Style x:Key="ButtonStyler" TargetType="{x:Type Button}">
                 <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            
             </Style>
 
-            <ControlTemplate TargetType="Button" x:Key="PlayBackButtonControlTemplate">
-                <Viewbox x:Name="ContentGrid" Stretch="Uniform" Height="96">
+            <ControlTemplate TargetType="Button" 
+                             x:Key="PlayBackButtonControlTemplate">
+                <Viewbox x:Name="ContentGrid" 
+                         Stretch="Uniform" 
+                         Height="96">
 
                     <Border x:Name="ButtonBorder" 
                             BorderBrush="Transparent" 
@@ -84,7 +89,7 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
-                    <EventTrigger RoutedEvent="MouseDown">
+                    <!--<EventTrigger RoutedEvent="PreviewMouseDown">
                         <BeginStoryboard>
                             <Storyboard FillBehavior="HoldEnd">
                                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ButtonBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
@@ -94,7 +99,7 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>
-                    <EventTrigger RoutedEvent="MouseUp">
+                    <EventTrigger RoutedEvent="PreviewMouseUp">
                         <BeginStoryboard>
                             <Storyboard FillBehavior="HoldEnd">
                                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ButtonBorder" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[0].(ScaleTransform.ScaleX)">
@@ -106,23 +111,66 @@
                                 </ObjectAnimationUsingKeyFrames>
                             </Storyboard>
                         </BeginStoryboard>
-                    </EventTrigger>
+                    </EventTrigger>-->
+                    
 
                 </ControlTemplate.Triggers>
             </ControlTemplate>
 
 
+            <Style x:Key="ComboBoxItemStyle"
+                   TargetType="{x:Type ComboBoxItem}">
+                <Style.Setters>
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate>
+                                <StackPanel>
+                                <UniformGrid Columns="3"
+                                             Background="LightGray">
+
+                                    <Label Content="{Binding ProgramName}"
+                                           Style="{StaticResource LabelStyler}"
+                                           HorizontalAlignment="Left"/>
+                                    <Label Content="{Binding ProductRelationship}"
+                                           Style="{StaticResource LabelStyler}"
+                                           HorizontalAlignment="Left"/>
+                                    <Label Content="{Binding ProgramCreator}"
+                                           Style="{StaticResource LabelStyler}"
+                                           HorizontalAlignment="Left"/>
+
+                                </UniformGrid>
+                                </StackPanel>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style.Setters>
+            </Style>
+
             <DataTemplate x:Key="ListItemDataTemplate">
                 <Border CornerRadius="12"
                         FocusVisualStyle="{x:Null}"
                         BorderThickness="2"
-                        BorderBrush="#432"
                         ClipToBounds="False"
                         x:Name="CardBorder"
                         VerticalAlignment="Stretch"
                         HorizontalAlignment="Stretch"
                         UseLayoutRounding="True">
-
+                    
+                    <Border.BorderBrush>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <LinearGradientBrush.RelativeTransform>
+                                <TransformGroup>
+                                    <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                                    <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                                    <RotateTransform CenterY="0.5" CenterX="0.5"/>
+                                    <TranslateTransform/>
+                                </TransformGroup>
+                            </LinearGradientBrush.RelativeTransform>
+                            <GradientStop x:Name="BorderBrushGradientStop1"  Color="#FF444444"/>
+                            <GradientStop x:Name="BorderBrushGradientStop2"  Color="#FF666666" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.BorderBrush>
+                    
                     <Border.Background>
                         <LinearGradientBrush EndPoint="0.5,2" StartPoint="3,0">
                             <GradientStop Color="#999" Offset="0.7"/>
@@ -223,7 +271,7 @@
                         </MultiDataTrigger.Setters>
                     </MultiDataTrigger>
 
-                    <DataTrigger Binding="{Binding IsActiveStep}" Value="True">
+                    <!--<DataTrigger Binding="{Binding IsActiveStep}" Value="True">
                         <Setter TargetName="StepTitle" Property="LayoutTransform">
                             <Setter.Value>
                                 <RotateTransform Angle="0"/>
@@ -232,7 +280,68 @@
                         <Setter TargetName="StepImage" Property="Visibility" Value="Visible"/>
                         <Setter TargetName="StepImage" Property="Height" Value="{Binding ElementName=CardDataDockPanel, Path=ActualHeight, Converter={StaticResource TwoThirdValue}}"/>
                         <Setter TargetName="StepImage" Property="Width" Value="{Binding ElementName=CardDataDockPanel, Path=ActualWidth, Converter={StaticResource TwoThirdValue}}"/>
-                    </DataTrigger>
+                    </DataTrigger>-->
+
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding IsActiveStep}" Value="True"/>
+                            <Condition Binding="{Binding PlayBackRunning}" Value="True"/>
+                        </MultiDataTrigger.Conditions>
+                        <MultiDataTrigger.Setters>
+                            <Setter TargetName="StepTitle" Property="LayoutTransform">
+                                <Setter.Value>
+                                    <RotateTransform Angle="0"/>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter TargetName="StepImage" Property="Visibility" Value="Visible"/>
+                            <Setter TargetName="StepImage" Property="Height" Value="{Binding ElementName=CardDataDockPanel, Path=ActualHeight, Converter={StaticResource TwoThirdValue}}"/>
+                            <Setter TargetName="StepImage" Property="Width" Value="{Binding ElementName=CardDataDockPanel, Path=ActualWidth, Converter={StaticResource TwoThirdValue}}"/>
+                        </MultiDataTrigger.Setters>
+                    </MultiDataTrigger>
+                    
+                    <MultiDataTrigger>
+                        <MultiDataTrigger.Conditions>
+                            <Condition Binding="{Binding IsActiveStep}" Value="True"/>
+                            <Condition Binding="{Binding PlayBackRunning}" Value="False"/>
+                            <you gotta fix this~!></you>
+                        </MultiDataTrigger.Conditions>
+                        <MultiDataTrigger.EnterActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CardBorder" 
+                                                                   Storyboard.TargetProperty="(Border.BorderBrush).(Brush.RelativeTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" 
+                                                                   RepeatBehavior="Forever">
+                                        <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
+                                        <EasingDoubleKeyFrame KeyTime="00:00:01" Value="359"/>
+                                    </DoubleAnimationUsingKeyFrames>
+                                    <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="CardBorder"
+                                                                      Storyboard.TargetProperty="(Border.BorderThickness)"
+                                                                      FillBehavior="HoldEnd">
+                                        <EasingThicknessKeyFrame KeyTime="00:00:00" Value="2,2,2,2"/>
+                                        <EasingThicknessKeyFrame KeyTime="00:00:01" Value="5,5,5,5"/>
+                                    </ThicknessAnimationUsingKeyFrames>
+                                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="(Border.BorderBrush).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
+                                        <EasingColorKeyFrame KeyTime="00:00:00" Value="#FF444444"/>
+                                        <EasingColorKeyFrame KeyTime="00:00:01" Value="#FFD61010"/>
+                                    </ColorAnimationUsingKeyFrames>
+                                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="(Border.BorderBrush).(GradientBrush.GradientStops)[0].(GradientStop.Color)">
+                                        <EasingColorKeyFrame KeyTime="00:00:00" Value="#FF666666"/>
+                                        <EasingColorKeyFrame KeyTime="00:00:01" Value="#FF7C1919"/>
+                                    </ColorAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </MultiDataTrigger.EnterActions>
+                        <MultiDataTrigger.Setters>
+                            <Setter TargetName="StepTitle" Property="LayoutTransform">
+                                <Setter.Value>
+                                    <RotateTransform Angle="0"/>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter TargetName="StepImage" Property="Visibility" Value="Visible"/>
+                            <Setter TargetName="StepImage" Property="Height" Value="{Binding ElementName=CardDataDockPanel, Path=ActualHeight, Converter={StaticResource TwoThirdValue}}"/>
+                            <Setter TargetName="StepImage" Property="Width" Value="{Binding ElementName=CardDataDockPanel, Path=ActualWidth, Converter={StaticResource TwoThirdValue}}"/>
+                        </MultiDataTrigger.Setters>
+                    </MultiDataTrigger>
 
                 </DataTemplate.Triggers>
 
@@ -259,20 +368,25 @@
 
 
             <StackPanel Background="Gray"
-                VerticalAlignment="Stretch"
-                HorizontalAlignment="Right">
-                <Viewbox Stretch="Uniform" StretchDirection="DownOnly">
-                    <Border BorderBrush="#333"
-                BorderThickness="2"
-                Margin="5">
-                        <UniformGrid VerticalAlignment="Center"
-                     HorizontalAlignment="Center"
-                     Columns="2">
+                        VerticalAlignment="Stretch"
+                        HorizontalAlignment="Right"
+                        Width="300">
 
-                            <Label Content="{Binding ProcessLocation}"
+                    <Border BorderBrush="#333"
+                            BorderThickness="2"
+                            Margin="5">
+                        <UniformGrid VerticalAlignment="Center"
+                                     HorizontalAlignment="Center"
+                                     Columns="2">
+
+                            <Label Content="Selected Program:"
                                    Style="{StaticResource LabelStyler}"/>
-                            <Label Content="{Binding ProgramName}"
-                                   Style="{StaticResource LabelStyler}"/>
+                            <ComboBox ItemsSource="{Binding ProductionPrograms}"
+                                      SelectedIndex="{Binding CurrentProgram, Mode=TwoWay}"
+                                      ItemContainerStyle="{StaticResource ComboBoxItemStyle}"
+                                      DisplayMemberPath="ProgramName"
+                                      />
+
                             <Label Content="Cycle Count: "
                                    Style="{StaticResource LabelStyler}"/>
                             <Label Content="{Binding CycleCount}"
@@ -284,7 +398,7 @@
                                    Style="{StaticResource LabelStyler}"/>
                                 <Label Content=" / "
                                    Style="{StaticResource LabelStyler}"/>
-                                <Label Content="{Binding ElementName=CardDeckListBox, Path=Items.Count}"
+                            <Label Content="{Binding CardCount}"
                                    Style="{StaticResource LabelStyler}"/>
                             </StackPanel>
                             <Label Content="Cycle Time: "
@@ -293,8 +407,6 @@
                                    Style="{StaticResource LabelStyler}"/>
                         </UniformGrid>
                     </Border>
-                </Viewbox>
-
 
 
                 <DockPanel LastChildFill="False"
@@ -307,8 +419,12 @@
                             Background="Transparent"
                             Style="{StaticResource ButtonStyler}"
                             Template="{StaticResource PlayBackButtonControlTemplate}"
-                            BorderThickness="1"
-                            RenderTransformOrigin="0.5,0.5">
+                            Visibility="{Binding PlayAvailable, Converter={StaticResource BoolToVisibility}}"
+                            BorderThickness="1">
+
+                        <Button.RenderTransformOrigin>
+                            <Point X="0.5" Y="0.5"/>
+                        </Button.RenderTransformOrigin>
 
                         <Button.Content>
                             <Grid Height="32" Width="32">
@@ -349,23 +465,44 @@
                             Background="Transparent"
                             Style="{StaticResource ButtonStyler}"
                             Template="{StaticResource PlayBackButtonControlTemplate}"
-                            BorderThickness="1"
-                            RenderTransformOrigin="0.5,0.5">
+                            Visibility="{Binding PauseAvailable,Converter={StaticResource BoolToVisibility}}"
+                            BorderThickness="1">
+
+                        <Button.RenderTransformOrigin>
+                            <Point X="0.5" Y="0.5"/>
+                        </Button.RenderTransformOrigin>
+
 
                         <Button.Content>
                             <Grid Width="32" Height="32" >
                                 <StackPanel Orientation="Horizontal"
                                   HorizontalAlignment="Center"
                                   VerticalAlignment="Center">
-                                    <Rectangle Width="8"
+                                    <Border BorderThickness="1">
+                                        <Rectangle Width="8"
                                        Fill="#c00"
                                        Height="25"/>
+                                        <Border.BorderBrush>
+                                            <LinearGradientBrush EndPoint="0,0" StartPoint="1,1">
+                                                <GradientStop Color="#FF881111" Offset="0.5"/>
+                                                <GradientStop Color="#FFCC0000"/>
+                                            </LinearGradientBrush>
+                                        </Border.BorderBrush>
+                                    </Border>
                                     <Rectangle Width="3"
                                        Fill="Transparent"
                                        Height="25"/>
-                                    <Rectangle Width="8"
+                                    <Border BorderThickness="1">
+                                        <Rectangle Width="8"
                                        Fill="#c00"
                                        Height="25"/>
+                                        <Border.BorderBrush>
+                                            <LinearGradientBrush EndPoint="0,0" StartPoint="1,1">
+                                                <GradientStop Color="#FF881111" Offset="1"/>
+                                                <GradientStop Color="#FFCC0000"/>
+                                            </LinearGradientBrush>
+                                        </Border.BorderBrush>
+                                    </Border>
                                 </StackPanel>
                             </Grid>
                         </Button.Content>
@@ -382,7 +519,12 @@
             <Image Source="{Binding ProcessDisplay}"
                    Margin="5"/>
             </Viewbox>
+
+
+
         </DockPanel>
+
+
 
         <ListBox x:Name="CardDeckListBox"
                  ItemsSource="{Binding ProductionDeck}"

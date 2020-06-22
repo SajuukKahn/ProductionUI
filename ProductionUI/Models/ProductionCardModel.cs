@@ -11,8 +11,7 @@ namespace ProductionUI.Models
                                     bool isActiveStep = false,
                                     bool stepComplete = false,
                                     string stepActiveTime = "0",
-                                    string stepDataLog = "No Data",
-                                    string stepPointData = "PolyLine ... ",
+                                    string stepTitle = "No Data",
                                     string stepStatus = "Running")
         {
 
@@ -28,9 +27,8 @@ namespace ProductionUI.Models
             IsActiveStep = isActiveStep;
             StepComplete = stepComplete;
             StepActiveTime = stepActiveTime;
-            StepTitle = stepDataLog;
+            StepTitle = stepTitle;
             StepStatus = stepStatus;
-            StepDataLog = stepPointData;
         }
         
 
@@ -67,20 +65,6 @@ namespace ProductionUI.Models
             {
                 _stepActiveTime = value;
                 OnPropertyChanged("StepActiveTime");
-            }
-        }
-
-        private string _stepDataLog;
-        public string StepDataLog
-        {
-            get
-            {
-                return _stepDataLog;
-            }
-            set
-            {
-                _stepDataLog = value;
-                OnPropertyChanged("StepDataLog");
             }
         }
 
