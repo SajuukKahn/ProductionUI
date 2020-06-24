@@ -1,9 +1,14 @@
-﻿using ProductionUI.Commands;
+﻿using Microsoft.VisualBasic.CompilerServices;
+using ProductionUI.Commands;
 using ProductionUI.Models;
 using ProductionUI.Tests;
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -14,8 +19,6 @@ namespace ProductionUI.ViewModels
 {
     public class ProductionCardDeckViewModel : INotifyPropertyChanged
     {
-        private Thread _thread;
-
         private ProductionCardCollection _productionDeck = new ProductionCardCollection();
         public ProductionCardCollection ProductionDeck
         {
@@ -44,24 +47,6 @@ namespace ProductionUI.ViewModels
                 OnPropertyChanged(nameof(ProductionPrograms));
             }
         }
-
-        //public ProductionCardModel PauseCard { get; private set; }
-        //private readonly ProductionCardModel _defaultPauseCard = new ProductionCardModel()
-        //{
-        //    StepTitle = "Paused.\nPress Play to Continue Playback",
-        //    StepStatus = "",
-        //    StepRequiresUserInteraction = true,
-        //    StepActiveTime = null
-        //};
-
-        //public ProductionCardModel InitialCard { get; private set; }
-        //private ProductionCardModel _defaultInitialCard = new ProductionCardModel()
-        //{   
-        //    StepTitle = "Press Play to Begin Playback",
-        //    StepStatus = "",
-        //    StepRequiresUserInteraction = true,
-        //    StepActiveTime = null
-        //};
 
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string prop)
@@ -185,8 +170,20 @@ namespace ProductionUI.ViewModels
             }
         }
 
-        private Timer _cycleTime;
-        public Timer CycleTime
+        private DateTime _dateTime = new DateTime();
+
+        private void SetCycleTimer()
+        {
+            _dateTime = DateTime.Now;
+        }
+
+        private string GetCycleTimer()
+        {
+            return new DateTimeConverter().ConvertToString(DateTime.Now - _dateTime);
+        }
+
+        private double _cycleTime;
+        public double CycleTime
         {
             get
             {
@@ -257,7 +254,7 @@ namespace ProductionUI.ViewModels
                 _productionDeck[value].StepComplete = false;
               //  _productionDeck[value].StartCardTimer();
             }
-            
+
             return value;
         }
 
@@ -274,46 +271,157 @@ namespace ProductionUI.ViewModels
             {
                 PlayAvailable = false;
                 PauseAvailable = true;
+                if(_cycleTimeTask.Status != TaskStatus.Running)
+                {
+                    _cycleTimeTask.Start();
+                }
             }
             PlayBackRunning = true;
         }
 
-        public void LoadProductionDeck()
+        public void LoadProductionDeck(bool reUseProgram = false)
         {
             PlayBackRunning = false;
-            LoadRandomProgram();
+            DeckCompleted = false;
+            CycleTime = 0;
+            LoadRandomProgram(reUseProgram);
+            _timerCancellationTokenSource.Cancel();
+            CycleTime = 0;
             PlayAvailable = true;
             PauseAvailable = false;
         }
 
-        private void LoadRandomProgram()
+        private bool _deckCompleted;
+        public bool DeckCompleted
         {
+            get
+            {
+                return _deckCompleted;
+            }
+            set
+            {
+                _deckCompleted = value;
+                if(value)
+                {
+                    LoadProductionDeck(true);
+                }
+            }
+        }
 
-            RandomProgramGenerator randomProgramGenerator = new RandomProgramGenerator();
-            ProcessDisplay = new BitmapImage(new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative));
-            _productionDeck.Clear();
-            ProductionDeck = randomProgramGenerator.GenerateRandom(_productionDeck);
-            randomProgramGenerator.GenerateRandom(this);
+
+        private CancellationTokenSource _cancellationTokenSource;
+        private CancellationToken _cancelToken;
+
+
+        private void LoadRandomProgram(bool reUseProgram = false)
+        {
+            if(!reUseProgram)
+            { 
+                RandomProgramGenerator randomProgramGenerator = new RandomProgramGenerator();
+                ProcessDisplay = new BitmapImage(new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative));
+                _productionDeck.Clear();
+                ProductionDeck = randomProgramGenerator.GenerateRandom(_productionDeck);
+                randomProgramGenerator.GenerateRandom(this);
+            }
+            if (_cancellationTokenSource == null)
+            {
+                _cancellationTokenSource = new CancellationTokenSource();
+                _cancelToken = _cancellationTokenSource.Token;
+            }
+            else
+            {
+                _cancellationTokenSource.Cancel();
+                _cancellationTokenSource.Dispose();
+                _cancellationTokenSource = new CancellationTokenSource();
+                _cancelToken = _cancellationTokenSource.Token;
+            }
+
+            var task = Task.Run(async() =>
+            {
+                Debug.WriteLine(this.ProductionDeck.Count);
+                this.CurrentIndex = 0;
+                //for (int i = 1; i < this.ProductionDeck.Count; i++) ;
+
+                while(this.CurrentIndex < (this.ProductionDeck.Count - 1))
+                {
+                    Debug.WriteLine("CurrentIndex: " + this.CurrentIndex + " count: " + this.ProductionDeck.Count);
+                    while (!this.PlayBackRunning)
+                    {
+                        if (_cancelToken.IsCancellationRequested)
+                        {
+                            return;
+                        }
+                    }
+
+                    if (!_cancelToken.IsCancellationRequested)
+                    {
+                        await Task.Delay((TimeSpan.FromSeconds(new Random().Next(1, 5) + new Random().NextDouble())));
+                        while (!this.PlayBackRunning)
+                        {
+                            if (_cancelToken.IsCancellationRequested)
+                            {
+                                return;
+                            }
+                        }
+                        this.CurrentIndex++;
+                    }
+                    else
+                    {
+                        return;
+                    }
+                    Debug.WriteLine(this.CurrentIndex < this.ProductionDeck.Count - 1);
+                }
+                Debug.WriteLine("EXIT CurrentIndex: " + this.CurrentIndex + " count: " + this.ProductionDeck.Count);
+                await Task.Delay((TimeSpan.FromSeconds(new Random().Next(1, 5) + new Random().NextDouble())));
+                this.DeckCompleted = true;
+            },_cancelToken);
 
             NextCard(0);
-
-            if (_thread != null && _thread.IsAlive)
-            {
-                _thread.Abort();
-            }
-            _thread = new Thread(() => randomProgramGenerator.RunRandomProgram(this))
-            {
-                IsBackground = true
-            };
-            _thread.Start();
+            OnPropertyChanged(nameof(ProductionDeck));
         }
+
+        private CancellationTokenSource _timerCancellationTokenSource;
+        private CancellationToken _timerCancelToken;
+        private Task _cycleTimeTask;
 
         public ProductionCardDeckViewModel()
         {
             PlayButton = new RelayCommand(o => PlayPressed());
             PauseButton = new RelayCommand(o => PausePressed());
-            _playAvailable = false;
-            _pauseAvailable = false;
+            PlayAvailable = false;
+            PauseAvailable = false;
+
+            if (_timerCancellationTokenSource == null)
+            {
+                _timerCancellationTokenSource = new CancellationTokenSource();
+                _timerCancelToken = _timerCancellationTokenSource.Token;
+            }
+            else
+            {
+                _timerCancellationTokenSource.Cancel();
+                _timerCancellationTokenSource.Dispose();
+                _timerCancellationTokenSource = new CancellationTokenSource();
+                _timerCancelToken = _timerCancellationTokenSource.Token;
+            }
+
+            _cycleTimeTask = Task.Run(async () =>
+            {
+                while(true && !_timerCancelToken.IsCancellationRequested)
+                {
+                    while(!_timerCancelToken.IsCancellationRequested)
+                    { 
+                        await Task.Delay(TimeSpan.FromMilliseconds(10));
+                        CycleTime += 0.01;
+                    }
+                }
+                return;
+            }, _timerCancelToken);
+
+        }
+
+        private void CycleTime_Tick()
+        {
+
         }
 
         public event EventHandler PlayBackRunningChanged;
@@ -325,11 +433,6 @@ namespace ProductionUI.ViewModels
 
         public ICommand PlayButton { get; set; }
         public ICommand PauseButton { get; set; }
-
-        ~ProductionCardDeckViewModel()
-        {
-            _thread.Abort();
-        }
     }
 }
 

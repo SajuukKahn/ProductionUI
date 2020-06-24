@@ -112,7 +112,6 @@
                             </Storyboard>
                         </BeginStoryboard>
                     </EventTrigger>-->
-                    
 
                 </ControlTemplate.Triggers>
             </ControlTemplate>
@@ -206,8 +205,8 @@
                                 <TextBlock.LayoutTransform>
                                     <TransformGroup>
                                         <RotateTransform Angle="90" 
-                                                     CenterX="0.5" 
-                                                     CenterY="0.5"/>
+                                                         CenterX="0.5" 
+                                                         CenterY="0.5"/>
                                     </TransformGroup>
                                 </TextBlock.LayoutTransform>
                             </TextBlock>
@@ -285,8 +284,9 @@
                     <MultiDataTrigger>
                         <MultiDataTrigger.Conditions>
                             <Condition Binding="{Binding IsActiveStep}" Value="True"/>
-                            <Condition Binding="{Binding PlayBackRunning}" Value="True"/>
+                            <Condition Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.PlayBackRunning}" Value="True"/>
                         </MultiDataTrigger.Conditions>
+
                         <MultiDataTrigger.Setters>
                             <Setter TargetName="StepTitle" Property="LayoutTransform">
                                 <Setter.Value>
@@ -302,24 +302,21 @@
                     <MultiDataTrigger>
                         <MultiDataTrigger.Conditions>
                             <Condition Binding="{Binding IsActiveStep}" Value="True"/>
-                            <Condition Binding="{Binding PlayBackRunning}" Value="False"/>
-                            <you gotta fix this~!></you>
+                            <Condition Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.PlayBackRunning}" Value="False"/>
                         </MultiDataTrigger.Conditions>
+
                         <MultiDataTrigger.EnterActions>
                             <BeginStoryboard>
                                 <Storyboard>
-                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CardBorder" 
-                                                                   Storyboard.TargetProperty="(Border.BorderBrush).(Brush.RelativeTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" 
-                                                                   RepeatBehavior="Forever">
+                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="(Border.BorderBrush).(Brush.RelativeTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" RepeatBehavior="Forever">
                                         <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
                                         <EasingDoubleKeyFrame KeyTime="00:00:01" Value="359"/>
                                     </DoubleAnimationUsingKeyFrames>
-                                    <ThicknessAnimationUsingKeyFrames Storyboard.TargetName="CardBorder"
-                                                                      Storyboard.TargetProperty="(Border.BorderThickness)"
-                                                                      FillBehavior="HoldEnd">
-                                        <EasingThicknessKeyFrame KeyTime="00:00:00" Value="2,2,2,2"/>
-                                        <EasingThicknessKeyFrame KeyTime="00:00:01" Value="5,5,5,5"/>
-                                    </ThicknessAnimationUsingKeyFrames>
+                                    <ThicknessAnimation Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="(Border.BorderThickness)" FillBehavior="HoldEnd" To="3,3,3,3" Duration="00:00:00.5">
+                                        <ThicknessAnimation.EasingFunction>
+                                            <BackEase EasingMode="EaseIn"/>
+                                        </ThicknessAnimation.EasingFunction>
+                                    </ThicknessAnimation>
                                     <ColorAnimationUsingKeyFrames Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="(Border.BorderBrush).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
                                         <EasingColorKeyFrame KeyTime="00:00:00" Value="#FF444444"/>
                                         <EasingColorKeyFrame KeyTime="00:00:01" Value="#FFD61010"/>
@@ -331,6 +328,30 @@
                                 </Storyboard>
                             </BeginStoryboard>
                         </MultiDataTrigger.EnterActions>
+
+                        <MultiDataTrigger.ExitActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="(Border.BorderBrush).(Brush.RelativeTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)">
+                                        <EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="0"/>
+                                    </DoubleAnimationUsingKeyFrames>
+                                    <ThicknessAnimation Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="(Border.BorderThickness)" FillBehavior="HoldEnd" To="2,2,2,2"  Duration="00:00:00.5">
+                                        <ThicknessAnimation.EasingFunction>
+                                            <BackEase EasingMode="EaseIn"/>
+                                        </ThicknessAnimation.EasingFunction>
+                                    </ThicknessAnimation>
+                                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="(Border.BorderBrush).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
+                                        <EasingColorKeyFrame KeyTime="00:00:00" Value="#FFD61010"/>
+                                        <EasingColorKeyFrame KeyTime="00:00:00.5" Value="#FF444444"/>
+                                    </ColorAnimationUsingKeyFrames>
+                                    <ColorAnimationUsingKeyFrames Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="(Border.BorderBrush).(GradientBrush.GradientStops)[0].(GradientStop.Color)">
+                                        <EasingColorKeyFrame KeyTime="00:00:00" Value="#FF7C1919"/>
+                                        <EasingColorKeyFrame KeyTime="00:00:00.5" Value="#FF666666"/>
+                                    </ColorAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </MultiDataTrigger.ExitActions>
+
                         <MultiDataTrigger.Setters>
                             <Setter TargetName="StepTitle" Property="LayoutTransform">
                                 <Setter.Value>
@@ -372,47 +393,46 @@
                         HorizontalAlignment="Right"
                         Width="300">
 
-                    <Border BorderBrush="#333"
-                            BorderThickness="2"
-                            Margin="5">
-                        <UniformGrid VerticalAlignment="Center"
-                                     HorizontalAlignment="Center"
-                                     Columns="2">
+                <Border BorderBrush="#333"
+                        BorderThickness="2"
+                        Margin="5">
+                    <UniformGrid VerticalAlignment="Center"
+                                 HorizontalAlignment="Center"
+                                 Columns="2">
 
-                            <Label Content="Selected Program:"
+                        <Label Content="Selected Program:"
                                    Style="{StaticResource LabelStyler}"/>
-                            <ComboBox ItemsSource="{Binding ProductionPrograms}"
-                                      SelectedIndex="{Binding CurrentProgram, Mode=TwoWay}"
-                                      ItemContainerStyle="{StaticResource ComboBoxItemStyle}"
-                                      DisplayMemberPath="ProgramName"
-                                      />
+                        <ComboBox ItemsSource="{Binding ProductionPrograms}"
+                                  SelectedIndex="{Binding CurrentProgram, Mode=TwoWay}"
+                                  ItemContainerStyle="{StaticResource ComboBoxItemStyle}"
+                                  DisplayMemberPath="ProgramName"/>
 
-                            <Label Content="Cycle Count: "
+                        <Label Content="Cycle Count: "
+                               Style="{StaticResource LabelStyler}"/>
+                        <Label Content="{Binding CycleCount}"
+                               Style="{StaticResource LabelStyler}"/>
+                        <Label Content="Program Step: " 
+                               Style="{StaticResource LabelStyler}"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="{Binding ElementName=CardDeckListBox, Converter={StaticResource AddOneToValue}, Path=SelectedIndex}"
                                    Style="{StaticResource LabelStyler}"/>
-                            <Label Content="{Binding CycleCount}"
-                                   Style="{StaticResource LabelStyler}"/>
-                            <Label Content="Program Step: " 
-                                   Style="{StaticResource LabelStyler}"/>
-                            <StackPanel Orientation="Horizontal">
-                                <Label Content="{Binding ElementName=CardDeckListBox, Converter={StaticResource AddOneToValue}, Path=SelectedIndex}"
-                                   Style="{StaticResource LabelStyler}"/>
-                                <Label Content=" / "
+                            <Label Content=" / "
                                    Style="{StaticResource LabelStyler}"/>
                             <Label Content="{Binding CardCount}"
                                    Style="{StaticResource LabelStyler}"/>
-                            </StackPanel>
-                            <Label Content="Cycle Time: "
-                                   Style="{StaticResource LabelStyler}"/>
-                            <Label Content="{Binding CycleTime}"
-                                   Style="{StaticResource LabelStyler}"/>
-                        </UniformGrid>
-                    </Border>
+                        </StackPanel>
+                        <Label Content="Cycle Time: "
+                               Style="{StaticResource LabelStyler}"/>
+                        <Label Content="{Binding CycleTime}"
+                               Style="{StaticResource LabelStyler}"/>
+                    </UniformGrid>
+                </Border>
 
 
                 <DockPanel LastChildFill="False"
-                   HorizontalAlignment="Center"
-                   Margin="5"
-                   Grid.Column="1">
+                           HorizontalAlignment="Center"
+                           Margin="5"
+                           Grid.Column="1">
 
                     <Button x:Name="PlayButton"
                             Command="{Binding PlayButton}"
@@ -429,8 +449,8 @@
                         <Button.Content>
                             <Grid Height="32" Width="32">
                                 <StackPanel Orientation="Horizontal"
-                                        HorizontalAlignment="Center"
-                                        VerticalAlignment="Center">
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
                                     <Path Fill="#FF239118">
                                         <Path.Stroke>
                                             <LinearGradientBrush EndPoint="0,0" StartPoint="1,1">
@@ -476,12 +496,12 @@
                         <Button.Content>
                             <Grid Width="32" Height="32" >
                                 <StackPanel Orientation="Horizontal"
-                                  HorizontalAlignment="Center"
-                                  VerticalAlignment="Center">
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center">
                                     <Border BorderThickness="1">
                                         <Rectangle Width="8"
-                                       Fill="#c00"
-                                       Height="25"/>
+                                                   Fill="#c00"
+                                                   Height="25"/>
                                         <Border.BorderBrush>
                                             <LinearGradientBrush EndPoint="0,0" StartPoint="1,1">
                                                 <GradientStop Color="#FF881111" Offset="0.5"/>
@@ -490,12 +510,12 @@
                                         </Border.BorderBrush>
                                     </Border>
                                     <Rectangle Width="3"
-                                       Fill="Transparent"
-                                       Height="25"/>
+                                               Fill="Transparent"
+                                               Height="25"/>
                                     <Border BorderThickness="1">
                                         <Rectangle Width="8"
-                                       Fill="#c00"
-                                       Height="25"/>
+                                                   Fill="#c00"
+                                                   Height="25"/>
                                         <Border.BorderBrush>
                                             <LinearGradientBrush EndPoint="0,0" StartPoint="1,1">
                                                 <GradientStop Color="#FF881111" Offset="1"/>
@@ -516,15 +536,11 @@
                      Stretch="Uniform"
                      DockPanel.Dock="Top"
                      StretchDirection="DownOnly">
-            <Image Source="{Binding ProcessDisplay}"
-                   Margin="5"/>
+                <Image Source="{Binding ProcessDisplay}"
+                       Margin="5"/>
             </Viewbox>
 
-
-
         </DockPanel>
-
-
 
         <ListBox x:Name="CardDeckListBox"
                  ItemsSource="{Binding ProductionDeck}"

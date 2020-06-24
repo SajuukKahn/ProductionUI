@@ -1,33 +1,32 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace ProductionUI.Models
 {
     class ProductionCardTimer
     {
-
-        private readonly System.Timers.Timer t;
-
-        private DateTime _startTime;
+        private Task _timer;
+        public Task Timer
+        {
+            get
+            {
+                return _timer;
+            }
+        }
 
         public ProductionCardTimer()
         {
-            t = new System.Timers.Timer(1);
-            t.Start();
+            _timer = Task.Run(async () =>
+            {
+                await Task.Delay(TimeSpan.FromMilliseconds(100));
+                return .1;
+            });
         }
 
-        public void ResetRunTime()
+        public void StartTimer()
         {
-            _startTime = System.DateTime.Now;
-        }
-
-        private TimeSpan Tick(object sender, EventArgs e)
-        {
-            return DateTime.Now - _startTime;
-        }
-
-        ~ProductionCardTimer()
-        {
-            t.Stop();
+            _timer.Start();
         }
     }
 }

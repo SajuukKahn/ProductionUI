@@ -31,8 +31,6 @@ namespace ProductionUI.Models
             StepStatus = stepStatus;
         }
         
-
-
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string prop)
         {
