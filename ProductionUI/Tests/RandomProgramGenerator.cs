@@ -1,17 +1,25 @@
 ﻿using ProductionUI.Models;
 using ProductionUI.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
+using System.Windows.Documents;
 using System.Windows.Media.Imaging;
 
 namespace ProductionUI.Tests
 {
     public class RandomProgramGenerator
     {
-        ProductionCardCollection _productionCardDeckModel;
+        ProductionCardCollection _productionCardCollection;
         ProductionCardDeckViewModel _productionCardDeckViewModel;
         ProductionProgramCollection _productionProgramCollection;
+
+        private string[] RandomCoordinates()
+        {
+            return new string[] { new Random().Next(-1200, 78000).ToString(), new Random().Next(-1200, 78000).ToString(), new Random().Next(-1200, 8000).ToString() };
+        }
 
         public ProductionCardCollection GenerateRandom(ProductionCardCollection productionCardDeckModel)
         {
@@ -27,42 +35,65 @@ namespace ProductionUI.Tests
                 "Dot",
                 "Part Presense Check"
             };
-            _productionCardDeckModel = productionCardDeckModel;
+            _productionCardCollection = productionCardDeckModel;
 
-            int randSize = new Random().Next(3, 5);
             BitmapImage image;//= new BitmapImage(new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative));
             image = new BitmapImage(new Uri("/Tests/TestImages/PCB5.bmp", UriKind.Relative));
 
+            List<ProductionCardSubStepModel> fidList = new List<ProductionCardSubStepModel>
+            {
+                new ProductionCardSubStepModel("Fiducial A", RandomCoordinates()),
+                new ProductionCardSubStepModel("Fiducial B", RandomCoordinates())
+            };
             ProductionCardModel firstCardModel = new ProductionCardModel()
             {
+                CardSubSteps = fidList,
                 StepTitle = "Fiducial Check",
                 StepImage = image
             };
 
-            _productionCardDeckModel.Add(firstCardModel);
+            _productionCardCollection.Add(firstCardModel);
+            int randSize = new Random().Next(4, 30);
+            List<ProductionCardSubStepModel> surfaceList = new List<ProductionCardSubStepModel>();
+            for (int i = 0; i < randSize; i++)
+            {
+                surfaceList.Add(new ProductionCardSubStepModel("Surface " + (i + 1), RandomCoordinates()));
+            }
             ProductionCardModel secondCardModel = new ProductionCardModel()
             {
+                CardSubSteps = surfaceList,
                 StepTitle = "Surface Height Check",
                 StepImage = image
             };
+            _productionCardCollection.Add(secondCardModel);
 
-            _productionCardDeckModel.Add(secondCardModel);
-
+            randSize = new Random().Next(15, 200);
             for (int i = 0; i < randSize; i++)
             {
+                string stepTitle = TitleArray[new Random().Next(TitleArray.Length)];
+                int randSteps = new Random().Next(1, 12);
+                List<ProductionCardSubStepModel> randomSteps = new List<ProductionCardSubStepModel>();
+
+                for (int j = 0; j < randSteps; j++)
+                {
+                    randomSteps.Add(new ProductionCardSubStepModel(stepTitle + (j + 1), RandomCoordinates()));
+                }
+
                 ProductionCardModel cardModel = new ProductionCardModel()
                 {
-                    StepTitle = TitleArray[new Random().Next(TitleArray.Length)]
+                    CardSubSteps = randomSteps,
+                    StepTitle = stepTitle,
                 };
-                if(i % 5 == 0)
+
+                if(new Random().Next(0, 3) == 1)
                 {
                     cardModel.StepImage = image;
                 }
 
-                _productionCardDeckModel.Add(cardModel);
+                _productionCardCollection.Add(cardModel);
             }
 
-            return _productionCardDeckModel;
+            return _productionCardCollection;
         }
 
         public ProductionCardDeckViewModel GenerateRandom(ProductionCardDeckViewModel productionCardDeckViewModel)
@@ -96,24 +127,12 @@ namespace ProductionUI.Tests
 
             for (int i = 0; i < randsize; i++)
             {
-                string progname = (char)new Random().Next(65, 90) + (char)new Random().Next(65, 90) + new Random().Next(1, 102).ToString() + " WRev_" + (char)new Random().Next(65, 90);
+                string progname = ((char)new Random().Next(65, 90)).ToString() + ((char)new Random().Next(65, 90)).ToString() + new Random().Next(1, 102).ToString() + " Rev_" + (char)new Random().Next(65, 90);
 
                 _productionProgramCollection.Add(new ProductionProgramModel(progname, relations[new Random().Next(relations.Length)] ,makernames[new Random().Next(makernames.Length)]));
             }
 
             return _productionProgramCollection;
-        }
-
-        public async void RunRandomProgram(ProductionCardDeckViewModel productionCardDeckViewModel)
-        {
-            for (int i = 0; i < productionCardDeckViewModel.ProductionDeck.Count; i++)
-            {
-                while (!productionCardDeckViewModel.PlayBackRunning)
-                {
-                }
-                productionCardDeckViewModel.CurrentIndex = i;
-                await Task.Delay(TimeSpan.FromSeconds(new Random().Next(1, 5) + new Random().NextDouble()));
-            }
         }
 
         private string ProgramName

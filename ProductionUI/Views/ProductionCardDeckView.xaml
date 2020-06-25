@@ -145,12 +145,14 @@
                 </Style.Setters>
             </Style>
 
-            <DataTemplate x:Key="ListItemDataTemplate">
+
+            <DataTemplate x:Key="ListItemDataTemplate"
+                          x:Name="ListItemDataTemplate">
                 <Border CornerRadius="12"
+                        x:Name="CardBorder"
                         FocusVisualStyle="{x:Null}"
                         BorderThickness="2"
                         ClipToBounds="False"
-                        x:Name="CardBorder"
                         VerticalAlignment="Stretch"
                         HorizontalAlignment="Stretch"
                         UseLayoutRounding="True">
@@ -188,16 +190,30 @@
                             <ScaleTransform/>
                         </DockPanel.RenderTransform>
 
+
+                        <Image Source="{Binding StepImage}"
+                          x:Name="StepImage"
+                          Visibility="Collapsed"
+                          Stretch="Uniform"
+                          Height="0"
+                          Width="0"
+                          UseLayoutRounding="True"
+                               DockPanel.Dock="Right"
+                               HorizontalAlignment="Stretch"
+                               VerticalAlignment="Stretch"/>
+
+
                         <StackPanel x:Name="CardDataStackPanel"
-                                DockPanel.Dock="Left"
+                                DockPanel.Dock="Top"
                                 VerticalAlignment="Stretch"
-                                HorizontalAlignment="Stretch"
+                                HorizontalAlignment="Left"
                                 Margin="5"
-                                UseLayoutRounding="True">
+                                UseLayoutRounding="True"
+                                    ClipToBounds="False">
 
                             <TextBlock Text="{Binding StepTitle}"
                                        FontFamily="Consolas"
-                                       FontSize="14"
+                                       FontSize="12"
                                        x:Name="StepTitle"
                                        ClipToBounds="True"
                                        UseLayoutRounding="True"
@@ -213,26 +229,80 @@
 
                             <TextBlock Text="{Binding StepStatus}"
                                     FontFamily="Consolas"
-                                    FontSize="14"
+                                    FontSize="12"
                                     x:Name="StepStatus"
                                     UseLayoutRounding="True">
                             </TextBlock>
 
-                            <TextBlock Text="{Binding StepActiveTime}"
+                            <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.CardTime}"                                       
                                    FontFamily="Consolas"
-                                   FontSize="14"
+                                   FontSize="12"
                                    x:Name="StepActiveTime"
                                    UseLayoutRounding="True">
                             </TextBlock>
                         </StackPanel>
 
-                        <Image Source="{Binding StepImage}"
-                          x:Name="StepImage"
-                          Visibility="Collapsed"
-                          Stretch="Uniform"
-                          Height="0"
-                          Width="0"
-                          UseLayoutRounding="True"/>
+                        <ListBox x:Name="CardSubStepListView"
+                                 ItemsSource="{Binding CardSubSteps}"
+                                 SelectedIndex="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.CurrentSubStepIndex, Mode=TwoWay}"
+                                 SelectionMode="Single"
+                                 DockPanel.Dock="Left"
+                                 ClipToBounds="False"
+                                 HorizontalAlignment="Stretch"
+                                 VerticalAlignment="Center"
+                                 Visibility="{Binding IsActiveStep, Converter={StaticResource BoolToVisibility}}"
+                                 AlternationCount="{Binding CardSubSteps.Count}">
+
+                            
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <CustomControls:VerticalCarouselPanel IsItemsHost="True"
+                                                                              MaxHeight="35"
+                                                                              MaxWidth="700"/>
+
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
+
+
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListBoxItem}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                                <ContentPresenter FocusVisualStyle="{x:Null}">
+                                                    <ContentPresenter.Content>
+                                                        <Border Background="Transparent">
+                                                            <UniformGrid Columns="2" HorizontalAlignment="Left">
+                                                                <Label Content="{Binding SubStepName}"
+                                                                           FontFamily="Consolas"
+                                                                           FontSize="10"/>
+                                                                <Label Content="{Binding FullSubStepData}"
+                                                                           FontFamily="Consolas"
+                                                                           FontSize="10"/>
+                                                            </UniformGrid>
+                                                        </Border>
+                                                    </ContentPresenter.Content>
+                                                </ContentPresenter>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+
+                            <ListBox.Template>
+                                <ControlTemplate TargetType="{x:Type ListBox}">
+                                    <Grid VerticalAlignment="Bottom">
+                                        <ItemsPresenter/>
+                                    </Grid>
+                                </ControlTemplate>
+                            </ListBox.Template>
+
+                        </ListBox>
+
+
+
+
 
                     </DockPanel>
                 </Border>
@@ -418,7 +488,7 @@
                                    Style="{StaticResource LabelStyler}"/>
                             <Label Content=" / "
                                    Style="{StaticResource LabelStyler}"/>
-                            <Label Content="{Binding CardCount}"
+                            <Label Content="{Binding ProductionCards.Count}"
                                    Style="{StaticResource LabelStyler}"/>
                         </StackPanel>
                         <Label Content="Cycle Time: "
@@ -485,7 +555,7 @@
                             Background="Transparent"
                             Style="{StaticResource ButtonStyler}"
                             Template="{StaticResource PlayBackButtonControlTemplate}"
-                            Visibility="{Binding PauseAvailable,Converter={StaticResource BoolToVisibility}}"
+                            Visibility="{Binding PauseAvailable, Converter={StaticResource BoolToVisibility}}"
                             BorderThickness="1">
 
                         <Button.RenderTransformOrigin>
@@ -543,17 +613,17 @@
         </DockPanel>
 
         <ListBox x:Name="CardDeckListBox"
-                 ItemsSource="{Binding ProductionDeck}"
-                 AlternationCount="{Binding ProductionDeck.Count}"
+                 ItemsSource="{Binding ProductionCards}"
+                 AlternationCount="{Binding ProductionCards.Count}"
                  MaxHeight="{Binding ElementName=TopPanelGrid, Path=ActualHeight}"
-                 DockPanel.Dock="Bottom"
                  PreviewKeyDown="CardDeckListBox_PreviewKeyDown"
                  VerticalAlignment="Stretch"
                  SelectedIndex="{Binding CurrentIndex}"
                  SelectionMode="Single"
                  Background="Violet"
                  Grid.Row="1"
-                 IsHitTestVisible="False">
+                 IsHitTestVisible="True">
+            
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <CustomControls:CarouselPanel IsItemsHost="True"/>
@@ -573,7 +643,7 @@
                     <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                 </Style>
             </ListBox.ItemContainerStyle>
-            
+
             <ListBox.Template>
                 <ControlTemplate TargetType="{x:Type ListBox}">
                     <Grid VerticalAlignment="Bottom">
@@ -581,11 +651,6 @@
                     </Grid>
                 </ControlTemplate>
             </ListBox.Template>
-
-            <ListBox.Resources>
-
-            </ListBox.Resources>
-
         </ListBox>
     </Grid>
 </UserControl>

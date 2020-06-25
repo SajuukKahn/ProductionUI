@@ -1,24 +1,28 @@
-﻿using System;
+﻿using ProductionUI.Tests;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace ProductionUI.Models
 {
-    class ProductionCardSubStepCollection : ObservableCollection<ProductionCardSubStepModel>
+    public class ProductionCardSubStepCollection : ObservableCollection<ProductionCardSubStepModel>, INotifyPropertyChanged
     {
-        public List<ProductionCardSubStepModel> ProductionCardSubStepModel
+        private List<ProductionCardSubStepModel> _subSteps = new List<ProductionCardSubStepModel>();
+        public List<ProductionCardSubStepModel> SubSteps
         {
             get
             {
-                return _productionCardSubStepModel;
+                return _subSteps;
             }
             set
             {
-                _productionCardSubStepModel = value;
+                _subSteps = value;
             }
         }
-        private List<ProductionCardSubStepModel> _productionCardSubStepModel = new List<ProductionCardSubStepModel>();
 
+        public ProductionCardSubStepCollection()
+        {
+        }
     }
 }

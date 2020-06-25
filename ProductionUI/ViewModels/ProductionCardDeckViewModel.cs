@@ -19,18 +19,39 @@ namespace ProductionUI.ViewModels
 {
     public class ProductionCardDeckViewModel : INotifyPropertyChanged
     {
-        private ProductionCardCollection _productionDeck = new ProductionCardCollection();
-        public ProductionCardCollection ProductionDeck
+        public ICommand PlayButton { get; set; }
+        public ICommand PauseButton { get; set; }
+
+        private CancellationTokenSource _cycleTimerCancellationTokenSource;
+        private CancellationToken _cycleTimerCancelToken;
+        private Task _cycleTimeTask;
+
+
+        public ProductionCardDeckViewModel()
+        {
+            PlayButton = new RelayCommand(o => PlayPressed());
+            PauseButton = new RelayCommand(o => PausePressed());
+            PlayAvailable = false;
+            PauseAvailable = false;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged(string prop)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
+        }
+
+        private ProductionCardCollection _productionCards = new ProductionCardCollection();
+        public ProductionCardCollection ProductionCards
         {
             get
             {
-                return _productionDeck;
+                return _productionCards;
             }
             set
             {
-                _productionDeck = value;
-                OnPropertyChanged(nameof(ProductionDeck));
-                OnPropertyChanged(nameof(CardCount));
+                _productionCards = value;
+                OnPropertyChanged(nameof(ProductionCards));
             }
         }
 
@@ -48,26 +69,6 @@ namespace ProductionUI.ViewModels
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged(string prop)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
-        }
-
-        private MediaElement _processImage;
-        public MediaElement ProcessImage
-        {
-            get
-            {
-                return _processImage;
-            }
-            set
-            {
-                _processImage = value;
-                OnPropertyChanged(nameof(ProcessImage));
-            }
-        }
-
         private ImageSource _processDisplay;
         public ImageSource ProcessDisplay
         {
@@ -81,6 +82,78 @@ namespace ProductionUI.ViewModels
                 OnPropertyChanged(nameof(ProcessDisplay));
             }
         }
+
+
+        private string _programName;
+        public string ProgramName
+        {
+            get
+            {
+                return _programName;
+            }
+            set
+            {
+                _programName = value;
+                OnPropertyChanged(nameof(ProgramName));
+            }
+        }
+
+        private double _cycleTime;
+        public double CycleTime
+        {
+            get
+            {
+                return Math.Round(_cycleTime, 2);
+            }
+            set
+            {
+                _cycleTime = Math.Round(value, 2);
+                OnPropertyChanged(nameof(CycleTime));
+            }
+        }
+
+
+        private double _cardTime;
+        public double CardTime
+        {
+            get
+            {
+                return Math.Round(_cardTime, 2);
+            }
+            set
+            {
+                _cardTime = Math.Round(value, 2);
+                OnPropertyChanged(nameof(CardTime));
+            }
+        }
+
+        private long _cycleCount;
+        public long CycleCount
+        {
+            get
+            {
+                return _cycleCount;
+            }
+            set
+            {
+                _cycleCount = value;
+                OnPropertyChanged(nameof(CycleCount));
+            }
+        }
+
+        //private MediaElement _processImage;
+        //public MediaElement ProcessImage
+        //{
+        //    get
+        //    {
+        //        return _processImage;
+        //    }
+        //    set
+        //    {
+        //        _processImage = value;
+        //        OnPropertyChanged(nameof(ProcessImage));
+        //    }
+        //}
 
         private int _currentIndex;
         public int CurrentIndex
@@ -114,6 +187,20 @@ namespace ProductionUI.ViewModels
             }
         }
 
+        private int _currentSubStepIndex;
+        public int CurrentSubStepIndex
+        {
+            get
+            {
+                return _currentSubStepIndex;
+            }
+            set
+            {
+                _currentSubStepIndex = value;
+                OnPropertyChanged(nameof(CurrentSubStepIndex));
+            }
+        }
+
         private bool _playBackRunning;
         public bool PlayBackRunning
         {
@@ -127,6 +214,8 @@ namespace ProductionUI.ViewModels
                 OnPropertyChanged(nameof(PlayBackRunning));
             }
         }
+
+        private bool _playBackPaused;
 
         private bool _playAvailable;
         public bool PlayAvailable
@@ -156,72 +245,10 @@ namespace ProductionUI.ViewModels
             }
         }
 
-        private string _programName;
-        public string ProgramName
-        {
-            get
-            {
-                return _programName;
-            }
-            set
-            {
-                _programName = value;
-                OnPropertyChanged(nameof(ProgramName));
-            }
-        }
-
-        private DateTime _dateTime = new DateTime();
-
-        private void SetCycleTimer()
-        {
-            _dateTime = DateTime.Now;
-        }
-
-        private string GetCycleTimer()
-        {
-            return new DateTimeConverter().ConvertToString(DateTime.Now - _dateTime);
-        }
-
-        private double _cycleTime;
-        public double CycleTime
-        {
-            get
-            {
-                return _cycleTime;
-            }
-            set
-            {
-                _cycleTime = value;
-                OnPropertyChanged(nameof(CycleTime));
-            }
-        }
-
-
-        private long _cycleCount;
-        public long CycleCount
-        {
-            get
-            {
-                return _cycleCount;
-            }
-            set
-            {
-                _cycleCount = value;
-                OnPropertyChanged(nameof(CycleCount));
-            }
-        }
-
-        public int CardCount
-        {
-            get
-            {
-                return _productionDeck.Count;
-            }
-        }
 
         public int NextCard(int value, bool StepPassed = true, bool StepComplete = true)
         {
-            if (value > -1 && CurrentIndex > -1 && CurrentIndex < _productionDeck.Count)
+            if (value > -1 && CurrentIndex > -1 && CurrentIndex < _productionCards.Count)
             {
 
                 bool setCompleted = false;
@@ -238,21 +265,19 @@ namespace ProductionUI.ViewModels
                 {
                     if (setCompleted)
                     {
-                        _productionDeck[j].StepPassed = StepPassed;
-                        _productionDeck[j].StepComplete = StepComplete;
+                        _productionCards[j].StepPassed = StepPassed;
+                        _productionCards[j].StepComplete = StepComplete;
                     }
                     else
                     {
-                        _productionDeck[j].StepPassed = false;
-                        _productionDeck[j].StepComplete = false;
+                        _productionCards[j].StepPassed = false;
+                        _productionCards[j].StepComplete = false;
                     }
-                    _productionDeck[j].IsActiveStep = false;
-                 //   _productionDeck[j].StopCardTimer();
+                    _productionCards[j].IsActiveStep = false;
                 }
 
-                _productionDeck[value].IsActiveStep = true;
-                _productionDeck[value].StepComplete = false;
-              //  _productionDeck[value].StartCardTimer();
+                _productionCards[value].IsActiveStep = true;
+                _productionCards[value].StepComplete = false;
             }
 
             return value;
@@ -271,21 +296,92 @@ namespace ProductionUI.ViewModels
             {
                 PlayAvailable = false;
                 PauseAvailable = true;
-                if(_cycleTimeTask.Status != TaskStatus.Running)
-                {
-                    _cycleTimeTask.Start();
-                }
+                StartCycleTimer();
+                StartCardTimer();
             }
             PlayBackRunning = true;
         }
 
+        private void StartCycleTimer()
+        {
+            if (_cycleTimeTask?.Status != TaskStatus.Running || _cycleTimeTask == null)
+            {
+
+                if (_cycleTimerCancellationTokenSource == null)
+                {
+                    _cycleTimerCancellationTokenSource = new CancellationTokenSource();
+                    _cycleTimerCancelToken = _cycleTimerCancellationTokenSource.Token;
+                }
+                else
+                {
+                    _cycleTimerCancellationTokenSource.Cancel();
+                    while(!_cycleTimeTask.IsCompleted)
+                    {
+                    }
+                    _cycleTimerCancellationTokenSource.Dispose();
+                    _cycleTimerCancellationTokenSource = new CancellationTokenSource();
+                    _cycleTimerCancelToken = _cycleTimerCancellationTokenSource.Token;
+                }
+                _cycleTimeTask = Task.Run(async () =>
+                {
+                    while (!_cycleTimerCancelToken.IsCancellationRequested && !DeckCompleted)
+                    {
+                        await Task.Delay(TimeSpan.FromMilliseconds(10));
+                        if (!_cycleTimerCancelToken.IsCancellationRequested)
+                        {
+                            CycleTime += 0.01;
+                        }
+                    }
+                    return;
+                }, _cycleTimerCancelToken);
+            }
+        }
+
+        private CancellationTokenSource _cardTimerCancellationTokenSource;
+        private CancellationToken _cardTimerCancelToken;
+        private Task _cardTimeTask;
+
+        private void StartCardTimer()
+        {
+            if (_cycleTimeTask?.Status != TaskStatus.Running || _cycleTimeTask == null)
+            {
+
+                if (_cardTimerCancellationTokenSource == null)
+                {
+                    _cardTimerCancellationTokenSource = new CancellationTokenSource();
+                    _cardTimerCancelToken = _cardTimerCancellationTokenSource.Token;
+                }
+                else
+                {
+                    _cardTimerCancellationTokenSource.Cancel();
+                    while (!_cardTimeTask.IsCompleted)
+                    {
+                    }
+                    _cardTimerCancellationTokenSource.Dispose();
+                    _cardTimerCancellationTokenSource = new CancellationTokenSource();
+                    _cardTimerCancelToken = _cardTimerCancellationTokenSource.Token;
+                }
+                _cardTimeTask = Task.Run(async () =>
+                {
+                    while (!_cardTimerCancelToken.IsCancellationRequested)
+                    {
+                        await Task.Delay(TimeSpan.FromMilliseconds(10));
+                        if (!_cardTimerCancelToken.IsCancellationRequested && !_playBackPaused)
+                        {
+                            CycleTime += 0.01;
+                        }
+                    }
+                    return;
+                }, _cardTimerCancelToken);
+            }
+        }
+
         public void LoadProductionDeck(bool reUseProgram = false)
         {
+            _cycleTimerCancellationTokenSource?.Cancel();
             PlayBackRunning = false;
             DeckCompleted = false;
-            CycleTime = 0;
             LoadRandomProgram(reUseProgram);
-            _timerCancellationTokenSource.Cancel();
             CycleTime = 0;
             PlayAvailable = true;
             PauseAvailable = false;
@@ -301,17 +397,25 @@ namespace ProductionUI.ViewModels
             set
             {
                 _deckCompleted = value;
+                OnPropertyChanged(nameof(DeckCompleted));
                 if(value)
                 {
-                    LoadProductionDeck(true);
+                    var task = Task.Run(async() =>
+                    {
+                        Debug.WriteLine("Beginning ~3s wait");
+                        await Task.Delay(2750);
+                        Debug.WriteLine("Async load of production deck?");
+                        LoadProductionDeck(true);
+                        Debug.WriteLine("Async load success");
+                    });
                 }
             }
         }
 
+        #region MechanicalTurk
 
-        private CancellationTokenSource _cancellationTokenSource;
-        private CancellationToken _cancelToken;
-
+        private CancellationTokenSource _randomProgramCancellationTokenSource;
+        private CancellationToken _randomProgramCancelToken;
 
         private void LoadRandomProgram(bool reUseProgram = false)
         {
@@ -319,120 +423,80 @@ namespace ProductionUI.ViewModels
             { 
                 RandomProgramGenerator randomProgramGenerator = new RandomProgramGenerator();
                 ProcessDisplay = new BitmapImage(new Uri("/Tests/TestImages/PCB" + new Random().Next(1, 9).ToString() + ".bmp", UriKind.Relative));
-                _productionDeck.Clear();
-                ProductionDeck = randomProgramGenerator.GenerateRandom(_productionDeck);
+                _productionCards.Clear();
+                ProductionCards = randomProgramGenerator.GenerateRandom(_productionCards);
                 randomProgramGenerator.GenerateRandom(this);
             }
-            if (_cancellationTokenSource == null)
+            if (_randomProgramCancellationTokenSource == null)
             {
-                _cancellationTokenSource = new CancellationTokenSource();
-                _cancelToken = _cancellationTokenSource.Token;
+                _randomProgramCancellationTokenSource = new CancellationTokenSource();
+                _randomProgramCancelToken = _randomProgramCancellationTokenSource.Token;
             }
             else
             {
-                _cancellationTokenSource.Cancel();
-                _cancellationTokenSource.Dispose();
-                _cancellationTokenSource = new CancellationTokenSource();
-                _cancelToken = _cancellationTokenSource.Token;
+                _randomProgramCancellationTokenSource.Cancel();
+                _randomProgramCancellationTokenSource.Dispose();
+                _randomProgramCancellationTokenSource = new CancellationTokenSource();
+                _randomProgramCancelToken = _randomProgramCancellationTokenSource.Token;
             }
 
             var task = Task.Run(async() =>
             {
-                Debug.WriteLine(this.ProductionDeck.Count);
-                this.CurrentIndex = 0;
-                //for (int i = 1; i < this.ProductionDeck.Count; i++) ;
+                CurrentIndex = 0;
 
-                while(this.CurrentIndex < (this.ProductionDeck.Count - 1))
+                while(CurrentIndex < (ProductionCards.Count - 1))
                 {
-                    Debug.WriteLine("CurrentIndex: " + this.CurrentIndex + " count: " + this.ProductionDeck.Count);
-                    while (!this.PlayBackRunning)
+                    while (!PlayBackRunning)
                     {
-                        if (_cancelToken.IsCancellationRequested)
+                        _playBackPaused = true;
+                        if (_randomProgramCancelToken.IsCancellationRequested)
                         {
                             return;
                         }
                     }
-
-                    if (!_cancelToken.IsCancellationRequested)
+                    _playBackPaused = false;
+                    if (!_randomProgramCancelToken.IsCancellationRequested)
                     {
-                        await Task.Delay((TimeSpan.FromSeconds(new Random().Next(1, 5) + new Random().NextDouble())));
-                        while (!this.PlayBackRunning)
+                        while (CurrentSubStepIndex < (_productionCards[CurrentIndex].CardSubSteps.Count - 1))
                         {
-                            if (_cancelToken.IsCancellationRequested)
+                            await Task.Delay((TimeSpan.FromSeconds(new Random().Next(1, 5) + new Random().NextDouble())));
+                            while (!PlayBackRunning)
+                            {
+                                _playBackPaused = true;
+                                if (_randomProgramCancelToken.IsCancellationRequested)
+                                {
+                                    return;
+                                }
+                            }
+                            CurrentSubStepIndex++;
+                        }
+                        _playBackPaused = false;
+                        await Task.Delay(TimeSpan.FromSeconds(new Random().Next(1, 5) + new Random().NextDouble()));
+                        while (!PlayBackRunning)
+                        {
+                            _playBackPaused = true;
+                            if (_randomProgramCancelToken.IsCancellationRequested)
                             {
                                 return;
                             }
                         }
-                        this.CurrentIndex++;
+                        CurrentSubStepIndex = 0;
+                        CurrentIndex++;
+                        CardTime = 0;
                     }
                     else
                     {
                         return;
                     }
-                    Debug.WriteLine(this.CurrentIndex < this.ProductionDeck.Count - 1);
                 }
-                Debug.WriteLine("EXIT CurrentIndex: " + this.CurrentIndex + " count: " + this.ProductionDeck.Count);
-                await Task.Delay((TimeSpan.FromSeconds(new Random().Next(1, 5) + new Random().NextDouble())));
-                this.DeckCompleted = true;
-            },_cancelToken);
+                DeckCompleted = true;
+            },_randomProgramCancelToken);
 
             NextCard(0);
-            OnPropertyChanged(nameof(ProductionDeck));
+            OnPropertyChanged(nameof(ProductionCards));
         }
 
-        private CancellationTokenSource _timerCancellationTokenSource;
-        private CancellationToken _timerCancelToken;
-        private Task _cycleTimeTask;
-
-        public ProductionCardDeckViewModel()
-        {
-            PlayButton = new RelayCommand(o => PlayPressed());
-            PauseButton = new RelayCommand(o => PausePressed());
-            PlayAvailable = false;
-            PauseAvailable = false;
-
-            if (_timerCancellationTokenSource == null)
-            {
-                _timerCancellationTokenSource = new CancellationTokenSource();
-                _timerCancelToken = _timerCancellationTokenSource.Token;
-            }
-            else
-            {
-                _timerCancellationTokenSource.Cancel();
-                _timerCancellationTokenSource.Dispose();
-                _timerCancellationTokenSource = new CancellationTokenSource();
-                _timerCancelToken = _timerCancellationTokenSource.Token;
-            }
-
-            _cycleTimeTask = Task.Run(async () =>
-            {
-                while(true && !_timerCancelToken.IsCancellationRequested)
-                {
-                    while(!_timerCancelToken.IsCancellationRequested)
-                    { 
-                        await Task.Delay(TimeSpan.FromMilliseconds(10));
-                        CycleTime += 0.01;
-                    }
-                }
-                return;
-            }, _timerCancelToken);
-
-        }
-
-        private void CycleTime_Tick()
-        {
-
-        }
-
-        public event EventHandler PlayBackRunningChanged;
-        protected virtual void OnPlayBackRunningChanged(EventArgs e)
-        {
-            EventHandler handler = PlayBackRunningChanged;
-            handler?.Invoke(this, e);
-        }
-
-        public ICommand PlayButton { get; set; }
-        public ICommand PauseButton { get; set; }
+        #endregion
     }
 }
 

@@ -1,11 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 
 namespace ProductionUI.Models
 {
-    class ProductionCardSubStepModel
+    public class ProductionCardSubStepModel 
     {
+        public ProductionCardSubStepModel(string subStepName, string[] subStepData)
+        {
+            SubStepName = subStepName;
+            SubStepData = subStepData;
+        }
 
         private string _subStepName;
         public string SubStepName
@@ -16,7 +22,15 @@ namespace ProductionUI.Models
             }
             set 
             { 
-                _subStepName = value; 
+                _subStepName = value;
+            }
+        }
+
+        public string FullSubStepData
+        {
+            get
+            {
+                return string.Join(", ", _subStepData);
             }
         }
 
@@ -24,13 +38,14 @@ namespace ProductionUI.Models
         public string[] SubStepData
         {
             get 
-            { 
+            {
                 return _subStepData; 
             }
             set 
             {
-                _subStepData = value; 
+                _subStepData = value;
             }
+
         }
     }
 }

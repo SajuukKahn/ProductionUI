@@ -20,7 +20,7 @@ namespace ProductionUI.Models
         private List<ProductionCardModel> _productionCardModel = new List<ProductionCardModel>();
 
         public MediaElement MediaElement { get; set; }
-        
+
         public ProductionCardCollection(MediaElement mediaElement = null)
         {
             MediaElement = mediaElement;
