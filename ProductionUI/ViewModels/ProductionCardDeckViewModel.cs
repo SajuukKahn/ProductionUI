@@ -4,9 +4,11 @@ using ProductionUI.Models;
 using ProductionUI.Tests;
 using System;
 using System.ComponentModel;
+using System.Data;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -21,16 +23,19 @@ namespace ProductionUI.ViewModels
     {
         public ICommand PlayButton { get; set; }
         public ICommand PauseButton { get; set; }
+        public ICommand ConfirmButton { get; set; }
+        public ICommand CancelButton { get; set; }
 
         private CancellationTokenSource _cycleTimerCancellationTokenSource;
         private CancellationToken _cycleTimerCancelToken;
         private Task _cycleTimeTask;
 
-
         public ProductionCardDeckViewModel()
         {
             PlayButton = new RelayCommand(o => PlayPressed());
             PauseButton = new RelayCommand(o => PausePressed());
+            ConfirmButton = new RelayCommand(o => ConfirmProgramChange());
+            CancelButton = new RelayCommand(o => CancelProgramChange());
             PlayAvailable = false;
             PauseAvailable = false;
         }
@@ -83,31 +88,16 @@ namespace ProductionUI.ViewModels
             }
         }
 
-
-        private string _programName;
-        public string ProgramName
-        {
-            get
-            {
-                return _programName;
-            }
-            set
-            {
-                _programName = value;
-                OnPropertyChanged(nameof(ProgramName));
-            }
-        }
-
         private double _cycleTime;
         public double CycleTime
         {
             get
             {
-                return Math.Round(_cycleTime, 2);
+                return _cycleTime;
             }
             set
             {
-                _cycleTime = Math.Round(value, 2);
+                _cycleTime = value;
                 OnPropertyChanged(nameof(CycleTime));
             }
         }
@@ -118,11 +108,11 @@ namespace ProductionUI.ViewModels
         {
             get
             {
-                return Math.Round(_cardTime, 2);
+                return _cardTime;
             }
             set
             {
-                _cardTime = Math.Round(value, 2);
+                _cardTime = value;
                 OnPropertyChanged(nameof(CardTime));
             }
         }
@@ -169,21 +159,17 @@ namespace ProductionUI.ViewModels
             }
         }
 
-        private int _currentProgram  = -1;
-        public int CurrentProgram
+        private bool _programSelectionConfirmationRaised;
+        public bool ProgramSelectionConfirmationRaised
         {
             get
             {
-                return _currentProgram;
+                return _programSelectionConfirmationRaised;
             }
             set
             {
-                if(_currentProgram != value)
-                {
-                    _currentProgram = value;
-                    LoadProductionDeck();
-                    OnPropertyChanged(nameof(CurrentProgram));
-                }
+                _programSelectionConfirmationRaised = value;
+                OnPropertyChanged(nameof(ProgramSelectionConfirmationRaised));
             }
         }
 
@@ -212,6 +198,20 @@ namespace ProductionUI.ViewModels
             {
                 _playBackRunning = value;
                 OnPropertyChanged(nameof(PlayBackRunning));
+            }
+        }
+
+        private bool _allowProgramChange = true;
+        public bool AllowProgramChange
+        {
+            get
+            {
+                return _allowProgramChange;
+            }
+            set
+            {
+                _allowProgramChange = value;
+                OnPropertyChanged(nameof(AllowProgramChange));
             }
         }
 
@@ -283,9 +283,82 @@ namespace ProductionUI.ViewModels
             return value;
         }
 
+        private int _newProgramSelection = -1;
+        private int _currentProgram = -1;
+        public int CurrentProgram
+        {
+            get
+            {
+                return _currentProgram;
+            }
+            set
+            {
+                if (_currentProgram != value)
+                {
+                    VerifyChange(value);
+                }
+            }
+        }
+
+        private string _oldProgramName;
+        private string _programName;
+        public string ProgramName
+        {
+            get
+            {
+                return _programName;
+            }
+            set
+            {
+                _oldProgramName = _programName;
+                _programName = value;
+                OnPropertyChanged(nameof(ProgramName));
+            }
+        }
+
+        private void VerifyChange(int newProgramSelectionValue)
+        {
+            if (CycleTime == 0 || DeckCompleted)
+            {
+                _currentProgram = newProgramSelectionValue;
+                OnPropertyChanged(nameof(CurrentProgram));
+                LoadProductionDeck();
+                _newProgramSelection = -1;
+                return;
+            }
+            PauseAvailable = false;
+            PlayAvailable = false;
+            AllowProgramChange = false;
+            ProgramSelectionConfirmationRaised = true;
+            _newProgramSelection = newProgramSelectionValue;
+        }
+
+        private void ConfirmProgramChange()
+        {
+            _currentProgram = _newProgramSelection;
+            AllowProgramChange = true;
+            OnPropertyChanged(nameof(CurrentProgram));
+            LoadProductionDeck();
+            PlayAvailable = true;
+            ProgramSelectionConfirmationRaised = false;
+            _newProgramSelection = -1;
+        }
+
+
+        private void CancelProgramChange()
+        {
+            _newProgramSelection = -1;
+            AllowProgramChange = true;
+            CurrentProgram = _currentProgram;
+            PlayAvailable = true;
+            ProgramName = _oldProgramName;
+            ProgramSelectionConfirmationRaised = false;
+        }
+
         private void PausePressed()
         {
             PlayBackRunning = false;
+            AllowProgramChange = true;
             PlayAvailable = true;
             PauseAvailable = false;
         }
@@ -294,6 +367,7 @@ namespace ProductionUI.ViewModels
         {
             if(PlayBackRunning == false)
             {
+                AllowProgramChange = false;
                 PlayAvailable = false;
                 PauseAvailable = true;
                 StartCycleTimer();
@@ -368,7 +442,7 @@ namespace ProductionUI.ViewModels
                         await Task.Delay(TimeSpan.FromMilliseconds(10));
                         if (!_cardTimerCancelToken.IsCancellationRequested && !_playBackPaused)
                         {
-                            CycleTime += 0.01;
+                            CardTime += 0.01;
                         }
                     }
                     return;
@@ -380,6 +454,7 @@ namespace ProductionUI.ViewModels
         {
             _cycleTimerCancellationTokenSource?.Cancel();
             PlayBackRunning = false;
+            AllowProgramChange = true;
             DeckCompleted = false;
             LoadRandomProgram(reUseProgram);
             CycleTime = 0;

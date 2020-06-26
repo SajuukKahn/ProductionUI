@@ -12,6 +12,22 @@ namespace ProductionUI.Tests
 {
     public class RandomProgramGenerator
     {
+
+        //TODO:
+        /*
+         *
+         * due: July 1
+         * 
+         * MVVM relationship clarification and clearer separation of concerns
+         * 
+         * If a model (ProductionCardDeckModel) basically has nothing in it you can just get rid of it. It's perfectly fine to have no model for a View/ViewModel pair, and in fact that tends to happen more often than not.
+         * Get in the habit of creating an interface for all your Views and ViewModels as well. You'll need those for registration later when doing injection.
+         * 
+         * later:
+         * prism integration
+         * telerik controls
+         */
+
         ProductionCardCollection _productionCardCollection;
         ProductionCardDeckViewModel _productionCardDeckViewModel;
         ProductionProgramCollection _productionProgramCollection;

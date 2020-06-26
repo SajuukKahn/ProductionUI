@@ -30,11 +30,79 @@
                                                          A=".08"
                                                          B="0"/>
             <CustomControls:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
+            <CustomControls:InvertBooleanConverter x:Key="InvertBoolean"/>
+            <CustomControls:DoubleToTimeLikeConverter x:Key="DoubleToTime"/>
+
+            <!--Control colors.-->
+            <Color x:Key="DisabledControlLightColor">#FFAAAAAA</Color>
+            <Color x:Key="DisabledControlDarkColor">#FF553030</Color>
+            <Color x:Key="DisabledForegroundColor">#FF888888</Color>
+
+            <Color x:Key="SelectedBackgroundColor">#FFEFB3B3</Color>
+            <Color x:Key="SelectedUnfocusedColor">#FFDDDDDD</Color>
+
+            <Color x:Key="ControlLightColor">#FFECECEC</Color>
+            <Color x:Key="ControlMediumColor">#FF444444</Color>
+            <Color x:Key="ControlDarkColor">#FFCC3434</Color>
+
+            <Color x:Key="ControlMouseOverColor">#FF232323</Color>
+            <Color x:Key="ControlPressedColor">#FF211AA9</Color>
+            <Color x:Key="GlyphColor">#FFFEFEFE</Color>
+            <Color x:Key="GlyphMouseOver">sc#1, 0.004391443, 0.002428215, 0.242281124</Color>
+
+            <!--Border colors-->
+            <Color x:Key="BorderLightColor">#FFCCCCCC</Color>
+            <Color x:Key="BorderMediumColor">#FF888888</Color>
+            <Color x:Key="BorderDarkColor">#FF444444</Color>
+
+            <Color x:Key="PressedBorderLightColor">#FFFFFFFF</Color>
+            <Color x:Key="PressedBorderDarkColor">#FF222222</Color>
+
+            <Color x:Key="DisabledBorderLightColor">#FFAAAAAA</Color>
+            <Color x:Key="DisabledBorderDarkColor">#FF2A2A2A</Color>
+
+            <Color x:Key="DefaultBorderBrushDarkColor">Black</Color>
+
+            <!--Control-specific resources.-->
+            <Color x:Key="HeaderTopColor">#FFC5CBF9</Color>
+            <Color x:Key="DatagridCurrentCellBorderColor">Black</Color>
+            <Color x:Key="SliderTrackDarkColor">#FFC5CBF9</Color>
+
+            <Color x:Key="NavButtonFrameColor">#FF3843C4</Color>
+
+            <LinearGradientBrush x:Key="MenuPopupBrush"
+                     EndPoint="0.5,1"
+                     StartPoint="0.5,0">
+                <GradientStop Color="{DynamicResource ControlLightColor}"
+                Offset="0" />
+                <GradientStop Color="{DynamicResource ControlMediumColor}"
+                Offset="0.5" />
+                <GradientStop Color="{DynamicResource ControlLightColor}"
+                Offset="1" />
+            </LinearGradientBrush>
+
+            <LinearGradientBrush x:Key="ProgressBarIndicatorAnimatedFill"
+                     StartPoint="0,0"
+                     EndPoint="1,0">
+                <LinearGradientBrush.GradientStops>
+                    <GradientStopCollection>
+                        <GradientStop Color="#000000FF"
+                    Offset="0" />
+                        <GradientStop Color="#600000FF"
+                    Offset="0.4" />
+                        <GradientStop Color="#600000FF"
+                    Offset="0.6" />
+                        <GradientStop Color="#000000FF"
+                    Offset="1" />
+                    </GradientStopCollection>
+                </LinearGradientBrush.GradientStops>
+            </LinearGradientBrush>
 
 
             <Style x:Key="LabelStyler" TargetType="{x:Type Label}">
                 <Setter Property="FontFamily" Value="Consolas"/>
-                <Setter Property="FontSize" Value="12"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="Margin" Value="0,4"/>
             </Style>
 
             <Style x:Key="ButtonStyler" TargetType="{x:Type Button}">
@@ -116,47 +184,283 @@
                 </ControlTemplate.Triggers>
             </ControlTemplate>
 
+            <ControlTemplate x:Key="ComboBoxToggleButton"
+                             TargetType="{x:Type ToggleButton}">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="20"/>
+                    </Grid.ColumnDefinitions>
+                    <VisualStateManager.VisualStateGroups>
+                        <VisualStateGroup x:Name="CommonStates">
+                            <VisualState x:Name="Normal" />
+                            <VisualState x:Name="MouseOver">
+                                <Storyboard>
+                                    <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)"
+                                                                  Storyboard.TargetName="Border">
+                                        <EasingColorKeyFrame KeyTime="0" Value="{StaticResource ControlMouseOverColor}" />
+                                    </ColorAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </VisualState>
+                            <VisualState x:Name="Pressed" />
+                            <VisualState x:Name="Disabled">
+                                <Storyboard>
+                                    <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)"
+                                                                  Storyboard.TargetName="Border">
+                                        <EasingColorKeyFrame KeyTime="0" Value="{StaticResource DisabledControlDarkColor}" />
+                                    </ColorAnimationUsingKeyFrames>
+                                    <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" 
+                                                                  Storyboard.TargetName="Arrow">
+                                        <EasingColorKeyFrame KeyTime="0" Value="{StaticResource DisabledForegroundColor}" />
+                                    </ColorAnimationUsingKeyFrames>
+                                    <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Border.BorderBrush).(GradientBrush.GradientStops)[1].(GradientStop.Color)"
+                                                                  Storyboard.TargetName="Border">
+                                        <EasingColorKeyFrame KeyTime="0" Value="{StaticResource DisabledBorderDarkColor}" />
+                                    </ColorAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </VisualState>
+                        </VisualStateGroup>
+                        <VisualStateGroup x:Name="CheckStates">
+                            <VisualState x:Name="Checked">
+                                <Storyboard>
+                                    <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)"
+                                                                  Storyboard.TargetName="Border">
+                                        <EasingColorKeyFrame KeyTime="0" Value="{StaticResource DefaultBorderBrushDarkColor}" />
+                                    </ColorAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </VisualState>
+                            <VisualState x:Name="Unchecked" />
+                            <VisualState x:Name="Indeterminate" />
+                        </VisualStateGroup>
+                    </VisualStateManager.VisualStateGroups>
+                    <Border x:Name="Border"
+                            Grid.ColumnSpan="2"
+                            CornerRadius="1"
+                            BorderThickness="1">
+                        <Border.BorderBrush>
+                            <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+                                <GradientStop Color="{DynamicResource BorderMediumColor}" Offset="0" />
+                                <GradientStop Color="{DynamicResource BorderDarkColor}" Offset="1" />
+                            </LinearGradientBrush>
+                        </Border.BorderBrush>
+                        <Border.Background>
 
-            <Style x:Key="ComboBoxItemStyle"
-                   TargetType="{x:Type ComboBoxItem}">
-                <Style.Setters>
-                    <Setter Property="Template">
-                        <Setter.Value>
-                            <ControlTemplate>
-                                <StackPanel>
-                                <UniformGrid Columns="3"
-                                             Background="LightGray">
+                            <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                <LinearGradientBrush.GradientStops>
+                                    <GradientStopCollection>
+                                        <GradientStop Color="{DynamicResource ControlLightColor}" />
+                                        <GradientStop Color="{DynamicResource ControlMediumColor}" Offset="1.0" />
+                                    </GradientStopCollection>
+                                </LinearGradientBrush.GradientStops>
+                            </LinearGradientBrush>
 
-                                    <Label Content="{Binding ProgramName}"
-                                           Style="{StaticResource LabelStyler}"
-                                           HorizontalAlignment="Left"/>
-                                    <Label Content="{Binding ProductRelationship}"
-                                           Style="{StaticResource LabelStyler}"
-                                           HorizontalAlignment="Left"/>
-                                    <Label Content="{Binding ProgramCreator}"
-                                           Style="{StaticResource LabelStyler}"
-                                           HorizontalAlignment="Left"/>
+                        </Border.Background>
+                    </Border>
+                    <Border Grid.Column="0" 
+                            CornerRadius="7,0,0,7"
+                            Margin="2" >
+                        <Border.Background>
+                            <SolidColorBrush Color="{StaticResource ControlLightColor}"/>
+                        </Border.Background>
+                    </Border>
+                    <Path x:Name="Arrow"
+                          Grid.Column="1"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          Data="M 0 0 L 4 4 L 8 0 Z">
+                        <Path.Fill>
+                            <SolidColorBrush Color="{DynamicResource GlyphColor}"/>
+                        </Path.Fill>
+                    </Path>
+                </Grid>
+            </ControlTemplate>
 
-                                </UniformGrid>
-                                </StackPanel>
-                            </ControlTemplate>
-                        </Setter.Value>
-                    </Setter>
-                </Style.Setters>
+            <ControlTemplate x:Key="ComboBoxTextBox" TargetType="{x:Type TextBox}">
+                <Border x:Name="PART_ContentHost"
+                        Focusable="False"
+                        Background="{TemplateBinding Background}"/>
+            </ControlTemplate>
+
+            <Style x:Key="{x:Type ComboBox}"
+                   TargetType="{x:Type ComboBox}">
+                <Setter Property="SnapsToDevicePixels" Value="true" />
+                <Setter Property="OverridesDefaultStyle" Value="true" />
+                <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
+                <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+                <Setter Property="ScrollViewer.CanContentScroll" Value="true" />
+                <Setter Property="MinWidth" Value="40" />
+                <Setter Property="MinHeight" Value="20" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ComboBox}">
+                            <Grid>
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal" />
+                                        <VisualState x:Name="MouseOver" />
+                                        <VisualState x:Name="Disabled">
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="PART_EditableTextBox"
+                                                                              Storyboard.TargetProperty="(TextElement.Foreground).(SolidColorBrush.Color)">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="{StaticResource DisabledForegroundColor}" />
+                                                </ColorAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+
+                                </VisualStateManager.VisualStateGroups>
+                                <ToggleButton x:Name="ToggleButton"
+                                              Template="{StaticResource ComboBoxToggleButton}"
+                                              Grid.Column="2"
+                                              Focusable="false"
+                                              ClickMode="Press"
+                                              IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                <ContentPresenter x:Name="ContentSite"
+                                                  IsHitTestVisible="False"
+                                                  Content="{TemplateBinding SelectionBoxItem}"
+                                                  ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                                  ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                                  Margin="3,3,23,3"
+                                                  VerticalAlignment="Stretch"
+                                                  HorizontalAlignment="Left">
+                                </ContentPresenter>
+                                <TextBox x:Name="PART_EditableTextBox"
+                                         Style="{x:Null}"
+                                         Template="{StaticResource ComboBoxTextBox}"
+                                         HorizontalAlignment="Left"
+                                         VerticalAlignment="Bottom"
+                                         Margin="3,3,23,3"
+                                         Focusable="True"
+                                         Background="Transparent"
+                                         Visibility="Collapsed"
+                                         IsReadOnly="{TemplateBinding IsReadOnly}" />
+                                <Popup x:Name="Popup"
+                                       Placement="Bottom"
+                                       IsOpen="{TemplateBinding IsDropDownOpen}"
+                                       AllowsTransparency="True"
+                                       Focusable="False"
+                                       PopupAnimation="Scroll">
+                                    <Grid x:Name="DropDown"
+                                          SnapsToDevicePixels="True"
+                                          MinWidth="{TemplateBinding ActualWidth}"
+                                          MaxHeight="{TemplateBinding MaxDropDownHeight}">
+                                        <Border x:Name="DropDownBorder"
+                                                BorderThickness="0">
+                                            <Border.BorderBrush>
+                                                <SolidColorBrush Color="{DynamicResource SliderTrackDarkColor}" />
+                                            </Border.BorderBrush>
+                                            <Border.Background>
+                                                <SolidColorBrush Color="{DynamicResource ControlLightColor}" />
+                                            </Border.Background>
+                                        </Border>
+                                        <ScrollViewer Margin="1"
+                                                      SnapsToDevicePixels="True">
+                                            <ItemsPresenter/>
+                                        </ScrollViewer>
+                                    </Grid>
+                                </Popup>
+                            </Grid>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="HasItems" Value="false">
+                                    <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95" />
+                                </Trigger>
+                                <Trigger Property="IsGrouping" Value="true">
+                                    <Setter Property="ScrollViewer.CanContentScroll" Value="false" />
+                                </Trigger>
+                                <Trigger SourceName="Popup" Property="AllowsTransparency" Value="true">
+                                    <Setter TargetName="DropDownBorder" Property="CornerRadius" Value="2" />
+                                    <Setter TargetName="DropDownBorder" Property="Margin" Value="0,2,0,0" />
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
             </Style>
 
+            <Style x:Key="{x:Type ComboBoxItem}"
+                   TargetType="{x:Type ComboBoxItem}">
+                <Setter Property="SnapsToDevicePixels"
+                        Value="true" />
+                <Setter Property="OverridesDefaultStyle"
+                        Value="true" />
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ComboBoxItem}">
+                            <Border x:Name="Border"
+                                    Padding="1"
+                                    SnapsToDevicePixels="true"
+                                    Background="Transparent">
+                                <Border.Triggers>
+                                    <EventTrigger RoutedEvent="MouseEnter">
+                                        <BeginStoryboard x:Name="ComboBoxItemEnter">
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
+                                                                              Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
+                                                    <EasingColorKeyFrame KeyTime="0"
+                                                                         Value="{StaticResource HeaderTopColor}" />
+                                                </ColorAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                    <EventTrigger RoutedEvent="MouseLeave">
+                                        <RemoveStoryboard  BeginStoryboardName="ComboBoxItemEnter"/>
+                                    </EventTrigger>
+                                </Border.Triggers>
+                                
+                                <VisualStateManager.VisualStateGroups>
+                                    <VisualStateGroup x:Name="SelectionStates">
+                                        <VisualState x:Name="Unselected"/>
+                                        <VisualState x:Name="Selected">
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
+                                                                              Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
+                                                    <EasingColorKeyFrame KeyTime="0"
+                                                                         Value="{StaticResource SelectedBackgroundColor}" />
+                                                </ColorAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                        <VisualState x:Name="SelectedUnfocused">
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
+                                                                              Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
+                                                    <EasingColorKeyFrame KeyTime="0"
+                                                                         Value="{StaticResource SelectedUnfocusedColor}" />
+                                                </ColorAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateManager.VisualStateGroups>
+                                <ContentPresenter>
+                                    <ContentPresenter.ContentTemplate>
+                                        <DataTemplate>
+                                            <UniformGrid Columns="3">
+                                                <Label Content="{Binding ProgramName}"
+                                                       Grid.Column="0"
+                                                       HorizontalAlignment="Left"/>
+                                                <Label Content="{Binding ProductRelationship}"
+                                                       Grid.Column="1"
+                                                       HorizontalAlignment="Left"/>
+                                                <Label Content="{Binding ProgramCreator}"
+                                                       Grid.Column="2"
+                                                       HorizontalAlignment="Left"/>
+                                            </UniformGrid>
 
-            <DataTemplate x:Key="ListItemDataTemplate"
-                          x:Name="ListItemDataTemplate">
+                                        </DataTemplate>
+                                    </ContentPresenter.ContentTemplate>
+                                </ContentPresenter>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+            <DataTemplate x:Key="ListItemDataTemplate">
                 <Border CornerRadius="12"
                         x:Name="CardBorder"
                         FocusVisualStyle="{x:Null}"
                         BorderThickness="2"
-                        ClipToBounds="False"
-                        VerticalAlignment="Stretch"
-                        HorizontalAlignment="Stretch"
                         UseLayoutRounding="True">
-                    
+
                     <Border.BorderBrush>
                         <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                             <LinearGradientBrush.RelativeTransform>
@@ -167,142 +471,158 @@
                                     <TranslateTransform/>
                                 </TransformGroup>
                             </LinearGradientBrush.RelativeTransform>
-                            <GradientStop x:Name="BorderBrushGradientStop1"  Color="#FF444444"/>
-                            <GradientStop x:Name="BorderBrushGradientStop2"  Color="#FF666666" Offset="1"/>
+                            <GradientStop x:Name="BorderBrushGradientStop1" Color="#FF666666"/>
+                            <GradientStop x:Name="BorderBrushGradientStop2" Color="#FF444444" Offset="1"/>
                         </LinearGradientBrush>
                     </Border.BorderBrush>
-                    
+
                     <Border.Background>
                         <LinearGradientBrush EndPoint="0.5,2" StartPoint="3,0">
                             <GradientStop Color="#999" Offset="0.7"/>
                             <GradientStop Color="#fff" Offset="1.1"/>
                         </LinearGradientBrush>
                     </Border.Background>
-                    
-                    <Border.BitmapEffect>
-                        <BlurBitmapEffect Radius="1" KernelType="Gaussian"/>
-                    </Border.BitmapEffect>
 
                     <DockPanel x:Name="CardDataDockPanel"
-                           LastChildFill="True"
-                           SnapsToDevicePixels="True">
+                               Margin="3"
+                               HorizontalAlignment="Stretch">
                         <DockPanel.RenderTransform>
                             <ScaleTransform/>
                         </DockPanel.RenderTransform>
 
 
-                        <Image Source="{Binding StepImage}"
-                          x:Name="StepImage"
-                          Visibility="Collapsed"
-                          Stretch="Uniform"
-                          Height="0"
-                          Width="0"
-                          UseLayoutRounding="True"
-                               DockPanel.Dock="Right"
-                               HorizontalAlignment="Stretch"
-                               VerticalAlignment="Stretch"/>
+                        <Viewbox Stretch="Uniform" 
+                                 StretchDirection="DownOnly"
+                                 DockPanel.Dock="Right">
+                            <Image Source="{Binding StepImage}"
+                                   x:Name="StepImage"
+                                   Visibility="Collapsed"
+                                   Stretch="Uniform"
+                                   Width="0"
+                                   UseLayoutRounding="True"
+                                   Margin="0,0,3,0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Stretch"/>
+                        </Viewbox>
 
 
                         <StackPanel x:Name="CardDataStackPanel"
-                                DockPanel.Dock="Top"
-                                VerticalAlignment="Stretch"
-                                HorizontalAlignment="Left"
-                                Margin="5"
-                                UseLayoutRounding="True"
+                                    DockPanel.Dock="Top"
+                                    VerticalAlignment="Stretch"
+                                    HorizontalAlignment="Left"
+                                    Margin="0"
+                                    UseLayoutRounding="True"
                                     ClipToBounds="False">
 
                             <TextBlock Text="{Binding StepTitle}"
                                        FontFamily="Consolas"
-                                       FontSize="12"
+                                       FontSize="14"
                                        x:Name="StepTitle"
                                        ClipToBounds="True"
                                        UseLayoutRounding="True"
                                        TextTrimming="CharacterEllipsis">
                                 <TextBlock.LayoutTransform>
                                     <TransformGroup>
-                                        <RotateTransform Angle="90" 
-                                                         CenterX="0.5" 
+                                        <RotateTransform Angle="90"
+                                                         CenterX="0.5"
                                                          CenterY="0.5"/>
                                     </TransformGroup>
                                 </TextBlock.LayoutTransform>
                             </TextBlock>
 
                             <TextBlock Text="{Binding StepStatus}"
-                                    FontFamily="Consolas"
-                                    FontSize="12"
-                                    x:Name="StepStatus"
-                                    UseLayoutRounding="True">
-                            </TextBlock>
+                                       FontFamily="Consolas"
+                                       FontSize="14"
+                                       x:Name="StepStatus"
+                                       UseLayoutRounding="True"/>
 
-                            <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.CardTime}"                                       
-                                   FontFamily="Consolas"
-                                   FontSize="12"
-                                   x:Name="StepActiveTime"
-                                   UseLayoutRounding="True">
-                            </TextBlock>
+                            <StackPanel Orientation="Horizontal"
+                                        x:Name="SubStepCounterPanel">
+                                <TextBlock Text="{Binding ElementName=CardSubStepListView, Path=SelectedIndex, Converter={StaticResource AddOneToValue}}"
+                                           FontFamily="Consolas"
+                                           FontSize="14"
+                                           x:Name="StepCounter"
+                                           UseLayoutRounding="True"/>
+
+                                <TextBlock Text=" / "
+                                           FontFamily="Consolas"
+                                           FontSize="14"/>
+
+                                <TextBlock Text="{Binding ElementName=CardSubStepListView, Path=AlternationCount}"
+                                           FontFamily="Consolas"
+                                           FontSize="14"/>
+                            </StackPanel>
+
+                            <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.CardTime, Mode=TwoWay, Converter={StaticResource DoubleToTime}}"                                       
+                                       FontFamily="Consolas"
+                                       FontSize="14"
+                                       x:Name="StepActiveTime"
+                                       UseLayoutRounding="True"/>
+
                         </StackPanel>
 
-                        <ListBox x:Name="CardSubStepListView"
-                                 ItemsSource="{Binding CardSubSteps}"
-                                 SelectedIndex="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.CurrentSubStepIndex, Mode=TwoWay}"
-                                 SelectionMode="Single"
+                        <Viewbox Stretch="Uniform" 
+                                 StretchDirection="DownOnly" 
+                                 MaxWidth="195"
                                  DockPanel.Dock="Left"
-                                 ClipToBounds="False"
-                                 HorizontalAlignment="Stretch"
-                                 VerticalAlignment="Center"
-                                 Visibility="{Binding IsActiveStep, Converter={StaticResource BoolToVisibility}}"
-                                 AlternationCount="{Binding CardSubSteps.Count}">
+                                 HorizontalAlignment="Left">
+                            <ListBox x:Name="CardSubStepListView"
+                                     ItemsSource="{Binding CardSubSteps}"
+                                     SelectedIndex="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.CurrentSubStepIndex, Mode=TwoWay}"
+                                     SelectionMode="Single"
+                                     VerticalAlignment="Center"
+                                     Visibility="{Binding IsActiveStep, Converter={StaticResource BoolToVisibility}}"
+                                     AlternationCount="{Binding CardSubSteps.Count}">
 
-                            
-                            <ListBox.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <CustomControls:VerticalCarouselPanel IsItemsHost="True"
+                                <ListBox.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <CustomControls:VerticalCarouselPanel IsItemsHost="True"
                                                                               MaxHeight="35"
-                                                                              MaxWidth="700"/>
+                                                                              MaxWidth="230"/>
+                                    </ItemsPanelTemplate>
+                                </ListBox.ItemsPanel>
 
-                                </ItemsPanelTemplate>
-                            </ListBox.ItemsPanel>
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="{x:Type ListBoxItem}">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                                    <ContentPresenter FocusVisualStyle="{x:Null}">
+                                                        <ContentPresenter.Content>
+                                                            <Border Background="Transparent">
 
+                                                                    <Grid>
+                                                                        <Grid.ColumnDefinitions>
+                                                                            <ColumnDefinition Width="*"/>
+                                                                            <ColumnDefinition Width="2*"/>
+                                                                        </Grid.ColumnDefinitions>
+                                                                        <Label Content="{Binding SubStepName}"
+                                                                               FontFamily="Consolas"
+                                                                               Grid.Column="0"/>
+                                                                        <Label Content="{Binding FullSubStepData}"
+                                                                               FontFamily="Consolas"
+                                                                               Grid.Column="1"/>
+                                                                    </Grid>
+                                                                </Border>
+                                                        </ContentPresenter.Content>
+                                                    </ContentPresenter>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
 
-                            <ListBox.ItemContainerStyle>
-                                <Style TargetType="{x:Type ListBoxItem}">
-                                    <Setter Property="Template">
-                                        <Setter.Value>
-                                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                                <ContentPresenter FocusVisualStyle="{x:Null}">
-                                                    <ContentPresenter.Content>
-                                                        <Border Background="Transparent">
-                                                            <UniformGrid Columns="2" HorizontalAlignment="Left">
-                                                                <Label Content="{Binding SubStepName}"
-                                                                           FontFamily="Consolas"
-                                                                           FontSize="10"/>
-                                                                <Label Content="{Binding FullSubStepData}"
-                                                                           FontFamily="Consolas"
-                                                                           FontSize="10"/>
-                                                            </UniformGrid>
-                                                        </Border>
-                                                    </ContentPresenter.Content>
-                                                </ContentPresenter>
-                                            </ControlTemplate>
-                                        </Setter.Value>
-                                    </Setter>
-                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-                                </Style>
-                            </ListBox.ItemContainerStyle>
+                                <ListBox.Template>
+                                    <ControlTemplate TargetType="{x:Type ListBox}">
+                                        <Grid VerticalAlignment="Bottom">
+                                            <ItemsPresenter/>
+                                        </Grid>
+                                    </ControlTemplate>
+                                </ListBox.Template>
 
-                            <ListBox.Template>
-                                <ControlTemplate TargetType="{x:Type ListBox}">
-                                    <Grid VerticalAlignment="Bottom">
-                                        <ItemsPresenter/>
-                                    </Grid>
-                                </ControlTemplate>
-                            </ListBox.Template>
-
-                        </ListBox>
-
-
-
-
+                            </ListBox>
+                        </Viewbox>
 
                     </DockPanel>
                 </Border>
@@ -317,10 +637,11 @@
                             <Setter TargetName="StepTitle" Property="TextBlock.FontSize" Value="10"/>
                             <Setter TargetName="StepStatus" Property="Visibility" Value="Collapsed"/>
                             <Setter TargetName="StepActiveTime" Property="Visibility" Value="Collapsed"/>
+                            <Setter TargetName="SubStepCounterPanel" Property="Visibility" Value="Collapsed"/>
                             <Setter TargetName="StepImage" Property="Visibility" Value="Collapsed"/>
                             <Setter TargetName="StepImage" Property="Height" Value="0"/>
                             <Setter TargetName="StepImage" Property="Width" Value="0"/>
-                            <Setter TargetName="CardDataStackPanel" Property="DockPanel.Dock" Value="Right"/>
+                            <Setter TargetName="CardDataDockPanel" Property="HorizontalAlignment" Value="Right"/>
                         </MultiDataTrigger.Setters>
                     </MultiDataTrigger>
 
@@ -333,23 +654,13 @@
                             <Setter TargetName="StepTitle" Property="TextBlock.FontSize" Value="10"/>
                             <Setter TargetName="StepStatus" Property="Visibility" Value="Collapsed"/>
                             <Setter TargetName="StepActiveTime" Property="Visibility" Value="Collapsed"/>
+                            <Setter TargetName="SubStepCounterPanel" Property="Visibility" Value="Collapsed"/>
                             <Setter TargetName="StepImage" Property="Visibility" Value="Collapsed"/>
                             <Setter TargetName="StepImage" Property="Height" Value="0"/>
                             <Setter TargetName="StepImage" Property="Width" Value="0"/>
-                            <Setter TargetName="CardDataStackPanel" Property="DockPanel.Dock" Value="Left" />
+                            <Setter TargetName="CardDataDockPanel" Property="HorizontalAlignment" Value="Left" />
                         </MultiDataTrigger.Setters>
                     </MultiDataTrigger>
-
-                    <!--<DataTrigger Binding="{Binding IsActiveStep}" Value="True">
-                        <Setter TargetName="StepTitle" Property="LayoutTransform">
-                            <Setter.Value>
-                                <RotateTransform Angle="0"/>
-                            </Setter.Value>
-                        </Setter>
-                        <Setter TargetName="StepImage" Property="Visibility" Value="Visible"/>
-                        <Setter TargetName="StepImage" Property="Height" Value="{Binding ElementName=CardDataDockPanel, Path=ActualHeight, Converter={StaticResource TwoThirdValue}}"/>
-                        <Setter TargetName="StepImage" Property="Width" Value="{Binding ElementName=CardDataDockPanel, Path=ActualWidth, Converter={StaticResource TwoThirdValue}}"/>
-                    </DataTrigger>-->
 
                     <MultiDataTrigger>
                         <MultiDataTrigger.Conditions>
@@ -364,11 +675,10 @@
                                 </Setter.Value>
                             </Setter>
                             <Setter TargetName="StepImage" Property="Visibility" Value="Visible"/>
-                            <Setter TargetName="StepImage" Property="Height" Value="{Binding ElementName=CardDataDockPanel, Path=ActualHeight, Converter={StaticResource TwoThirdValue}}"/>
-                            <Setter TargetName="StepImage" Property="Width" Value="{Binding ElementName=CardDataDockPanel, Path=ActualWidth, Converter={StaticResource TwoThirdValue}}"/>
+                            <Setter TargetName="StepImage" Property="Width" Value="100"/>
                         </MultiDataTrigger.Setters>
                     </MultiDataTrigger>
-                    
+
                     <MultiDataTrigger>
                         <MultiDataTrigger.Conditions>
                             <Condition Binding="{Binding IsActiveStep}" Value="True"/>
@@ -380,20 +690,15 @@
                                 <Storyboard>
                                     <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="(Border.BorderBrush).(Brush.RelativeTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" RepeatBehavior="Forever">
                                         <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
-                                        <EasingDoubleKeyFrame KeyTime="00:00:01" Value="359"/>
+                                        <EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="359"/>
                                     </DoubleAnimationUsingKeyFrames>
-                                    <ThicknessAnimation Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="(Border.BorderThickness)" FillBehavior="HoldEnd" To="3,3,3,3" Duration="00:00:00.5">
-                                        <ThicknessAnimation.EasingFunction>
-                                            <BackEase EasingMode="EaseIn"/>
-                                        </ThicknessAnimation.EasingFunction>
-                                    </ThicknessAnimation>
                                     <ColorAnimationUsingKeyFrames Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="(Border.BorderBrush).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
                                         <EasingColorKeyFrame KeyTime="00:00:00" Value="#FF444444"/>
-                                        <EasingColorKeyFrame KeyTime="00:00:01" Value="#FFD61010"/>
+                                        <EasingColorKeyFrame KeyTime="00:00:00.5" Value="#FFD61010"/>
                                     </ColorAnimationUsingKeyFrames>
                                     <ColorAnimationUsingKeyFrames Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="(Border.BorderBrush).(GradientBrush.GradientStops)[0].(GradientStop.Color)">
                                         <EasingColorKeyFrame KeyTime="00:00:00" Value="#FF666666"/>
-                                        <EasingColorKeyFrame KeyTime="00:00:01" Value="#FF7C1919"/>
+                                        <EasingColorKeyFrame KeyTime="00:00:00.5" Value="#FF7C1919"/>
                                     </ColorAnimationUsingKeyFrames>
                                 </Storyboard>
                             </BeginStoryboard>
@@ -403,20 +708,15 @@
                             <BeginStoryboard>
                                 <Storyboard>
                                     <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="(Border.BorderBrush).(Brush.RelativeTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)">
-                                        <EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="0"/>
+                                        <EasingDoubleKeyFrame KeyTime="00:00:00.25" Value="0"/>
                                     </DoubleAnimationUsingKeyFrames>
-                                    <ThicknessAnimation Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="(Border.BorderThickness)" FillBehavior="HoldEnd" To="2,2,2,2"  Duration="00:00:00.5">
-                                        <ThicknessAnimation.EasingFunction>
-                                            <BackEase EasingMode="EaseIn"/>
-                                        </ThicknessAnimation.EasingFunction>
-                                    </ThicknessAnimation>
                                     <ColorAnimationUsingKeyFrames Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="(Border.BorderBrush).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
                                         <EasingColorKeyFrame KeyTime="00:00:00" Value="#FFD61010"/>
-                                        <EasingColorKeyFrame KeyTime="00:00:00.5" Value="#FF444444"/>
+                                        <EasingColorKeyFrame KeyTime="00:00:00.25" Value="#FF444444"/>
                                     </ColorAnimationUsingKeyFrames>
                                     <ColorAnimationUsingKeyFrames Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="(Border.BorderBrush).(GradientBrush.GradientStops)[0].(GradientStop.Color)">
                                         <EasingColorKeyFrame KeyTime="00:00:00" Value="#FF7C1919"/>
-                                        <EasingColorKeyFrame KeyTime="00:00:00.5" Value="#FF666666"/>
+                                        <EasingColorKeyFrame KeyTime="00:00:00.25" Value="#FF666666"/>
                                     </ColorAnimationUsingKeyFrames>
                                 </Storyboard>
                             </BeginStoryboard>
@@ -429,15 +729,11 @@
                                 </Setter.Value>
                             </Setter>
                             <Setter TargetName="StepImage" Property="Visibility" Value="Visible"/>
-                            <Setter TargetName="StepImage" Property="Height" Value="{Binding ElementName=CardDataDockPanel, Path=ActualHeight, Converter={StaticResource TwoThirdValue}}"/>
-                            <Setter TargetName="StepImage" Property="Width" Value="{Binding ElementName=CardDataDockPanel, Path=ActualWidth, Converter={StaticResource TwoThirdValue}}"/>
+                            <Setter TargetName="StepImage" Property="Width" Value="100"/>
                         </MultiDataTrigger.Setters>
                     </MultiDataTrigger>
-
                 </DataTemplate.Triggers>
-
             </DataTemplate>
-
         </ResourceDictionary>
     </UserControl.Resources>
 
@@ -457,7 +753,6 @@
         <DockPanel LastChildFill="True"
                    Background="#555">
 
-
             <StackPanel Background="Gray"
                         VerticalAlignment="Stretch"
                         HorizontalAlignment="Right"
@@ -472,9 +767,10 @@
 
                         <Label Content="Selected Program:"
                                    Style="{StaticResource LabelStyler}"/>
+
                         <ComboBox ItemsSource="{Binding ProductionPrograms}"
                                   SelectedIndex="{Binding CurrentProgram, Mode=TwoWay}"
-                                  ItemContainerStyle="{StaticResource ComboBoxItemStyle}"
+                                  IsEnabled="{Binding AllowProgramChange}"
                                   DisplayMemberPath="ProgramName"/>
 
                         <Label Content="Cycle Count: "
@@ -493,11 +789,10 @@
                         </StackPanel>
                         <Label Content="Cycle Time: "
                                Style="{StaticResource LabelStyler}"/>
-                        <Label Content="{Binding CycleTime}"
+                        <Label Content="{Binding CycleTime, Converter={StaticResource DoubleToTime}}"
                                Style="{StaticResource LabelStyler}"/>
                     </UniformGrid>
                 </Border>
-
 
                 <DockPanel LastChildFill="False"
                            HorizontalAlignment="Center"
@@ -562,7 +857,6 @@
                             <Point X="0.5" Y="0.5"/>
                         </Button.RenderTransformOrigin>
 
-
                         <Button.Content>
                             <Grid Width="32" Height="32" >
                                 <StackPanel Orientation="Horizontal"
@@ -597,6 +891,36 @@
                             </Grid>
                         </Button.Content>
                     </Button>
+
+                    <!--
+                    Stackpanel / grid with warning text "changing programs bad" and two buttons, one confirm one cancel
+                    -->
+
+                    <Grid Visibility="{Binding ProgramSelectionConfirmationRaised,Converter={StaticResource BoolToVisibility}}">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Label Content="Confirm Program Change" />
+
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+
+                            <Button Grid.Column="0"
+                                    Content="Cancel"
+                                    Command="{Binding CancelButton}">
+                            </Button>
+                            <Button Grid.Column="1"
+                                    Content="Confirm"
+                                    Command="{Binding ConfirmButton}">
+                            </Button>
+                        </Grid>
+                    </Grid>
+                    
                 </DockPanel>
 
             </StackPanel>
@@ -622,15 +946,14 @@
                  SelectionMode="Single"
                  Background="Violet"
                  Grid.Row="1"
-                 IsHitTestVisible="True">
+                 IsHitTestVisible="False">
             
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <CustomControls:CarouselPanel IsItemsHost="True"/>
                 </ItemsPanelTemplate>
             </ListBox.ItemsPanel>
-
-            <ListBox.ItemContainerStyle>
+           <ListBox.ItemContainerStyle>
                 <Style TargetType="{x:Type ListBoxItem}">
                     <Setter Property="Template">
                         <Setter.Value>

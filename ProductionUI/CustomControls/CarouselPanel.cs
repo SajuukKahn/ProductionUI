@@ -94,10 +94,10 @@ namespace ProductionUI.CustomControls
 
             center -= _bigWidth;
 
-            _animateTransformX.Duration = new Duration(TimeSpan.FromMilliseconds(50));
-            _animateWidth.Duration = _animateTransformX.Duration;
-            _animateWidth.FillBehavior = FillBehavior.HoldEnd;
-            _animateWidth.EasingFunction = new ExponentialEase() { EasingMode = EasingMode.EaseOut };
+            //_animateTransformX.Duration = new Duration(TimeSpan.FromMilliseconds(50));
+            //_animateWidth.Duration = _animateTransformX.Duration;
+            //_animateWidth.FillBehavior = FillBehavior.HoldEnd;
+            //_animateWidth.EasingFunction = new ExponentialEase() { EasingMode = EasingMode.EaseOut };
 
             for (int leftCounter = selectedIndex  - 1; leftCounter > -1; leftCounter--)
             {
@@ -107,10 +107,10 @@ namespace ProductionUI.CustomControls
                 Panel.SetZIndex(Children[leftCounter], zIndex--);
 
                 Children[leftCounter].Arrange(finalRect);
-                _animateWidth.From = Children[leftCounter].RenderSize.Width;
-                _animateWidth.To = _rWidth;
-                Children[leftCounter].BeginAnimation(WidthProperty, _animateWidth, HandoffBehavior.SnapshotAndReplace);
-                
+                //_animateWidth.From = Children[leftCounter].RenderSize.Width;
+                //_animateWidth.To = _rWidth;
+                //Children[leftCounter].BeginAnimation(WidthProperty, _animateWidth, HandoffBehavior.SnapshotAndReplace);
+
             }
 
             center += _bigWidth + _rWidth;
@@ -122,21 +122,21 @@ namespace ProductionUI.CustomControls
                 var finalRect = new Rect(left, top, _rWidth, _rHeight);
                 Panel.SetZIndex(Children[rightCounter], zIndex--);
 
+                //_animateWidth.From = Children[rightCounter].RenderSize.Width;
                 Children[rightCounter].Arrange(finalRect);
-                _animateWidth.From = Children[rightCounter].RenderSize.Width;
-                _animateWidth.To = _rWidth;
-                Children[rightCounter].BeginAnimation(WidthProperty, _animateWidth, HandoffBehavior.SnapshotAndReplace);
+                //_animateWidth.To = _rWidth;
+                //Children[rightCounter].BeginAnimation(WidthProperty, _animateWidth, HandoffBehavior.SnapshotAndReplace);
 
             }
 
             center = Math.Ceiling(finalSize.Width / 2);
-            Children[selectedIndex].Arrange(new Rect(center - _bigWidth, top, _rWidth, _rHeight));
             Panel.SetZIndex(Children[selectedIndex], 1);
-            _animateWidth.From = Children[selectedIndex].RenderSize.Width;
-            _animateWidth.To = _bigWidth * 2;
+            //_animateWidth.From = Children[selectedIndex].RenderSize.Width;
+            //_animateWidth.To = _bigWidth * 2;
 
             Children[selectedIndex].Arrange(new Rect(center - _bigWidth, top, _bigWidth * 2, _rHeight));
-            Children[selectedIndex].BeginAnimation(WidthProperty, _animateWidth, HandoffBehavior.SnapshotAndReplace);
+            Children[selectedIndex].Arrange(new Rect(center - _bigWidth, top, _bigWidth * 2, _rHeight));
+            //Children[selectedIndex].BeginAnimation(WidthProperty, _animateWidth, HandoffBehavior.SnapshotAndReplace);
 
 
             return finalSize;

@@ -90,6 +90,7 @@ namespace ProductionUI.CustomControls
 
             center -= (_rHeight / 2);
 
+
             for (int topCounter = selectedIndex - 1; topCounter > -1; topCounter--)
             {
                 int xval = selectedIndex - topCounter;
@@ -97,12 +98,21 @@ namespace ProductionUI.CustomControls
                 var finalRect = new Rect(0, top, _rWidth, _rHeight);
                 Panel.SetZIndex(Children[topCounter], zIndex--);
 
-                Children[topCounter].Arrange(finalRect);
-                Children[topCounter].Effect = new BlurEffect()
+                if(selectedIndex- topCounter < 4)
+                { 
+                    Children[topCounter].Arrange(finalRect);
+                    Children[topCounter].Visibility = Visibility.Visible;
+                    Children[topCounter].Effect = new BlurEffect()
+                    {
+                        KernelType = KernelType.Gaussian,
+                        Radius = xval * 4
+                    };
+                }
+                else
                 {
-                    KernelType = KernelType.Gaussian,
-                    Radius = xval * 5
-                };
+                    Children[topCounter].Arrange(finalRect);
+                    Children[topCounter].Visibility = Visibility.Collapsed;
+                }
             }
 
             //center += (_rHeight  / 2);
@@ -114,12 +124,21 @@ namespace ProductionUI.CustomControls
                 var finalRect = new Rect(0, top, _rWidth, _rHeight);
                 Panel.SetZIndex(Children[bottomCounter], zIndex--);
 
-                Children[bottomCounter].Arrange(finalRect);
-                Children[bottomCounter].Effect = new BlurEffect()
+                if(bottomCounter - selectedIndex < 4)
+                { 
+                    Children[bottomCounter].Arrange(finalRect);
+                    Children[bottomCounter].Visibility = Visibility.Visible;
+                    Children[bottomCounter].Effect = new BlurEffect()
+                    {
+                        KernelType = KernelType.Gaussian,
+                        Radius = xval * 4
+                    };
+                }
+                else
                 {
-                    KernelType = KernelType.Gaussian,
-                    Radius = xval * 5
-        };
+                    Children[bottomCounter].Arrange(finalRect);
+                    Children[bottomCounter].Visibility = Visibility.Collapsed;
+                }
             }
 
             center = Math.Ceiling(finalSize.Height / 2);
