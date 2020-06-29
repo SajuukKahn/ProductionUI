@@ -15,6 +15,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 using System.Xml.Schema;
 
 namespace ProductionUI.ViewModels
@@ -26,16 +27,14 @@ namespace ProductionUI.ViewModels
         public ICommand ConfirmButton { get; set; }
         public ICommand CancelButton { get; set; }
 
-        private CancellationTokenSource _cycleTimerCancellationTokenSource;
-        private CancellationToken _cycleTimerCancelToken;
-        private Task _cycleTimeTask;
-
         public ProductionCardDeckViewModel()
         {
             PlayButton = new RelayCommand(o => PlayPressed());
             PauseButton = new RelayCommand(o => PausePressed());
             ConfirmButton = new RelayCommand(o => ConfirmProgramChange());
             CancelButton = new RelayCommand(o => CancelProgramChange());
+            InitializeCycleTimer();
+            InitializeCardTimer();
             PlayAvailable = false;
             PauseAvailable = false;
         }
@@ -73,6 +72,7 @@ namespace ProductionUI.ViewModels
                 OnPropertyChanged(nameof(ProductionPrograms));
             }
         }
+      
 
         private ImageSource _processDisplay;
         public ImageSource ProcessDisplay
@@ -85,35 +85,6 @@ namespace ProductionUI.ViewModels
             {
                 _processDisplay = value;
                 OnPropertyChanged(nameof(ProcessDisplay));
-            }
-        }
-
-        private double _cycleTime;
-        public double CycleTime
-        {
-            get
-            {
-                return _cycleTime;
-            }
-            set
-            {
-                _cycleTime = value;
-                OnPropertyChanged(nameof(CycleTime));
-            }
-        }
-
-
-        private double _cardTime;
-        public double CardTime
-        {
-            get
-            {
-                return _cardTime;
-            }
-            set
-            {
-                _cardTime = value;
-                OnPropertyChanged(nameof(CardTime));
             }
         }
 
@@ -215,8 +186,6 @@ namespace ProductionUI.ViewModels
             }
         }
 
-        private bool _playBackPaused;
-
         private bool _playAvailable;
         public bool PlayAvailable
         {
@@ -253,6 +222,8 @@ namespace ProductionUI.ViewModels
 
                 bool setCompleted = false;
                 int i = value, ceiling = CurrentIndex;
+
+                // need to add in some stuff here... changing the "status" of the card, for instance
 
                 if (CurrentIndex < value)
                 {
@@ -318,7 +289,7 @@ namespace ProductionUI.ViewModels
 
         private void VerifyChange(int newProgramSelectionValue)
         {
-            if (CycleTime == 0 || DeckCompleted)
+            if (CycleStartTime.Equals(null) || DeckCompleted)
             {
                 _currentProgram = newProgramSelectionValue;
                 OnPropertyChanged(nameof(CurrentProgram));
@@ -336,14 +307,12 @@ namespace ProductionUI.ViewModels
         private void ConfirmProgramChange()
         {
             _currentProgram = _newProgramSelection;
-            AllowProgramChange = true;
             OnPropertyChanged(nameof(CurrentProgram));
             LoadProductionDeck();
             PlayAvailable = true;
             ProgramSelectionConfirmationRaised = false;
             _newProgramSelection = -1;
         }
-
 
         private void CancelProgramChange()
         {
@@ -358,7 +327,6 @@ namespace ProductionUI.ViewModels
         private void PausePressed()
         {
             PlayBackRunning = false;
-            AllowProgramChange = true;
             PlayAvailable = true;
             PauseAvailable = false;
         }
@@ -376,88 +344,14 @@ namespace ProductionUI.ViewModels
             PlayBackRunning = true;
         }
 
-        private void StartCycleTimer()
-        {
-            if (_cycleTimeTask?.Status != TaskStatus.Running || _cycleTimeTask == null)
-            {
-
-                if (_cycleTimerCancellationTokenSource == null)
-                {
-                    _cycleTimerCancellationTokenSource = new CancellationTokenSource();
-                    _cycleTimerCancelToken = _cycleTimerCancellationTokenSource.Token;
-                }
-                else
-                {
-                    _cycleTimerCancellationTokenSource.Cancel();
-                    while(!_cycleTimeTask.IsCompleted)
-                    {
-                    }
-                    _cycleTimerCancellationTokenSource.Dispose();
-                    _cycleTimerCancellationTokenSource = new CancellationTokenSource();
-                    _cycleTimerCancelToken = _cycleTimerCancellationTokenSource.Token;
-                }
-                _cycleTimeTask = Task.Run(async () =>
-                {
-                    while (!_cycleTimerCancelToken.IsCancellationRequested && !DeckCompleted)
-                    {
-                        await Task.Delay(TimeSpan.FromMilliseconds(10));
-                        if (!_cycleTimerCancelToken.IsCancellationRequested)
-                        {
-                            CycleTime += 0.01;
-                        }
-                    }
-                    return;
-                }, _cycleTimerCancelToken);
-            }
-        }
-
-        private CancellationTokenSource _cardTimerCancellationTokenSource;
-        private CancellationToken _cardTimerCancelToken;
-        private Task _cardTimeTask;
-
-        private void StartCardTimer()
-        {
-            if (_cycleTimeTask?.Status != TaskStatus.Running || _cycleTimeTask == null)
-            {
-
-                if (_cardTimerCancellationTokenSource == null)
-                {
-                    _cardTimerCancellationTokenSource = new CancellationTokenSource();
-                    _cardTimerCancelToken = _cardTimerCancellationTokenSource.Token;
-                }
-                else
-                {
-                    _cardTimerCancellationTokenSource.Cancel();
-                    while (!_cardTimeTask.IsCompleted)
-                    {
-                    }
-                    _cardTimerCancellationTokenSource.Dispose();
-                    _cardTimerCancellationTokenSource = new CancellationTokenSource();
-                    _cardTimerCancelToken = _cardTimerCancellationTokenSource.Token;
-                }
-                _cardTimeTask = Task.Run(async () =>
-                {
-                    while (!_cardTimerCancelToken.IsCancellationRequested)
-                    {
-                        await Task.Delay(TimeSpan.FromMilliseconds(10));
-                        if (!_cardTimerCancelToken.IsCancellationRequested && !_playBackPaused)
-                        {
-                            CardTime += 0.01;
-                        }
-                    }
-                    return;
-                }, _cardTimerCancelToken);
-            }
-        }
-
         public void LoadProductionDeck(bool reUseProgram = false)
         {
-            _cycleTimerCancellationTokenSource?.Cancel();
             PlayBackRunning = false;
             AllowProgramChange = true;
             DeckCompleted = false;
             LoadRandomProgram(reUseProgram);
-            CycleTime = 0;
+            ResetCycleTimer();
+            ResetCardTimer();
             PlayAvailable = true;
             PauseAvailable = false;
         }
@@ -523,13 +417,13 @@ namespace ProductionUI.ViewModels
                 {
                     while (!PlayBackRunning)
                     {
-                        _playBackPaused = true;
+                        AllowProgramChange = true;
                         if (_randomProgramCancelToken.IsCancellationRequested)
                         {
                             return;
                         }
                     }
-                    _playBackPaused = false;
+                    AllowProgramChange = false;
                     if (!_randomProgramCancelToken.IsCancellationRequested)
                     {
                         while (CurrentSubStepIndex < (_productionCards[CurrentIndex].CardSubSteps.Count - 1))
@@ -537,19 +431,21 @@ namespace ProductionUI.ViewModels
                             await Task.Delay((TimeSpan.FromSeconds(new Random().Next(1, 5) + new Random().NextDouble())));
                             while (!PlayBackRunning)
                             {
-                                _playBackPaused = true;
+                                PauseCardTimer();
+                                AllowProgramChange = true;
                                 if (_randomProgramCancelToken.IsCancellationRequested)
                                 {
                                     return;
                                 }
                             }
+                            StartCardTimer();
                             CurrentSubStepIndex++;
                         }
-                        _playBackPaused = false;
+                        AllowProgramChange = false;
                         await Task.Delay(TimeSpan.FromSeconds(new Random().Next(1, 5) + new Random().NextDouble()));
                         while (!PlayBackRunning)
                         {
-                            _playBackPaused = true;
+                            PauseCardTimer();
                             if (_randomProgramCancelToken.IsCancellationRequested)
                             {
                                 return;
@@ -557,7 +453,8 @@ namespace ProductionUI.ViewModels
                         }
                         CurrentSubStepIndex = 0;
                         CurrentIndex++;
-                        CardTime = 0;
+                        ResetCardTimer();
+                        StartCardTimer();
                     }
                     else
                     {
@@ -572,6 +469,195 @@ namespace ProductionUI.ViewModels
         }
 
         #endregion
+
+        #region CycleTime handler
+
+        private DispatcherTimer _cycleTimer = null;
+        private readonly Stopwatch _cycleStopwatch = new Stopwatch();
+        private TimeSpan _cycleDifference;
+
+        public void ResetCycleTimer()
+        {
+            _cycleStopwatch.Reset();
+            _cycleDifference = new TimeSpan(0);
+            CycleTime = new TimeSpan(0).ToString("hh\\:mm\\:ss\\.ff");
+        }
+
+        public void PauseCycleTimer()
+        {
+            _cycleStopwatch.Stop();
+        }
+
+        public void StartCycleTimer()
+        {
+           _cycleStopwatch.Start();
+            CycleStartTime = DateTime.Now;
+        }
+
+        public void InitializeCycleTimer()
+        {
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                _cycleTimer = new DispatcherTimer();
+                _cycleTimer.Tick += Cycle_Timer_Tick;
+                _cycleTimer.Interval = new TimeSpan(0, 0, 0, 0, 10);
+
+            }, DispatcherPriority.Normal);
+        }
+
+        private DateTime? _cycleStartTime;
+        public DateTime? CycleStartTime
+        {
+            get { return _cycleStartTime; }
+            set
+            {
+                //if (_cycleStartTime != value)
+                //{
+                    if (!_cycleStartTime.HasValue)
+                    {
+                        _cycleStartTime = value;
+                        _cycleDifference = DateTime.Now.Subtract(CycleStartTime.Value);
+                        System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                        {
+                            _cycleStopwatch.Start();
+                            _cycleTimer.Start();
+                        }, DispatcherPriority.Normal);
+                    }
+                    else if (_cycleStartTime.HasValue && value == null)
+                    {
+                        _cycleStopwatch.Stop();
+                        _cycleStartTime = value;
+                    }
+                    else if (_cycleStartTime.HasValue && value != null)
+                    {
+                        _cycleStartTime = value;
+                        _cycleDifference = DateTime.Now.Subtract(CycleStartTime.Value);
+                    }
+                    OnPropertyChanged(nameof(CycleStartTime));
+                //}
+            }
+        }
+
+        private string _cycleTime;
+        public string CycleTime
+        {
+            get
+            {
+                return _cycleTime;
+            }
+            set
+            {
+                _cycleTime = value;
+                OnPropertyChanged(nameof(CycleTime));
+            }
+        }
+
+        void Cycle_Timer_Tick(object sender, EventArgs e)
+        {
+            if (_cycleStopwatch.IsRunning)
+            {
+                TimeSpan total = _cycleDifference + _cycleStopwatch.Elapsed;
+                CycleTime = total.ToString("hh\\:mm\\:ss\\.ff");
+                //TimeElapsed = String.Format("{0:0} {1:00}:{2:00}:{3:00}.{4:00}", total.Days, total.Hours, total.Minutes, total.Seconds, total.Milliseconds);
+            }
+        }
+
+        #endregion
+
+        #region CardTime handler
+
+        private DispatcherTimer _cardTimer = null;
+        private readonly Stopwatch _cardStopwatch = new Stopwatch();
+        private TimeSpan _cardDifference;
+
+        public void ResetCardTimer()
+        {
+            _cardStopwatch.Reset();
+            _cardDifference = new TimeSpan(0);
+            CardTime = new TimeSpan(0).ToString("hh\\:mm\\:ss\\.ff");
+        }
+
+        public void PauseCardTimer()
+        {
+            _cardStopwatch.Stop();
+        }
+
+        public void StartCardTimer()
+        {
+            _cardStopwatch.Start();
+            CardStartTime = DateTime.Now;
+        }
+
+        public void InitializeCardTimer()
+        {
+            System.Windows.Application.Current.Dispatcher.Invoke(() =>
+            {
+                _cardTimer = new DispatcherTimer();
+                _cardTimer.Tick += Card_Timer_Tick;
+                _cardTimer.Interval = new TimeSpan(0, 0, 0, 0, 10);
+            }, DispatcherPriority.Normal);
+        }
+
+        private DateTime? _cardStartTime;
+        public DateTime? CardStartTime
+        {
+            get { return _cardStartTime; }
+            set
+            {
+                //if (_cardStartTime != value)
+                //{
+                if (!_cardStartTime.HasValue)
+                {
+                    _cardStartTime = value;
+                    _cardDifference = DateTime.Now.Subtract(CardStartTime.Value);
+                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        _cardStopwatch.Start();
+                        _cardTimer.Start();
+                    }, DispatcherPriority.Normal);
+                }
+                else if (_cardStartTime.HasValue && value == null)
+                {
+                    _cardStopwatch.Stop();
+                    _cardStartTime = value;
+                }
+                else if (_cardStartTime.HasValue && value != null)
+                {
+                    _cardStartTime = value;
+                    _cardDifference = DateTime.Now.Subtract(CardStartTime.Value);
+                }
+                OnPropertyChanged(nameof(CardStartTime));
+                //}
+            }
+        }
+
+        private string _cardTime;
+        public string CardTime
+        {
+            get
+            {
+                return _cardTime;
+            }
+            set
+            {
+                _cardTime = value;
+                OnPropertyChanged(nameof(CardTime));
+            }
+        }
+
+        void Card_Timer_Tick(object sender, EventArgs e)
+        {
+            if (_cardStopwatch.IsRunning)
+            {
+                TimeSpan total = _cardDifference +_cardStopwatch.Elapsed;
+                CardTime = total.ToString("hh\\:mm\\:ss\\.ff");
+                //TimeElapsed = String.Format("{0:0} {1:00}:{2:00}:{3:00}.{4:00}", total.Days, total.Hours, total.Minutes, total.Seconds, total.Milliseconds);
+            }
+        }
+
+        #endregion
+
+
     }
 }
 

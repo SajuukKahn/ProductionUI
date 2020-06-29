@@ -105,7 +105,7 @@ namespace ProductionUI.CustomControls
                     Children[topCounter].Effect = new BlurEffect()
                     {
                         KernelType = KernelType.Gaussian,
-                        Radius = xval * 4
+                        Radius = xval * xval
                     };
                 }
                 else
@@ -131,7 +131,7 @@ namespace ProductionUI.CustomControls
                     Children[bottomCounter].Effect = new BlurEffect()
                     {
                         KernelType = KernelType.Gaussian,
-                        Radius = xval * 4
+                        Radius = xval * xval
                     };
                 }
                 else

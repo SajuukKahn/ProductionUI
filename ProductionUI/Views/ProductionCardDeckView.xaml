@@ -17,11 +17,14 @@
             <CustomControls:FirstDegreeFunctionConverter x:Key="AddOneToValue" 
                                                          A="1" 
                                                          B="1"/>
+            <CustomControls:FirstDegreeFunctionConverter x:Key="SubtractThree" 
+                                                         A="1" 
+                                                         B="-3"/>
             <CustomControls:FirstDegreeFunctionConverter x:Key="DoubleValue"
                                                          A="2"
                                                          B="0"/>
-            <CustomControls:FirstDegreeFunctionConverter x:Key="OneThirdValue"
-                                                         A=".3333"
+            <CustomControls:FirstDegreeFunctionConverter x:Key="OneHundredTenPercent"
+                                                         A="1.2"
                                                          B="0"/>
             <CustomControls:FirstDegreeFunctionConverter x:Key="TwoThirdValue"
                                                          A=".6"
@@ -31,7 +34,6 @@
                                                          B="0"/>
             <CustomControls:BoolToVisibilityConverter x:Key="BoolToVisibility"/>
             <CustomControls:InvertBooleanConverter x:Key="InvertBoolean"/>
-            <CustomControls:DoubleToTimeLikeConverter x:Key="DoubleToTime"/>
 
             <!--Control colors.-->
             <Color x:Key="DisabledControlLightColor">#FFAAAAAA</Color>
@@ -60,7 +62,6 @@
 
             <Color x:Key="DisabledBorderLightColor">#FFAAAAAA</Color>
             <Color x:Key="DisabledBorderDarkColor">#FF2A2A2A</Color>
-
             <Color x:Key="DefaultBorderBrushDarkColor">Black</Color>
 
             <!--Control-specific resources.-->
@@ -69,6 +70,12 @@
             <Color x:Key="SliderTrackDarkColor">#FFC5CBF9</Color>
 
             <Color x:Key="NavButtonFrameColor">#FF3843C4</Color>
+
+            <!--<Style x:Key="UniversalFont" TargetType="{x:Type Window}">
+                <Setter Property="FontFamily" Value="Segoe UI Bold"/>
+            </Style>-->
+
+            <FontFamily x:Key="UniversalFont">Segoe UI Historic</FontFamily>
 
             <LinearGradientBrush x:Key="MenuPopupBrush"
                      EndPoint="0.5,1"
@@ -99,15 +106,35 @@
             </LinearGradientBrush>
 
 
+            <Style x:Key="StandardButtonTemplate"  TargetType="Button">
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border BorderThickness="1" BorderBrush="Black" Margin="5" Padding="10"
+                                    Background="{TemplateBinding Background}">
+                                <Grid>
+                                    <ContentPresenter HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center">
+
+                                    </ContentPresenter>
+                                </Grid>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+
+
+
             <Style x:Key="LabelStyler" TargetType="{x:Type Label}">
-                <Setter Property="FontFamily" Value="Consolas"/>
+                <Setter Property="FontFamily" Value="{StaticResource UniversalFont}"/>
                 <Setter Property="FontSize" Value="14"/>
                 <Setter Property="Margin" Value="0,4"/>
             </Style>
 
             <Style x:Key="ButtonStyler" TargetType="{x:Type Button}">
                 <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-            
+                <Setter Property="FontFamily" Value="{StaticResource UniversalFont}"/>
             </Style>
 
             <ControlTemplate TargetType="Button" 
@@ -394,10 +421,8 @@
                                     <EventTrigger RoutedEvent="MouseEnter">
                                         <BeginStoryboard x:Name="ComboBoxItemEnter">
                                             <Storyboard>
-                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
-                                                                              Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
-                                                    <EasingColorKeyFrame KeyTime="0"
-                                                                         Value="{StaticResource HeaderTopColor}" />
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border" Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="{StaticResource HeaderTopColor}" />
                                                 </ColorAnimationUsingKeyFrames>
                                             </Storyboard>
                                         </BeginStoryboard>
@@ -412,19 +437,15 @@
                                         <VisualState x:Name="Unselected"/>
                                         <VisualState x:Name="Selected">
                                             <Storyboard>
-                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
-                                                                              Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
-                                                    <EasingColorKeyFrame KeyTime="0"
-                                                                         Value="{StaticResource SelectedBackgroundColor}" />
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border" Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="{StaticResource SelectedBackgroundColor}" />
                                                 </ColorAnimationUsingKeyFrames>
                                             </Storyboard>
                                         </VisualState>
                                         <VisualState x:Name="SelectedUnfocused">
                                             <Storyboard>
-                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
-                                                                              Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
-                                                    <EasingColorKeyFrame KeyTime="0"
-                                                                         Value="{StaticResource SelectedUnfocusedColor}" />
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border" Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
+                                                    <EasingColorKeyFrame KeyTime="0" Value="{StaticResource SelectedUnfocusedColor}"/>
                                                 </ColorAnimationUsingKeyFrames>
                                             </Storyboard>
                                         </VisualState>
@@ -455,10 +476,11 @@
             </Style>
 
             <DataTemplate x:Key="ListItemDataTemplate">
-                <Border CornerRadius="12"
+                <Border CornerRadius="5"
                         x:Name="CardBorder"
+                        MaxWidth="324"
                         FocusVisualStyle="{x:Null}"
-                        BorderThickness="2"
+                        BorderThickness="3"
                         UseLayoutRounding="True">
 
                     <Border.BorderBrush>
@@ -483,148 +505,156 @@
                         </LinearGradientBrush>
                     </Border.Background>
 
-                    <DockPanel x:Name="CardDataDockPanel"
+                    <Grid x:Name="CardDataDockPanel"
                                Margin="3"
                                HorizontalAlignment="Stretch">
-                        <DockPanel.RenderTransform>
-                            <ScaleTransform/>
-                        </DockPanel.RenderTransform>
 
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
 
-                        <Viewbox Stretch="Uniform" 
-                                 StretchDirection="DownOnly"
-                                 DockPanel.Dock="Right">
-                            <Image Source="{Binding StepImage}"
-                                   x:Name="StepImage"
-                                   Visibility="Collapsed"
-                                   Stretch="Uniform"
-                                   Width="0"
-                                   UseLayoutRounding="True"
-                                   Margin="0,0,3,0"
-                                   HorizontalAlignment="Stretch"
-                                   VerticalAlignment="Stretch"/>
-                        </Viewbox>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
 
+                            <StackPanel x:Name="CardDataStackPanel"
+                                        VerticalAlignment="Top"
+                                        HorizontalAlignment="Left"
+                                        UseLayoutRounding="True">
 
-                        <StackPanel x:Name="CardDataStackPanel"
-                                    DockPanel.Dock="Top"
-                                    VerticalAlignment="Stretch"
-                                    HorizontalAlignment="Left"
-                                    Margin="0"
-                                    UseLayoutRounding="True"
-                                    ClipToBounds="False">
-
-                            <TextBlock Text="{Binding StepTitle}"
-                                       FontFamily="Consolas"
+                                <TextBlock Text="{Binding StepTitle}"
+                                       FontFamily="{StaticResource UniversalFont}"
                                        FontSize="14"
                                        x:Name="StepTitle"
                                        ClipToBounds="True"
                                        UseLayoutRounding="True"
                                        TextTrimming="CharacterEllipsis">
-                                <TextBlock.LayoutTransform>
-                                    <TransformGroup>
-                                        <RotateTransform Angle="90"
+                                    <TextBlock.LayoutTransform>
+                                        <TransformGroup>
+                                            <RotateTransform Angle="90"
                                                          CenterX="0.5"
                                                          CenterY="0.5"/>
-                                    </TransformGroup>
-                                </TextBlock.LayoutTransform>
-                            </TextBlock>
+                                        </TransformGroup>
+                                    </TextBlock.LayoutTransform>
+                                </TextBlock>
 
-                            <TextBlock Text="{Binding StepStatus}"
-                                       FontFamily="Consolas"
+                                <TextBlock Text="{Binding StepStatus}"
+                                       FontFamily="{StaticResource UniversalFont}"
                                        FontSize="14"
                                        x:Name="StepStatus"
                                        UseLayoutRounding="True"/>
 
-                            <StackPanel Orientation="Horizontal"
+                                <StackPanel Orientation="Horizontal"
                                         x:Name="SubStepCounterPanel">
-                                <TextBlock Text="{Binding ElementName=CardSubStepListView, Path=SelectedIndex, Converter={StaticResource AddOneToValue}}"
-                                           FontFamily="Consolas"
+                                    <TextBlock Text="{Binding ElementName=CardSubStepListView, Path=SelectedIndex, Converter={StaticResource AddOneToValue}}"
+                                           FontFamily="{StaticResource UniversalFont}"
                                            FontSize="14"
                                            x:Name="StepCounter"
                                            UseLayoutRounding="True"/>
 
-                                <TextBlock Text=" / "
-                                           FontFamily="Consolas"
+                                    <TextBlock Text=" / "
+                                           FontFamily="{StaticResource UniversalFont}"
                                            FontSize="14"/>
 
-                                <TextBlock Text="{Binding ElementName=CardSubStepListView, Path=AlternationCount}"
-                                           FontFamily="Consolas"
+                                    <TextBlock Text="{Binding ElementName=CardSubStepListView, Path=AlternationCount}"
+                                           FontFamily="{StaticResource UniversalFont}"
                                            FontSize="14"/>
-                            </StackPanel>
+                                </StackPanel>
 
-                            <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.CardTime, Mode=TwoWay, Converter={StaticResource DoubleToTime}}"                                       
-                                       FontFamily="Consolas"
+                                <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.CardTime, Mode=TwoWay}"                                       
+                                       FontFamily="{StaticResource UniversalFont}"
                                        FontSize="14"
                                        x:Name="StepActiveTime"
                                        UseLayoutRounding="True"/>
 
-                        </StackPanel>
+                            </StackPanel>
 
-                        <Viewbox Stretch="Uniform" 
-                                 StretchDirection="DownOnly" 
-                                 MaxWidth="195"
-                                 DockPanel.Dock="Left"
-                                 HorizontalAlignment="Left">
-                            <ListBox x:Name="CardSubStepListView"
-                                     ItemsSource="{Binding CardSubSteps}"
-                                     SelectedIndex="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.CurrentSubStepIndex, Mode=TwoWay}"
-                                     SelectionMode="Single"
-                                     VerticalAlignment="Center"
-                                     Visibility="{Binding IsActiveStep, Converter={StaticResource BoolToVisibility}}"
-                                     AlternationCount="{Binding CardSubSteps.Count}">
+                            <Viewbox Stretch="Uniform"
+                                     Grid.Column="1"
+                                     HorizontalAlignment="Right"
+                                     VerticalAlignment="Top"
+                                     StretchDirection="DownOnly">
+                                <Image Source="{Binding StepImage}"
+                                       x:Name="StepImage"
+                                       Visibility="Collapsed"
+                                       Stretch="Uniform"
+                                       Width="0"
+                                       UseLayoutRounding="True"
+                                       Margin="0,3,3,0"/>
+                            </Viewbox>
 
-                                <ListBox.ItemsPanel>
-                                    <ItemsPanelTemplate>
-                                        <CustomControls:VerticalCarouselPanel IsItemsHost="True"
-                                                                              MaxHeight="35"
-                                                                              MaxWidth="230"/>
-                                    </ItemsPanelTemplate>
-                                </ListBox.ItemsPanel>
+                        </Grid>
 
-                                <ListBox.ItemContainerStyle>
-                                    <Style TargetType="{x:Type ListBoxItem}">
-                                        <Setter Property="Template">
-                                            <Setter.Value>
-                                                <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                                                    <ContentPresenter FocusVisualStyle="{x:Null}">
-                                                        <ContentPresenter.Content>
-                                                            <Border Background="Transparent">
 
-                                                                    <Grid>
-                                                                        <Grid.ColumnDefinitions>
-                                                                            <ColumnDefinition Width="*"/>
-                                                                            <ColumnDefinition Width="2*"/>
-                                                                        </Grid.ColumnDefinitions>
-                                                                        <Label Content="{Binding SubStepName}"
-                                                                               FontFamily="Consolas"
-                                                                               Grid.Column="0"/>
-                                                                        <Label Content="{Binding FullSubStepData}"
-                                                                               FontFamily="Consolas"
-                                                                               Grid.Column="1"/>
-                                                                    </Grid>
-                                                                </Border>
-                                                        </ContentPresenter.Content>
-                                                    </ContentPresenter>
-                                                </ControlTemplate>
-                                            </Setter.Value>
-                                        </Setter>
-                                        <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-                                    </Style>
-                                </ListBox.ItemContainerStyle>
+                        <Viewbox Stretch="Uniform"
+                                 StretchDirection="DownOnly"
+                                 Grid.Row="1">
+                        <ListBox x:Name="CardSubStepListView"
+                                 ItemsSource="{Binding CardSubSteps}"
+                                 MaxWidth="300"
+                                 SelectedIndex="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType={x:Type UserControl}}, Path=DataContext.CurrentSubStepIndex, Mode=TwoWay}"
+                                 SelectionMode="Single"
+                                 Visibility="{Binding IsActiveStep, Converter={StaticResource BoolToVisibility}}"
+                                 AlternationCount="{Binding CardSubSteps.Count}">
 
-                                <ListBox.Template>
-                                    <ControlTemplate TargetType="{x:Type ListBox}">
-                                        <Grid VerticalAlignment="Bottom">
-                                            <ItemsPresenter/>
-                                        </Grid>
-                                    </ControlTemplate>
-                                </ListBox.Template>
+                            <ListBox.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <CustomControls:VerticalCarouselPanel IsItemsHost="True"
+                                                                          UseLayoutRounding="True"
+                                                                          SnapsToDevicePixels="True"
+                                                                            MaxHeight="35"/>
+                                </ItemsPanelTemplate>
+                            </ListBox.ItemsPanel>
 
-                            </ListBox>
+                            <ListBox.ItemContainerStyle>
+                                <Style TargetType="{x:Type ListBoxItem}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                                <ContentPresenter FocusVisualStyle="{x:Null}">
+                                                    <ContentPresenter.Content>
+                                                        <Border Background="Transparent"
+                                                                HorizontalAlignment="Stretch">
+
+                                                                <Grid>
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition Width="auto"/>
+                                                                    <ColumnDefinition Width="auto"/>
+                                                                </Grid.ColumnDefinitions>
+
+                                                                    <Label Content="{Binding SubStepName}"
+                                                                            FontFamily="{StaticResource UniversalFont}"
+                                                                            Grid.Column="0"/>
+                                                                <Label Content="{Binding FullSubStepData}"
+                                                                            FontFamily="{StaticResource UniversalFont}"
+                                                                            Grid.Column="1"/>
+                                                            </Grid>
+                                                        </Border>
+                                                    </ContentPresenter.Content>
+                                                </ContentPresenter>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+                                </Style>
+                            </ListBox.ItemContainerStyle>
+
+                            <ListBox.Template>
+                                <ControlTemplate TargetType="{x:Type ListBox}">
+                                    <Grid VerticalAlignment="Bottom">
+                                        <ItemsPresenter/>
+                                    </Grid>
+                                </ControlTemplate>
+                            </ListBox.Template>
+
+                        </ListBox>
+
                         </Viewbox>
 
-                    </DockPanel>
+                    </Grid>
                 </Border>
 
                 <DataTemplate.Triggers>
@@ -634,7 +664,6 @@
                             <Condition Binding="{Binding StepComplete}" Value="False"/>
                         </MultiDataTrigger.Conditions>
                         <MultiDataTrigger.Setters>
-                            <Setter TargetName="StepTitle" Property="TextBlock.FontSize" Value="10"/>
                             <Setter TargetName="StepStatus" Property="Visibility" Value="Collapsed"/>
                             <Setter TargetName="StepActiveTime" Property="Visibility" Value="Collapsed"/>
                             <Setter TargetName="SubStepCounterPanel" Property="Visibility" Value="Collapsed"/>
@@ -651,7 +680,6 @@
                             <Condition Binding="{Binding StepComplete}" Value="True"/>
                         </MultiDataTrigger.Conditions>
                         <MultiDataTrigger.Setters>
-                            <Setter TargetName="StepTitle" Property="TextBlock.FontSize" Value="10"/>
                             <Setter TargetName="StepStatus" Property="Visibility" Value="Collapsed"/>
                             <Setter TargetName="StepActiveTime" Property="Visibility" Value="Collapsed"/>
                             <Setter TargetName="SubStepCounterPanel" Property="Visibility" Value="Collapsed"/>
@@ -675,7 +703,7 @@
                                 </Setter.Value>
                             </Setter>
                             <Setter TargetName="StepImage" Property="Visibility" Value="Visible"/>
-                            <Setter TargetName="StepImage" Property="Width" Value="100"/>
+                            <Setter TargetName="StepImage" Property="Width" Value="{Binding ElementName=CardDataStackPanel, Path=ActualHeight, Converter={StaticResource SubtractThree}}"/>
                         </MultiDataTrigger.Setters>
                     </MultiDataTrigger>
 
@@ -690,7 +718,7 @@
                                 <Storyboard>
                                     <DoubleAnimationUsingKeyFrames Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="(Border.BorderBrush).(Brush.RelativeTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" RepeatBehavior="Forever">
                                         <EasingDoubleKeyFrame KeyTime="00:00:00" Value="0"/>
-                                        <EasingDoubleKeyFrame KeyTime="00:00:00.5" Value="359"/>
+                                        <EasingDoubleKeyFrame KeyTime="00:00:02" Value="359"/>
                                     </DoubleAnimationUsingKeyFrames>
                                     <ColorAnimationUsingKeyFrames Storyboard.TargetName="CardBorder" Storyboard.TargetProperty="(Border.BorderBrush).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
                                         <EasingColorKeyFrame KeyTime="00:00:00" Value="#FF444444"/>
@@ -729,7 +757,7 @@
                                 </Setter.Value>
                             </Setter>
                             <Setter TargetName="StepImage" Property="Visibility" Value="Visible"/>
-                            <Setter TargetName="StepImage" Property="Width" Value="100"/>
+                            <Setter TargetName="StepImage" Property="Width" Value="{Binding ElementName=CardDataStackPanel, Path=ActualHeight, Converter={StaticResource SubtractThree}}"/>
                         </MultiDataTrigger.Setters>
                     </MultiDataTrigger>
                 </DataTemplate.Triggers>
@@ -789,7 +817,7 @@
                         </StackPanel>
                         <Label Content="Cycle Time: "
                                Style="{StaticResource LabelStyler}"/>
-                        <Label Content="{Binding CycleTime, Converter={StaticResource DoubleToTime}}"
+                        <Label Content="{Binding CycleTime}"
                                Style="{StaticResource LabelStyler}"/>
                     </UniformGrid>
                 </Border>
@@ -856,7 +884,7 @@
                         <Button.RenderTransformOrigin>
                             <Point X="0.5" Y="0.5"/>
                         </Button.RenderTransformOrigin>
-
+                        
                         <Button.Content>
                             <Grid Width="32" Height="32" >
                                 <StackPanel Orientation="Horizontal"
@@ -892,31 +920,100 @@
                         </Button.Content>
                     </Button>
 
-                    <!--
-                    Stackpanel / grid with warning text "changing programs bad" and two buttons, one confirm one cancel
-                    -->
-
                     <Grid Visibility="{Binding ProgramSelectionConfirmationRaised,Converter={StaticResource BoolToVisibility}}">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
 
-                        <Label Content="Confirm Program Change" />
-
-                        <Grid Grid.Row="1">
+                        <StackPanel>
+                        <Label x:Name="WarningLabel"
+                                Content="Confirm Program Change" 
+                               FontFamily="{StaticResource UniversalFont}"
+                               HorizontalAlignment="Center"
+                               FontSize="18"/>
+                            <TextBlock Text="Changing programs while playback is in progress will terminate current program"
+                                       TextWrapping="Wrap"
+                                       FontFamily="{StaticResource UniversalFont}"
+                                       HorizontalAlignment="Center"
+                                       MaxWidth="{Binding ElementName=WarningLabel, Path=ActualWidth, Converter={StaticResource OneHundredTenPercent}}"
+                                       FontSize="11">
+                            </TextBlock>
+                        </StackPanel>
+                        
+                        <Grid Grid.Row="1"
+                              Margin="5">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition/>
                                 <ColumnDefinition/>
                             </Grid.ColumnDefinitions>
 
-                            <Button Grid.Column="0"
-                                    Content="Cancel"
-                                    Command="{Binding CancelButton}">
+                            <Button x:Name="CancelButton"
+                                    Command="{Binding CancelButton}"
+                                    Style="{StaticResource StandardButtonTemplate}">
+                                Cancel
+                                
+                                <Button.Background>
+                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                        <GradientStop Color="#FFDDDDDD"/>
+                                        <GradientStop Color="#FFB48181" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Button.Background>
+
+                                <Button.Triggers>
+                                    <EventTrigger RoutedEvent="MouseEnter">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="CancelButton" Storyboard.TargetProperty="(Control.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
+                                                    <EasingColorKeyFrame KeyTime="00:00:00.5000000" Value="#FFEE3838"/>
+                                                </ColorAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                    <EventTrigger RoutedEvent="MouseLeave">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="CancelButton" Storyboard.TargetProperty="(Control.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
+                                                    <EasingColorKeyFrame KeyTime="00:00:00.5000000" Value="#FFB48181"/>
+                                                </ColorAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Button.Triggers>
                             </Button>
-                            <Button Grid.Column="1"
-                                    Content="Confirm"
+                            
+                            
+                            <Button x:Name="ConfirmButton"
+                                    Grid.Column="1"
+                                    Style="{StaticResource StandardButtonTemplate}"
                                     Command="{Binding ConfirmButton}">
+                                <Button.Background>
+                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                        <GradientStop Color="#FFDDDDDD"/>
+                                        <GradientStop Color="#FF81B498" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Button.Background>
+                                <Button.Triggers>
+                                    <EventTrigger RoutedEvent="MouseEnter">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="ConfirmButton" Storyboard.TargetProperty="(Control.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
+                                                    <EasingColorKeyFrame KeyTime="00:00:00.5000000" Value="#FF13D600"/>
+                                                </ColorAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                    <EventTrigger RoutedEvent="MouseLeave">
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimationUsingKeyFrames Storyboard.TargetName="ConfirmButton" Storyboard.TargetProperty="(Control.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)">
+                                                    <EasingColorKeyFrame KeyTime="00:00:00.5000000" Value="#FF81B498"/>
+                                                </ColorAnimationUsingKeyFrames>
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </EventTrigger>
+                                </Button.Triggers>
+                                Confirm
                             </Button>
                         </Grid>
                     </Grid>
@@ -946,7 +1043,7 @@
                  SelectionMode="Single"
                  Background="Violet"
                  Grid.Row="1"
-                 IsHitTestVisible="False">
+                 IsHitTestVisible="True">
             
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>

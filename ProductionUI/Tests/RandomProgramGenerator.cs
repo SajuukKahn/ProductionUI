@@ -34,7 +34,7 @@ namespace ProductionUI.Tests
 
         private string[] RandomCoordinates()
         {
-            return new string[] { new Random().Next(-1200, 78000).ToString(), new Random().Next(-1200, 78000).ToString(), new Random().Next(-1200, 8000).ToString() };
+            return new string[] { new Random().Next(-20000, 200000).ToString(), new Random().Next(-20000, 200000).ToString(), new Random().Next(-9000, 100000).ToString() };
         }
 
         public ProductionCardCollection GenerateRandom(ProductionCardCollection productionCardDeckModel)
