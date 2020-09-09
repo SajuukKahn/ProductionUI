@@ -1,137 +1,143 @@
 ﻿using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Media;
-using System.ComponentModel;
-using ProductionUI.ViewModels;
-using ProductionUI.Models;
 using System;
-using System.Windows.Documents;
-using System.Collections.ObjectModel;
-using Microsoft.VisualBasic;
-using System.Linq;
-using System.Collections;
 using System.Diagnostics;
+using System.Windows.Media.Animation;
+using System.Threading;
+using System.Windows.Controls.Primitives;
+using System.Windows.Documents;
 
 namespace ProductionUI.CustomControls
 {
     public class CarouselPanel : Panel
-    {
-        //private bool _eventHooked = false;
-
+    { 
         private double _rWidth;
         private double _rHeight;
-        private long counter = 0;
+        private DoubleAnimation _animateWidth = new DoubleAnimation();
+        private DoubleAnimation _animateTransformX = new DoubleAnimation();
+
+        private bool _eventHooked;
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            counter++;
-            Debug.WriteLine("MeasureOverride Called " + counter);
-            //if (!_eventHooked)
-            //{
-            //    Debug.WriteLine("event hooked up");
-            //    var listBox = GetListBox();
-            //    if (listBox != null)
-            //    {
-            //        listBox.SelectionChanged += (sender, e) => InvalidateArrange();
-            //        _eventHooked = true;
-            //    }
-            //}
+            if (!_eventHooked)
+            {
+                Debug.WriteLine("event hooked up");
+                var listBox = GetListBox();
+                if (listBox != null)
+                {
+                    listBox.SelectionChanged += (sender, e) => InvalidateArrange();
+                    _eventHooked = true;
+                }
+            }
 
-            // double _minHeight = 1;
-            // double _minWidth = 1;
-            // double _absoluteMinWidth = Double.MaxValue;
-            // double _absoluteMinHeight = Double.MaxValue;
-            // 
-            // foreach (UIElement child in Children)
-            // {
-            // 
-            //     //child.Measure(availableSize);
-            // 
-            //     if (!(_minWidth.CompareTo(child.DesiredSize.Width) > 0))
-            //     {
-            //         _minWidth = child.DesiredSize.Width;
-            //     }
-            //     if (!(_minHeight.CompareTo(child.DesiredSize.Height) > 0))
-            //     {
-            //         _minHeight = child.DesiredSize.Height;
-            //     }
-            //     if(_minHeight < _absoluteMinHeight)
-            //     {
-            //         _absoluteMinHeight = _minHeight;
-            //     }
-            //     if(_minWidth < _absoluteMinWidth)
-            //     {
-            //         _absoluteMinWidth = _minWidth;
-            //     }
-            // }
+            double _minHeight = 1;
+            double _minWidth = 1;
+            double _absoluteMinWidth = Double.MaxValue;
+            double _absoluteMinHeight = Double.MaxValue;
 
-            _rWidth = Math.Ceiling(availableSize.Width / 7) - 10;
+            foreach (UIElement child in Children)
+            {
+
+                child.Measure(availableSize);
+
+                if (!(_minWidth.CompareTo(child.DesiredSize.Width) > 0))
+                {
+                    _minWidth = child.DesiredSize.Width;
+                }
+                if (!(_minHeight.CompareTo(child.DesiredSize.Height) > 0))
+                {
+                    _minHeight = child.DesiredSize.Height;
+                }
+                if (_minHeight < _absoluteMinHeight)
+                {
+                    _absoluteMinHeight = _minHeight;
+                }
+                if (_minWidth < _absoluteMinWidth)
+                {
+                    _absoluteMinWidth = _minWidth;
+                }
+            }
+                
+            _rWidth = Math.Ceiling(availableSize.Width / 9);
             
-            if(_rWidth < 150)
+            if(_rWidth < 25)
             {
-                _rWidth = 150;
+                _rWidth = 25;
             }
 
-            _rHeight = Math.Ceiling(availableSize.Height / 2) - 10;
-            if(_rHeight < 90)
+            _rHeight = Math.Ceiling(availableSize.Height - 10);
+            if(_rHeight < 40)
             {
-                _rHeight = 90;
+                _rHeight = 40;
             }
-            Debug.WriteLine("W:\t" + +_rWidth + "\tH:\t" + _rHeight);
 
             return availableSize;
         }
 
         protected override Size ArrangeOverride(Size finalSize)
         {
-
-            Debug.WriteLine("arrange override run");
-
             var listBox = GetListBox();
             if (listBox == null) return base.ArrangeOverride(finalSize);
             if (listBox.SelectedIndex < 0) listBox.SelectedIndex = 0;
+            if (listBox.SelectedIndex < 0) return base.ArrangeOverride(finalSize);
 
             int selectedIndex = listBox.SelectedIndex;
-            double top = (finalSize.Height / 2) - _rHeight;
+
+            double top = (finalSize.Height / 2) - (_rHeight / 2);
             int zIndex = 10000;
+            
+            double _bigWidth = Math.Ceiling(_rWidth * 2);
 
+            double center = Math.Ceiling(finalSize.Width / 2);
 
-            double center = finalSize.Width / 2;
+            center -= _bigWidth;
 
-            Children[selectedIndex].Arrange(new Rect(center - _rWidth, top, _rWidth * 2, _rHeight * 2));
-            Panel.SetZIndex(Children[selectedIndex], 69000);
-
-            ProductionCardDeckViewModel.SelectedIndex.IsActiveStep = false;
-            ProductionCardDeckViewModel.SelectedIndex = (ProductionCardModel)listBox.SelectedItem;
-            ProductionCardDeckViewModel.SelectedIndex.IsActiveStep = true;
-
-            center -= _rWidth;
+            //_animateTransformX.Duration = new Duration(TimeSpan.FromMilliseconds(50));
+            //_animateWidth.Duration = _animateTransformX.Duration;
+            //_animateWidth.FillBehavior = FillBehavior.HoldEnd;
+            //_animateWidth.EasingFunction = new ExponentialEase() { EasingMode = EasingMode.EaseOut };
 
             for (int leftCounter = selectedIndex  - 1; leftCounter > -1; leftCounter--)
             {
                 int xval = selectedIndex - leftCounter;
-                var left = center - (_rWidth * (xval / Math.Sqrt(xval)));
+                var left = Math.Ceiling(center - (_rWidth * Math.Sqrt(xval)));
                 var finalRect = new Rect(left, top, _rWidth, _rHeight);
-                Children[leftCounter].Arrange(finalRect);
                 Panel.SetZIndex(Children[leftCounter], zIndex--);
+
+                Children[leftCounter].Arrange(finalRect);
+                //_animateWidth.From = Children[leftCounter].RenderSize.Width;
+                //_animateWidth.To = _rWidth;
+                //Children[leftCounter].BeginAnimation(WidthProperty, _animateWidth, HandoffBehavior.SnapshotAndReplace);
+
             }
 
-            center += _rWidth;
+            center += _bigWidth + _rWidth;
 
             for (int rightCounter = selectedIndex + 1; rightCounter < Children.Count; rightCounter++)
             {
-                //   var left = center + (((rightCounter - selectedIndex) / 10) * (_rWidth * _rWidth)) + _rWidth;
-                //var left2 = center + (_rWidth + (_rWidth / (2 - Math.Exp(1-rightCounter))));
                 int xval = rightCounter - selectedIndex;
-                var left = center + (_rWidth * (xval / Math.Sqrt(xval)));
-
-                //var left2 = center + ((center / 2) * (1 - (Math.Exp(0 - (rightCounter - selectedIndex)))));
-
-                //var magic = 2 / Math.Sqrt(xval);
+                var left = Math.Ceiling(center + (_rWidth * Math.Sqrt(xval)));
                 var finalRect = new Rect(left, top, _rWidth, _rHeight);
-                Children[rightCounter].Arrange(finalRect);
                 Panel.SetZIndex(Children[rightCounter], zIndex--);
+
+                //_animateWidth.From = Children[rightCounter].RenderSize.Width;
+                Children[rightCounter].Arrange(finalRect);
+                //_animateWidth.To = _rWidth;
+                //Children[rightCounter].BeginAnimation(WidthProperty, _animateWidth, HandoffBehavior.SnapshotAndReplace);
+
             }
+
+            center = Math.Ceiling(finalSize.Width / 2);
+            Panel.SetZIndex(Children[selectedIndex], 1);
+            //_animateWidth.From = Children[selectedIndex].RenderSize.Width;
+            //_animateWidth.To = _bigWidth * 2;
+
+            Children[selectedIndex].Arrange(new Rect(center - _bigWidth, top, _bigWidth * 2, _rHeight));
+            Children[selectedIndex].Arrange(new Rect(center - _bigWidth, top, _bigWidth * 2, _rHeight));
+            //Children[selectedIndex].BeginAnimation(WidthProperty, _animateWidth, HandoffBehavior.SnapshotAndReplace);
+
 
             return finalSize;
             //return base.ArrangeOverride(finalSize);

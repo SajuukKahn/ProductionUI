@@ -1,0 +1,19 @@
+﻿<Window x:Class="ProductionUI.Views.ProcessUIMainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ProductionUI.Views"
+        mc:Ignorable="d"
+        Title="Container"
+        Background="DarkGray"
+        WindowStyle="ThreeDBorderWindow"
+        WindowState="Normal"
+        SizeToContent="Manual"
+        WindowStartupLocation="CenterOwner"
+        Width="722"
+        Height="531"
+        ResizeMode="CanResize">
+
+    <local:ProductionCardDeckView />
+</Window>

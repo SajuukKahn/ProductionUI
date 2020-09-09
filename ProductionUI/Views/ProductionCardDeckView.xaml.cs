@@ -23,9 +23,9 @@ namespace ProductionUI.Views
             InitializeComponent();
         }
 
-        private void CardDeckListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void CardDeckListBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-
+            e.Handled = true;
         }
     }
 }

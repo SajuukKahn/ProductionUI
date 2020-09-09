@@ -1,29 +1,28 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.Windows;
 using System.Windows.Data;
 
 namespace ProductionUI.CustomControls
 {
-    public class ComparisonSetter : IValueConverter
-    { 
+    class BoolToVisibilityConverter : IValueConverter
+    {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            string parameterString = parameter as string;
-            if(!string.IsNullOrEmpty(parameterString))
+            var type = value.GetType();
+            if (type.Name == "Boolean")
             {
-                string[] parameters = parameterString.Split('|');
-
-
+                if (value.Equals(false))
+                {
+                    return Visibility.Collapsed;
+                }
+                return Visibility.Visible;
             }
-
-
             return null;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return null;
+            throw new NotSupportedException();
         }
     }
 }

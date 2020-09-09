@@ -1,97 +1,47 @@
 ﻿using ProductionUI.Interfaces;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Threading;
 
 namespace ProductionUI.Models
 {
     public class ProductionCardModel : IProductionCard , INotifyPropertyChanged
     {
 
-        public ProductionCardModel(ImageSource imageSource = null,
+        public ProductionCardModel( ImageSource imageSource = null,
                                     bool isActiveStep = false,
                                     bool stepComplete = false,
-                                    string stepActiveTime = "0",
-                                    string stepDataLog = "No Data",
-                                    string stepPointData = "PolyLine ... ",
-                                    string stepStatus = "Waiting...")
+                                    string stepTitle = "No Data")
         {
-
-            _dispatchTimer = new DispatcherTimer
-            {
-                IsEnabled = true,
-                Interval = TimeSpan.FromMilliseconds(1)
-            };
-            _dispatchTimer.Tick += Tick;
-            ResetRunTime();
-
             StepImage = imageSource;
             IsActiveStep = isActiveStep;
             StepComplete = stepComplete;
-            StepActiveTime = stepActiveTime;
-            StepDataDisplay = stepDataLog;
-            StepStatus = stepStatus;
-            StepDataLog = stepPointData;
+            StepTitle = stepTitle;
+            StepStatus = ProductionCardStepStatus.Waiting;
         }
         
-
-
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged(string prop)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(prop));
         }
 
-        private string _stepDataDisplay;
-        public string StepDataDisplay
-        {
+        private List<ProductionCardSubStepModel> _cardSubSteps = new List<ProductionCardSubStepModel>();
+        public List<ProductionCardSubStepModel> CardSubSteps
+        { 
             get
             {
-                return _stepDataDisplay;
+                return _cardSubSteps;
             }
             set
             {
-                _stepDataDisplay = value;
-                OnPropertyChanged("StepDataDisplay");
+                _cardSubSteps = value;
+                OnPropertyChanged(nameof(CardSubSteps));
             }
         }
 
-
-        private string _stepActiveTime;
-        public string StepActiveTime
-        {
-            get
-            {
-                return _stepActiveTime;
-            }
-            set
-            {
-                _stepActiveTime = value;
-                OnPropertyChanged("StepActiveTime");
-            }
-        }
-
-        private string _stepDataLog;
-        public string StepDataLog
-        {
-            get
-            {
-                return _stepDataLog;
-            }
-            set
-            {
-                _stepDataLog = value;
-                OnPropertyChanged("StepDataLog");
-            }
-        }
-
-        private string _stepStatus;
-        public string StepStatus
+        private ProductionCardStepStatus _stepStatus;
+        public ProductionCardStepStatus StepStatus
         {
             get
             {
@@ -100,10 +50,23 @@ namespace ProductionUI.Models
             set
             {
                 _stepStatus = value;
-                OnPropertyChanged("StepStatus");
+                OnPropertyChanged(nameof(StepStatus));
             }
         }
 
+        private string _stepTitle;
+        public string StepTitle
+        {
+            get
+            {
+                return _stepTitle;
+            }
+            set
+            {
+                _stepTitle = value;
+                OnPropertyChanged(nameof(StepTitle));
+            }
+        }
 
         private ImageSource _stepImage;
         public ImageSource StepImage
@@ -115,24 +78,9 @@ namespace ProductionUI.Models
             set
             {
                 _stepImage = value;
-                OnPropertyChanged("StepImage");
+                OnPropertyChanged(nameof(StepImage));
             }
         }
-
-        private bool _stepRequiresUserInteraction;
-        public bool StepRequiresUserInteraction
-        {
-            get
-            {
-                return _stepRequiresUserInteraction;
-            }
-            set
-            {
-                _stepRequiresUserInteraction = value;
-                OnPropertyChanged("StepRequiresUserInteraction");
-            }
-        }
-
 
         private bool _stepComplete;
         public bool StepComplete
@@ -144,7 +92,7 @@ namespace ProductionUI.Models
             set
             {
                 _stepComplete = value;
-                OnPropertyChanged("StepComplete");
+                OnPropertyChanged(nameof(StepComplete));
             }
         }
 
@@ -158,16 +106,7 @@ namespace ProductionUI.Models
             set
             {
                 _isActiveStep = value;
-                OnPropertyChanged("IsActiveStep");
-                if (value == false)
-                {
-                    _dispatchTimer.Stop();
-                }
-                else
-                {
-                    ResetRunTime();
-                    _dispatchTimer.Start();
-                }
+                OnPropertyChanged(nameof(IsActiveStep));
             }
         }
 
@@ -181,7 +120,7 @@ namespace ProductionUI.Models
             set
             {
                 _stepPassed = value;
-                OnPropertyChanged("Step Passed");
+                OnPropertyChanged(nameof(StepPassed));
             }
         }
 
@@ -195,40 +134,8 @@ namespace ProductionUI.Models
             set
             {
                 _breakOnError = value;
-                OnPropertyChanged("BreakOnError");
+                OnPropertyChanged(nameof(BreakOnError));
             }
-        }
-
-        private readonly DispatcherTimer _dispatchTimer;
-
-        private DateTime _startTime;
-
-
-        public void stopCardTimer()
-        {
-            _dispatchTimer.Stop();
-        }
-
-        public void startCardTimer()
-        {
-            ResetRunTime();
-            _dispatchTimer.Start();
-        }
-
-        public void ResetRunTime()
-        {
-            _startTime = System.DateTime.Now;
-        }
-
-        private void Tick(object sender, EventArgs e)
-        {
-            StepActiveTime = Convert.ToString(DateTime.Now - _startTime);
-        }
-
-        ~ProductionCardModel()
-        {
-            _dispatchTimer.Stop();
-            _dispatchTimer.IsEnabled = false;
         }
 
     }
